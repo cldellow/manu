@@ -98,4 +98,29 @@ public class IndexTest {
             if (index != null) index.close();
         }
     }
+
+    @Test
+    public void testGetExistingById() throws SQLException {
+        Index index = null;
+        try {
+            index = new Index(dbLoc, false);
+            int id = index.add("somekey");
+            String actual = index.get(id);
+            assertEquals("somekey", actual);
+        } finally {
+            if (index != null) index.close();
+        }
+    }
+
+    @Test
+    public void testGetNonExistingById() throws SQLException {
+        Index index = null;
+        try {
+            index = new Index(dbLoc, false);
+            String actual = index.get(123);
+            assertEquals(null, actual);
+        } finally {
+            if (index != null) index.close();
+        }
+    }
 }

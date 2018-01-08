@@ -26,15 +26,27 @@ public class Index {
     public int get(String key) throws SQLException {
       PreparedStatement statement = conn.prepareStatement("SELECT rowid FROM keys WHERE key = ?");
       try {
-          int rv = -1;
           statement.setString(1, key);
           ResultSet rs = statement.executeQuery();
           if(rs.next())
-              rv = rs.getInt(1);
-          return rv;
+              return rs.getInt(1);
+          return -1;
       } finally {
           statement.close();
       }
+    }
+
+    public String get(int id) throws SQLException {
+        PreparedStatement statement = conn.prepareStatement("SELECT key FROM keys WHERE rowid = ?");
+        try {
+            statement.setInt(1, id);
+            ResultSet rs = statement.executeQuery();
+            if(rs.next())
+                return rs.getString(1);
+            return null;
+        } finally {
+            statement.close();
+        }
     }
 
     public int add(String key) throws SQLException {
