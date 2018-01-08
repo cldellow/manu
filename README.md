@@ -1,6 +1,7 @@
 # Mostly archived, not updated.
 
 [![Build Status](https://travis-ci.org/cldellow/manu.svg?branch=master)](https://travis-ci.org/cldellow/manu)
+[![codecov](https://codecov.io/gh/cldellow/manu/branch/master/graph/badge.svg)](https://codecov.io/gh/cldellow/manu)
 
 A time series storage format for integers and floats, using efficient delta encodings from [FastPFOR](https://github.com/lemire/JavaFastPFOR).
 
