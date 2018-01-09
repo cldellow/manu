@@ -23,10 +23,10 @@ digraph structs {
   1: type of field 1\n(int, fixed1, fixed2) |
   ... |
   1: type of field K |
-  <rowlistpos> 4: row-list position |
   2: length of field 1 name |
   variable: field 1 name\nUTF-8 encoding |
-  ...
+  ... |
+  <rowlistpos> 4: row-list position
   " ];
 
   record [ label = "<decoder>1: decoder\n*high bits = # of bytes for length |

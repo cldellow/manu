@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Random;
 
 import static org.junit.Assert.*;
 
@@ -80,6 +81,41 @@ public class WriterTest {
                 fieldTypes,
                 Arrays.asList(records).iterator());
     }
+
+    @Test
+    public void testLarge() throws Exception {
+        Long epochMs = System.currentTimeMillis();
+        int numDatapoints = 1000;
+        Interval interval = Interval.DAY;
+        int recordOffset = 0;
+        int numRecords = 16385;
+        String[] fieldNames = {"int"};
+        FieldType[] fieldTypes = {FieldType.INT};
+        FieldEncoder[] encoders = {new PFOREncoder()};
+        int[] datapoints = new int[numDatapoints];
+        Random r = new Random();
+        System.out.println(System.currentTimeMillis());
+        for(int i = 0; i < numDatapoints; i++)
+            datapoints[i] = Math.abs(r.nextInt()) % 300;
+        System.out.println(System.currentTimeMillis());
+        Record[] records = new Record[numRecords];
+        for(int i = 0; i < numRecords; i++)
+            records[i] = new SimpleRecord(encoders, new int[][] {datapoints});
+        System.out.println(System.currentTimeMillis());
+        Writer.write(
+                dbLoc,
+                epochMs,
+                numDatapoints,
+                interval,
+                recordOffset,
+                numRecords,
+                fieldNames,
+                fieldTypes,
+                Arrays.asList(records).iterator());
+        System.out.println(System.currentTimeMillis());
+        System.out.println(new File(dbLoc).length());
+    }
+
 
     @Test(expected=IllegalArgumentException.class)
     public void testTooFewRows() throws Exception {
