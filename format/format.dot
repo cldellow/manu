@@ -15,7 +15,8 @@ digraph structs {
   " ];
 
   preamble [ label="<epoch> 8: ms since epoch |
-  1: interval\n(0=hour, 1=day) |
+  4: num datapoints |
+  1: interval |
   4: starting record\ne.g. 0 |
   4: # of records\ne.g. 100000 |
   1: # of fields |
