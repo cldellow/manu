@@ -32,7 +32,8 @@ public class Writer {
         final DataOutputStream dos = new DataOutputStream(bos);
 
         final int numFields = fieldNames.length;
-        int rowListPosition = -1;
+        int rowListPointerPosition = -1;
+        int rowListOffset = -1;
         final int[] rowListPositions = new int[(numRecords + ROW_LIST_SIZE - 1) / ROW_LIST_SIZE];
         final int[] recordPositions = new int[numRecords];
         int currentRecord = 0;
@@ -41,7 +42,7 @@ public class Writer {
             writePreamble(dos, epochMs, numDatapoints, interval, recordOffset, numRecords, fieldNames, fieldTypes);
 
             // Stash rowListPosition so we can fix it up later.
-            rowListPosition = dos.size();
+            rowListPointerPosition = dos.size();
             dos.writeInt(0); // write a dummy value so the space is allocated
 
             while(records.hasNext()) {
@@ -65,13 +66,19 @@ public class Writer {
                 for(int j = 0; j < outputPos.get(); j++)
                     dos.writeInt(tmpArray[j]);
             }
-            rowListPosition = dos.size();
+            rowListOffset = dos.size();
             for(int i = 0; i < rowListPositions.length; i++)
                 dos.writeInt(rowListPositions[i]);
         } finally {
             dos.flush();
             dos.close();
         }
+
+        // Seek and fixup the rowlistposition
+        RandomAccessFile raf = new RandomAccessFile(file, "rw");
+        raf.seek(rowListPointerPosition);
+        raf.writeInt(rowListOffset);
+        raf.close();
 
         if(numRecords != currentRecord)
             throwRecordNumberException(currentRecord, numRecords);

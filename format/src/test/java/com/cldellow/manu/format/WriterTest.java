@@ -96,7 +96,7 @@ public class WriterTest {
         Random r = new Random();
         System.out.println(System.currentTimeMillis());
         for(int i = 0; i < numDatapoints; i++)
-            datapoints[i] = Math.abs(r.nextInt()) % 300;
+            datapoints[i] = Math.abs(r.nextInt()) % 30;
         System.out.println(System.currentTimeMillis());
         Record[] records = new Record[numRecords];
         for(int i = 0; i < numRecords; i++)

@@ -1,14 +1,13 @@
 package com.cldellow.manu.format;
 
-import me.lemire.integercompression.FastPFOR;
-import me.lemire.integercompression.IntWrapper;
-import me.lemire.integercompression.SkippableComposition;
-import me.lemire.integercompression.VariableByte;
+import me.lemire.integercompression.*;
 
 public class PFOREncoder implements FieldEncoder {
     private int[] tmp = new int[16384];
     private IntWrapper outPos = new IntWrapper(0);
-    private SkippableComposition compressor = new SkippableComposition(new FastPFOR(), new VariableByte());
+//    private SkippableComposition compressor = new SkippableComposition(new FastPFOR(), new VariableByte());
+    private SkippableComposition compressor = new SkippableComposition(new NewPFD(), new VariableByte());
+
 
     public int id() {
         return 1;
