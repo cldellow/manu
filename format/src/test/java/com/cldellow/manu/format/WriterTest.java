@@ -85,7 +85,7 @@ public class WriterTest {
     @Test
     public void testLarge() throws Exception {
         Long epochMs = System.currentTimeMillis();
-        int numDatapoints = 1000;
+        int numDatapoints = 744;
         Interval interval = Interval.DAY;
         int recordOffset = 0;
         int numRecords = 16385;
@@ -96,7 +96,7 @@ public class WriterTest {
         Random r = new Random();
         System.out.println(System.currentTimeMillis());
         for(int i = 0; i < numDatapoints; i++)
-            datapoints[i] = Math.abs(r.nextInt()) % 30;
+            datapoints[i] = (150 + (12 - (i % 24)) * Math.abs(r.nextInt()) % 4 ) / 4;
         System.out.println(System.currentTimeMillis());
         Record[] records = new Record[numRecords];
         for(int i = 0; i < numRecords; i++)
@@ -114,6 +114,7 @@ public class WriterTest {
                 Arrays.asList(records).iterator());
         System.out.println(System.currentTimeMillis());
         System.out.println(new File(dbLoc).length());
+        System.out.println(((double)new File(dbLoc).length()) / (double)(numRecords * numDatapoints));
     }
 
 

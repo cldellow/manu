@@ -7,10 +7,12 @@ digraph structs {
   <record2> record 2 |
   ... |
   record N |
-  <rowlist1> row-list 1 |
+  <rowlist1> row-list 1\ndelta-encoded |
   ... |
   <rowlistm> row-list M |
-  <rowlistpos> row-list positions\n(differential encoded)
+  <rowlistpos> 4: row-list 1 position |
+  ... |
+  <rowlistposm> 4: row-list M position
 
   " ];
 
@@ -39,9 +41,9 @@ digraph structs {
   preamble:rowlistpos -> composite:rowlistpos;
 
   composite:rowlistpos -> composite:rowlist1;
-  composite:rowlistpos -> composite:rowlistm;
+  composite:rowlistposm -> composite:rowlistm;
 
-  composite:record1 -> record:decoder;
+  composite:record1 -> record:decoder [arrowhead=dot];
   composite:rowlist1 -> composite:record1;
   composite:rowlist1 -> composite:record2;
 }

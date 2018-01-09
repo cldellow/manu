@@ -61,6 +61,11 @@ public class Writer {
                 IntWrapper inputPos = new IntWrapper(i);
                 IntWrapper outputPos = new IntWrapper(0);
                 int howMany = Math.min(numRecords - i, ROW_LIST_SIZE);
+                int start = recordPositions[i];
+                for(int k = i+1; k < i + howMany; k++) {
+                    recordPositions[k] -= start;
+                    start += recordPositions[k];
+                }
                 codec.compress(recordPositions, inputPos, howMany, tmpArray, outputPos);
                 rowListPositions[i / ROW_LIST_SIZE] = dos.size();
                 for(int j = 0; j < outputPos.get(); j++)
