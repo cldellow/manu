@@ -4,8 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum FieldType {
-    INT(0),
-    FLOAT(1);
+    INT(0),     // an int
+    FIXED1(1),  // an int, divided by 10 on output
+    FIXED2(2);  // an int, divided by 100 on output
 
     private int value;
     private static Map map = new HashMap();

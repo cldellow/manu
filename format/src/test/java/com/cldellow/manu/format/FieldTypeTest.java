@@ -9,7 +9,10 @@ public class FieldTypeTest {
     public void testRoundTrip() {
         assertEquals(0, FieldType.INT.getValue());
         assertEquals(FieldType.INT, FieldType.valueOf(0));
-        assertEquals(1, FieldType.FLOAT.getValue());
-        assertEquals(FieldType.FLOAT, FieldType.valueOf(1));
+        assertEquals(1, FieldType.FIXED1.getValue());
+        assertEquals(FieldType.FIXED1, FieldType.valueOf(1));
+        assertEquals(2, FieldType.FIXED2.getValue());
+        assertEquals(FieldType.FIXED2, FieldType.valueOf(2));
+
     }
 }

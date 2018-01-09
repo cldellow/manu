@@ -2,8 +2,6 @@ digraph structs {
   node [shape=record];
   rankdir=LR;
 
-//  struct1 [ label="<f0> one | two | three" ];
-//  struct2 [ label="<f0> one | two | three" ];
   composite [ label ="<preamble> preamble |
   <record1> record 1 |
   <record2> record 2 |
@@ -24,11 +22,14 @@ digraph structs {
   1: type of field 1\n(0=int, 1=float) |
   ... |
   1: type of field K |
-  <rowlistpos> 4: row-list position
+  <rowlistpos> 4: row-list position |
+  1: length of field 1 name |
+  ... |
+  variable: field 1 name\nUTF-8 encoding
   " ];
 
-  record [ label = "<decoder>1: decoder\n*high bit = # of bytes for length |
-  1-2: length\n*only for fields 1..K-1 |
+  record [ label = "<decoder>1: decoder\n*high bits = # of bytes for length |
+  1/2/3/4: length\n*only for fields 1..K-1 |
   content
   " ];
 

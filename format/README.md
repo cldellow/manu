@@ -19,6 +19,12 @@ Key IDs are contiguous. If a key is missing, it will have an entry in the pointe
 At 0.7 bytes/value: ~260MB for 1M items for a year at daily resolution.
 At 1 byte/value, ~370MB.
 
+### Encoders
+
+When serializing, a different encoder can be selected for each field in each record.
+
+Encoder 0 for integers and floats is the identity function - it just copies the input array.
+
 # Operations
 ## Reads
 - get-key key
