@@ -25,6 +25,11 @@
         <artifactId>sqlite-jdbc</artifactId>
         <version>3.21.0.1</version>
       </dependency> 
+      <dependency>
+        <groupId>me.lemire.integercompression</groupId>
+        <artifactId>JavaFastPFOR</artifactId>
+        <version>0.1.11</version>
+      </dependency> 
     </dependencies>
   </dependencyManagement>
   <build>

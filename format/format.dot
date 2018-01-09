@@ -16,17 +16,17 @@ digraph structs {
 
   preamble [ label="<epoch> 8: ms since epoch |
   4: num datapoints |
-  1: interval |
+  1: interval\n(minute, ..., year) |
   4: starting record\ne.g. 0 |
   4: # of records\ne.g. 100000 |
   1: # of fields |
-  1: type of field 1\n(0=int, 1=float) |
+  1: type of field 1\n(int, fixed1, fixed2) |
   ... |
   1: type of field K |
   <rowlistpos> 4: row-list position |
-  1: length of field 1 name |
-  ... |
-  variable: field 1 name\nUTF-8 encoding
+  2: length of field 1 name |
+  variable: field 1 name\nUTF-8 encoding |
+  ...
   " ];
 
   record [ label = "<decoder>1: decoder\n*high bits = # of bytes for length |
