@@ -7,11 +7,10 @@ import java.io.*;
 import java.util.Iterator;
 
 public class Writer {
-    private static final int ROW_LIST_SIZE = 8192;
-
     // TODO: switch to NIO once we have a baseline implementation of writing/reading
     public static void write(
             String file,
+            short rowListSize,
             long epochMs,
             int numDatapoints,
             Interval interval,
@@ -34,12 +33,12 @@ public class Writer {
         final int numFields = fieldNames.length;
         int rowListPointerPosition = -1;
         int rowListOffset = -1;
-        final int[] rowListPositions = new int[(numRecords + ROW_LIST_SIZE - 1) / ROW_LIST_SIZE];
+        final int[] rowListPositions = new int[(numRecords + rowListSize - 1) / rowListSize];
         final int[] recordPositions = new int[numRecords];
         int currentRecord = 0;
         final int[] tmpArray = new int[131072];
         try {
-            writePreamble(dos, epochMs, numDatapoints, interval, recordOffset, numRecords, fieldNames, fieldTypes);
+            writePreamble(dos, rowListSize, epochMs, numDatapoints, interval, recordOffset, numRecords, fieldNames, fieldTypes);
 
             // Stash rowListPosition so we can fix it up later.
             rowListPointerPosition = dos.size();
@@ -53,21 +52,19 @@ public class Writer {
                 writeRecord(dos, records.next(), numFields, tmpArray);
             }
 
-            IntegratedIntegerCODEC codec =  new
-                    IntegratedComposition(
-                    new IntegratedBinaryPacking(),
-                    new IntegratedVariableByte());
-            for(int i = 0; i < numRecords; i += ROW_LIST_SIZE) {
+            IntegratedIntegerCODEC codec =  Common.getRowListCodec();
+            for(int i = 0; i < numRecords; i += rowListSize) {
                 IntWrapper inputPos = new IntWrapper(i);
                 IntWrapper outputPos = new IntWrapper(0);
-                int howMany = Math.min(numRecords - i, ROW_LIST_SIZE);
+                int howMany = Math.min(numRecords - i, rowListSize);
                 int start = recordPositions[i];
                 for(int k = i+1; k < i + howMany; k++) {
                     recordPositions[k] -= start;
                     start += recordPositions[k];
                 }
                 codec.compress(recordPositions, inputPos, howMany, tmpArray, outputPos);
-                rowListPositions[i / ROW_LIST_SIZE] = dos.size();
+                rowListPositions[i / rowListSize] = dos.size();
+                dos.writeShort(outputPos.get());
                 for(int j = 0; j < outputPos.get(); j++)
                     dos.writeInt(tmpArray[j]);
             }
@@ -106,6 +103,7 @@ public class Writer {
     }
     private static void writePreamble(
                 DataOutputStream dos,
+                short rowListSize,
                 long epochMs,
                 int numDatapoints,
                 Interval interval,
@@ -113,6 +111,7 @@ public class Writer {
                 int numRecords,
                 String[] fieldNames,
                 FieldType[] fieldTypes) throws IOException {
+        dos.writeShort(rowListSize);
         dos.writeLong(epochMs);
         dos.writeInt(numDatapoints);
         dos.writeByte(interval.getValue());
@@ -124,7 +123,11 @@ public class Writer {
         }
 
         for(String name : fieldNames) {
-            dos.writeUTF(name);
+            byte[] utf = name.getBytes("UTF-8");
+            dos.writeByte(utf.length);
+            for(int i = 0; i < utf.length; i++)
+                dos.writeByte(utf[i]);
+
         }
     }
 

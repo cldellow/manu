@@ -7,33 +7,33 @@ public class Index {
 
     public Index(String file, boolean readOnly) throws SQLException {
         String maybeRo = "";
-        if(readOnly)
+        if (readOnly)
             maybeRo = "?mode=ro";
 
         conn = DriverManager.getConnection("jdbc:sqlite:file:" + file + maybeRo);
 
-        if(!readOnly)
+        if (!readOnly)
             ensureSchema();
     }
 
     public void close() throws SQLException {
-      if(conn != null) {
-          conn.close();
-          conn = null;
-      }
+        if (conn != null) {
+            conn.close();
+            conn = null;
+        }
     }
 
     public int get(String key) throws SQLException {
-      PreparedStatement statement = conn.prepareStatement("SELECT rowid FROM keys WHERE key = ?");
-      try {
-          statement.setString(1, key);
-          ResultSet rs = statement.executeQuery();
-          if(rs.next())
-              return rs.getInt(1);
-          return -1;
-      } finally {
-          statement.close();
-      }
+        PreparedStatement statement = conn.prepareStatement("SELECT rowid FROM keys WHERE key = ?");
+        try {
+            statement.setString(1, key);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next())
+                return rs.getInt(1);
+            return -1;
+        } finally {
+            statement.close();
+        }
     }
 
     public String get(int id) throws SQLException {
@@ -41,7 +41,7 @@ public class Index {
         try {
             statement.setInt(1, id);
             ResultSet rs = statement.executeQuery();
-            if(rs.next())
+            if (rs.next())
                 return rs.getString(1);
             return null;
         } finally {

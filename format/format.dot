@@ -7,7 +7,8 @@ digraph structs {
   <record2> record 2 |
   ... |
   record N |
-  <rowlist1> row-list 1\ndelta-encoded |
+  <rowlist1>2: row-list 1 length|
+  row-list 1\ndelta-encoded |
   ... |
   <rowlistm> row-list M |
   <rowlistpos> 4: row-list 1 position |
@@ -16,7 +17,8 @@ digraph structs {
 
   " ];
 
-  preamble [ label="<epoch> 8: ms since epoch |
+  preamble [ label="<start> 2: records per row list |
+  8: ms since epoch |
   4: num datapoints |
   1: interval\n(minute, ..., year) |
   4: starting record\ne.g. 0 |
@@ -25,7 +27,7 @@ digraph structs {
   1: type of field 1\n(int, fixed1, fixed2) |
   ... |
   1: type of field K |
-  2: length of field 1 name |
+  1: length of field 1 name |
   variable: field 1 name\nUTF-8 encoding |
   ... |
   <rowlistpos> 4: row-list position
@@ -36,7 +38,7 @@ digraph structs {
   content
   " ];
 
-  composite:preamble -> preamble:epoch [arrowhead=dot];
+  composite:preamble -> preamble:start [arrowhead=dot];
 
   preamble:rowlistpos -> composite:rowlistpos;
 

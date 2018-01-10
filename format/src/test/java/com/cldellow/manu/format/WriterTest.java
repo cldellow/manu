@@ -1,6 +1,7 @@
 package com.cldellow.manu.format;
 
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -11,6 +12,7 @@ import java.util.Iterator;
 import java.util.Random;
 
 import static org.junit.Assert.*;
+
 
 public class WriterTest {
     private String dbLoc = "/tmp/manu-test.data";
@@ -36,12 +38,13 @@ public class WriterTest {
         int[] datapoints2 = {2, 3, 4, 5, 6, 7, 8,9, 10, 11};
 
         Record[] records = {
-                new SimpleRecord(encoders, new int[][] {datapoints}),
-                new SimpleRecord(encoders, new int[][] {datapoints2})
+                new SimpleRecord(recordOffset + 0, encoders, new int[][] {datapoints}),
+                new SimpleRecord(recordOffset + 1, encoders, new int[][] {datapoints2})
         };
 
         Writer.write(
                 dbLoc,
+                (short)1024,
                 epochMs,
                 numDatapoints,
                 interval,
@@ -66,12 +69,13 @@ public class WriterTest {
         int[] datapoints2 = {2, 3, 4, 5, 6, 7, 8,9, 10, 11};
 
         Record[] records = {
-                new SimpleRecord(encoders, new int[][] {datapoints, datapoints2}),
-                new SimpleRecord(encoders, new int[][] {datapoints2, datapoints})
+                new SimpleRecord(recordOffset + 0, encoders, new int[][] {datapoints, datapoints2}),
+                new SimpleRecord(recordOffset + 1, encoders, new int[][] {datapoints2, datapoints})
         };
 
         Writer.write(
                 dbLoc,
+                (short)1024,
                 epochMs,
                 numDatapoints,
                 interval,
@@ -88,22 +92,20 @@ public class WriterTest {
         int numDatapoints = 744;
         Interval interval = Interval.DAY;
         int recordOffset = 0;
-        int numRecords = 16385;
+        int numRecords = 1025;
         String[] fieldNames = {"int"};
         FieldType[] fieldTypes = {FieldType.INT};
         FieldEncoder[] encoders = {new PFOREncoder()};
         int[] datapoints = new int[numDatapoints];
         Random r = new Random();
-        System.out.println(System.currentTimeMillis());
         for(int i = 0; i < numDatapoints; i++)
             datapoints[i] = (150 + (12 - (i % 24)) * Math.abs(r.nextInt()) % 4 ) / 4;
-        System.out.println(System.currentTimeMillis());
         Record[] records = new Record[numRecords];
         for(int i = 0; i < numRecords; i++)
-            records[i] = new SimpleRecord(encoders, new int[][] {datapoints});
-        System.out.println(System.currentTimeMillis());
+            records[i] = new SimpleRecord(recordOffset + i, encoders, new int[][] {datapoints});
         Writer.write(
                 dbLoc,
+                (short)256,
                 epochMs,
                 numDatapoints,
                 interval,
@@ -112,9 +114,6 @@ public class WriterTest {
                 fieldNames,
                 fieldTypes,
                 Arrays.asList(records).iterator());
-        System.out.println(System.currentTimeMillis());
-        System.out.println(new File(dbLoc).length());
-        System.out.println(((double)new File(dbLoc).length()) / (double)(numRecords * numDatapoints));
     }
 
 
@@ -131,11 +130,12 @@ public class WriterTest {
         int[] datapoints = {1, 2, 3, 4, 5, 6, 7,8, 9, 10};
 
         Record[] records = {
-                new SimpleRecord(encoders, new int[][] {datapoints})
+                new SimpleRecord(recordOffset + 0, encoders, new int[][] {datapoints})
         };
 
         Writer.write(
                 dbLoc,
+                (short)1024,
                 epochMs,
                 numDatapoints,
                 interval,
@@ -159,12 +159,13 @@ public class WriterTest {
         int[] datapoints = {1, 2, 3, 4, 5, 6, 7,8, 9, 10};
 
         Record[] records = {
-                new SimpleRecord(encoders, new int[][] {datapoints}),
-                new SimpleRecord(encoders, new int[][] {datapoints})
+                new SimpleRecord(recordOffset + 0, encoders, new int[][] {datapoints}),
+                new SimpleRecord(recordOffset + 1, encoders, new int[][] {datapoints})
         };
 
         Writer.write(
                 dbLoc,
+                (short)1024,
                 epochMs,
                 numDatapoints,
                 interval,
@@ -188,12 +189,13 @@ public class WriterTest {
         int[] datapoints = {1, 2, 3, 4, 5, 6, 7,8, 9, 10};
 
         Record[] records = {
-                new SimpleRecord(encoders, new int[][] {datapoints}),
-                new SimpleRecord(encoders, new int[][] {datapoints})
+                new SimpleRecord(recordOffset + 0, encoders, new int[][] {datapoints}),
+                new SimpleRecord(recordOffset + 1, encoders, new int[][] {datapoints})
         };
 
         Writer.write(
                 dbLoc,
+                (short)1024,
                 epochMs,
                 numDatapoints,
                 interval,
