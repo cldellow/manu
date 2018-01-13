@@ -1,0 +1,19 @@
+#!/bin/bash
+
+set -euo pipefail
+
+root=$(dirname "${BASH_SOURCE[0]}")/..
+root=$(readlink -f "$root")
+# shellcheck disable=SC2046
+sh_shebang_files=$( ( cd "$root" && grep -l '#!/bin/bash' $(git ls-files --full-name) ) || true)
+
+if [ -z "$sh_shebang_files" ]; then
+  echo "Nothing to lint"
+  exit 0
+fi
+
+# Always run from the repo root so that `shellcheck source` directives
+# can be resolved relative to the same location, regardless of whether
+# mvn was invoked in the root project or child project.
+# shellcheck disable=SC2086
+cd "$root" && shellcheck -x $sh_shebang_files

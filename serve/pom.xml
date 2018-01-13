@@ -9,4 +9,7 @@
   </parent>
   <artifactId>manu-serve</artifactId>
   <packaging>jar</packaging>
+  <properties>
+    <manu.root>${basedir}/..</manu.root>
+  </properties>
 </project>

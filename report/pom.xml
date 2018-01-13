@@ -9,6 +9,9 @@
   </parent>
   <artifactId>manu-report</artifactId>
   <packaging>jar</packaging>
+  <properties>
+    <manu.root>${basedir}/..</manu.root>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>com.cldellow</groupId>

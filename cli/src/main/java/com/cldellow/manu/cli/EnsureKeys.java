@@ -14,16 +14,9 @@ public class EnsureKeys {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         Vector<String> keys = new Vector<String>();
-        int cnt = 0;
         String key = null;
         while (null != (key = br.readLine())) {
             keys.add(key);
-            cnt++;
-
-            if(cnt % 100000 == 0) {
-                i.add(keys);
-                keys = new Vector<String>();
-            }
         }
 
         i.add(keys);

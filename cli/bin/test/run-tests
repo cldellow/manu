@@ -1,15 +1,36 @@
 #!/bin/bash
 
 set -euo pipefail
-set -x
 
 here=$(dirname "${BASH_SOURCE[0]}")
 here=$(readlink -f "$here")
+
+# shellcheck source=cli/bin/test/lib.sh
+. "$here"/lib.sh
+
+log_tmp=$(mktemp --tmpdir run_tests.XXXX)
+function finish {
+  rm -f "$log_tmp"
+}
+trap finish EXIT
 
 if [ ! -v coverage ]; then
   export coverage=1
 fi
 
-"$here"/../ensure-keys || true
-echo "x" | "$here"/../ensure-keys /tmp/foo.bar || true
+function test_no_args_is_error {
+  if "$here"/../ensure-keys ; then
+    echo wtf
+    return 1
+  fi
+}
+
+function test_can_add_key_from_stdin {
+  echo "x" | "$here"/../ensure-keys /tmp/foo.bar || true
+}
+
+while read -r fn; do
+  echo "Test: $fn"
+  "$fn"
+done < <(find_tests)
 

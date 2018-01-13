@@ -7,6 +7,9 @@
   <version>0.1.0-SNAPSHOT</version>
   <name>${project.artifactId}</name>
   <inceptionYear>2018</inceptionYear>
+  <properties>
+    <manu.root>${basedir}</manu.root>
+  </properties>
   <modules>
     <module>format</module>
     <module>cli</module>
@@ -77,6 +80,25 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.8</version>
+        <executions>
+          <execution>
+            <id>run-shellcheck</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <exec executable="${manu.root}/bin/run-shellcheck" failOnError="true" />
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
   </build>
 </project>

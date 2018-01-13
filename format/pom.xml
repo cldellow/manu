@@ -9,6 +9,9 @@
   </parent>
   <artifactId>manu-format</artifactId>
   <packaging>jar</packaging>
+  <properties>
+    <manu.root>${basedir}/..</manu.root>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
