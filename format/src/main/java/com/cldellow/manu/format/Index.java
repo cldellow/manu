@@ -1,6 +1,7 @@
 package com.cldellow.manu.format;
 
 import java.sql.*;
+import java.util.Collection;
 
 public class Index {
     private Connection conn = null;
@@ -49,8 +50,24 @@ public class Index {
         }
     }
 
+    public void add(Collection<String> keys) throws SQLException {
+        conn.setAutoCommit(false);
+        PreparedStatement statement = conn.prepareStatement("INSERT OR IGNORE INTO keys VALUES (?)");
+        try {
+            for (String key : keys) {
+                statement.setString(1, key);
+                statement.executeUpdate();
+            }
+        } finally {
+            statement.close();
+            conn.setAutoCommit(true);
+
+        }
+    }
+
     public int add(String key) throws SQLException {
         PreparedStatement statement = conn.prepareStatement("INSERT OR IGNORE INTO keys VALUES (?)");
+
         try {
             statement.setString(1, key);
             statement.executeUpdate();
@@ -59,6 +76,7 @@ public class Index {
             statement.close();
         }
     }
+
 
     private void ensureSchema() throws SQLException {
         Statement statement = conn.createStatement();

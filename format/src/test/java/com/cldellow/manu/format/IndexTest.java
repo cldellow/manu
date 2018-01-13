@@ -7,6 +7,8 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Vector;
 
 import static org.junit.Assert.*;
 
@@ -98,6 +100,25 @@ public class IndexTest {
             if (index != null) index.close();
         }
     }
+
+    @Test
+    public void testAddMultiple() throws SQLException {
+        Index index = null;
+        try {
+            index = new Index(dbLoc, false);
+            Collection<String> keys = new Vector<String>();
+            keys.add("abc");
+            keys.add("def");
+            index.add(keys);
+            int id = index.add("abc");
+            assertNotEquals(-1, id);
+            int id2 = index.get("abc");
+            assertEquals(id, id2);
+        } finally {
+            if (index != null) index.close();
+        }
+    }
+
 
     @Test
     public void testGetExistingById() throws SQLException {

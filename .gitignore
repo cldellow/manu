@@ -22,6 +22,8 @@
 hs_err_pid*
 
 *.swp
+*.swo
 .idea
 target
 *.iml
+cp.txt

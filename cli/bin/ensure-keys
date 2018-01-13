@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -euo pipefail
+here=$(dirname "${BASH_SOURCE[0]}")/..
+here=$(readlink -f "$here")
+
+java -cp "$(cat "$here"/cp.txt):"$here"/target/classes" com.cldellow.manu.cli.EnsureKeys "$@"

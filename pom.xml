@@ -15,6 +15,22 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>com.cldellow</groupId>
+        <artifactId>manu-format</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>com.cldellow</groupId>
+        <artifactId>manu-cli</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>com.cldellow</groupId>
+        <artifactId>manu-serve</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>4.12</version>
@@ -34,6 +50,27 @@
   </dependencyManagement>
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.0.2</version>
+        <executions>
+          <execution>
+            <!-- Write a file containing the classpath for all runtime dependencies (not test)
+                 This is used in dev mode for scripts to source.
+            -->
+            <id>build-classpath</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>build-classpath</goal>
+            </goals>
+            <configuration>
+              <outputFile>cp.txt</outputFile>
+              <includeScope>runtime</includeScope>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
