@@ -19,18 +19,21 @@ if [ ! -v coverage ]; then
 fi
 
 function test_no_args_is_error {
-  if "$here"/../ensure-keys ; then
-    echo wtf
-    return 1
-  fi
+  run "$here"/../ensure-keys
+
+  assert_exit_code 1
 }
 
 function test_can_add_key_from_stdin {
-  echo "x" | "$here"/../ensure-keys /tmp/foo.bar || true
+  echo "x" | run "$here"/../ensure-keys /tmp/foo.bar
+
+  assert_exit_code 0
 }
 
 while read -r fn; do
+  reset_test
   echo "Test: $fn"
   "$fn"
+  log_if_errors
 done < <(find_tests)
 
