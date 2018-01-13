@@ -9,7 +9,7 @@ public class PFOREncoder implements FieldEncoder {
     private IntWrapper outPos = new IntWrapper(0);
     private SkippableComposition compressor = new SkippableComposition(new FastPFOR128(), new VariableByte());
 
-    public int id() {
+    public int getId() {
         return 1;
     }
 

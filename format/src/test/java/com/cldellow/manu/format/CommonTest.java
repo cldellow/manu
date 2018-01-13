@@ -17,4 +17,9 @@ public class CommonTest {
         assertTrue(Common.getEncoder(1) instanceof PFOREncoder);
         assertTrue(Common.getEncoder(2) instanceof AverageEncoder);
     }
+
+    @Test
+    public void testCtor() {
+        new Common();
+    }
 }

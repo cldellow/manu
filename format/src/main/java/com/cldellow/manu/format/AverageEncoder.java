@@ -22,7 +22,7 @@ public class AverageEncoder implements FieldEncoder {
         return numKnown == 0 || (max < 100 && ((double) sum / numKnown) <= 10);
     }
 
-    public int id() {
+    public int getId() {
         return 2;
     }
 

@@ -10,6 +10,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class AverageEncoderTest {
+    @Test
+    public void testId() {
+        assertEquals(2, new AverageEncoder().getId());
+    }
 
     @Test
     public void bigNumbersNotEligible() {

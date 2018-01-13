@@ -19,7 +19,7 @@ public class SimpleRecordTest {
         FieldEncoder[] encoders = {new CopyEncoder()};
         int[][] datapoints = {{0, 1, 2}};
         Record r = new SimpleRecord(1, encoders, datapoints );
-        assertEquals(0, r.getEncoder(0).id());
+        assertEquals(0, r.getEncoder(0).getId());
     }
 
     @Test

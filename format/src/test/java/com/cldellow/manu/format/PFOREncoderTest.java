@@ -10,10 +10,15 @@ import static org.junit.Assert.assertTrue;
 public class PFOREncoderTest {
 
     @Test
+    public void id() {
+        assertEquals(1, new PFOREncoder().getId());
+    }
+
+
+    @Test
     public void isVariableLength() {
         assertTrue(new PFOREncoder().isVariableLength());
     }
-
 
     @Test
     public void getLength() {

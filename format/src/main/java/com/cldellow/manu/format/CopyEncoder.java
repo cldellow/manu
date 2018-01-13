@@ -5,7 +5,7 @@ import me.lemire.integercompression.IntWrapper;
 // A dumb encoder - just copies src to dst; useful
 // for validating the rest of the system.
 public class CopyEncoder implements FieldEncoder {
-    public int id() { return 0; }
+    public int getId() { return 0; }
 
     public boolean isVariableLength() { return true; }
     public int getLength() { return -1; }

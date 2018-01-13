@@ -9,6 +9,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class CopyEncoderTest {
+    @Test
+    public void testId() {
+        assertEquals(0, new CopyEncoder().getId());
+    }
 
     @Test
     public void isVariableLength() {
