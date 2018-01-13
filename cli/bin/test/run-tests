@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -euo pipefail
+
+here=$(dirname "${BASH_SOURCE[0]}")
+here=$(readlink -f "$here")
+
+export coverage=1
+
+"$here"/../ensure-keys || true
+echo "x" | "$here"/../ensure-keys /tmp/foo.bar || true
+
