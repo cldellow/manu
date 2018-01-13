@@ -25,6 +25,11 @@
       <groupId>com.cldellow</groupId>
       <artifactId>manu-format</artifactId>
     </dependency>
+    <dependency>
+      <groupId>me.lemire.integercompression</groupId>
+      <artifactId>JavaFastPFOR</artifactId>
+      <version>0.1.11</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

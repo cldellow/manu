@@ -1,11 +1,13 @@
 package com.cldellow.manu.cli;
 
+import com.cldellow.manu.format.Index;
 import com.cldellow.manu.format.Interval;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 public class Write {
-    public static void main(String[] _args) {
+    public static void main(String[] _args) throws SQLException {
         // TODO: use a proper argparse library
         try {
             ArgHolder args = new ArgHolder(_args);
@@ -19,6 +21,7 @@ public class Write {
             if(defs.isEmpty())
                 throw new NotEnoughArgsException();
 
+            Index i = new Index(indexFile, true);
         } catch(NotEnoughArgsException nae) {
             usage();
             System.exit(1);

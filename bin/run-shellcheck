@@ -1,6 +1,9 @@
 #!/bin/bash
-
 set -euo pipefail
+
+if [[ "${MAVEN_CMD_LINE_ARGS:-}" == *"-DskipTests"* ]]; then
+  exit 0
+fi
 
 root=$(dirname "${BASH_SOURCE[0]}")/..
 root=$(readlink -f "$root")

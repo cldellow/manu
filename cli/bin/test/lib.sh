@@ -1,7 +1,6 @@
 #!/bin/bash
 
 declare test_exit_code test_run_cmd test_result
-declare -a test_logs test_kinds
 
 function find_tests {
   declare -F | sed -e 's/.* //' | grep ^test_
@@ -11,27 +10,21 @@ function reset_test {
   test_exit_code=0
   test_result=0
   test_run_cmd=""
-
-  test_logs=()
-  test_kinds=()
 }
 
-function push {
-  kind=${1:?must provide kind}
-  log=${2:?must provide log}
-  test_logs+=("$log")
-  test_kinds+=("$kind")
+function log {
+  echo "$@" >> "${tmpdir:?}"/logfile
 }
-
 
 function run {
   set +e
   #shellcheck disable=SC2034
   test_run_cmd="$*"
-  push "run" "$test_run_cmd"
-  "$@" &> "${log_tmp:?}"
-  #shellcheck disable=SC2034
+  log "  $ $test_run_cmd"
+  "$@" &> "${tmpdir:?}"/lastcmd
   test_exit_code="$?"
+  sed -e 's/^/    /' "${tmpdir:?}/lastcmd" >> "${tmpdir:?}"/logfile
+  #shellcheck disable=SC2034
   set -e
 }
 
@@ -40,10 +33,10 @@ function assert {
   expected=${2:?must provide msg}
   actual=${3:?must provide msg}
   if [ "$expected" == "$actual" ]; then
-    push "ok  " "$msg $expected"
+    log "  ok   $msg $expected"
   else
     test_result=1
-    push "fail" "$msg $expected (but was: $actual)"
+    log "  fail $msg $expected (but was: $actual)"
   fi
 }
 
@@ -54,18 +47,6 @@ function assert_exit_code {
 
 function log_if_errors {
   if [ "$test_result" == "1" ]; then
-    i=0
-    n=${#test_logs[@]}
-    while [ "$i" -lt "$n" ]; do
-      kind=${test_kinds[$i]}
-      log=${test_logs[$i]}
-
-      if [ "$kind" == "run" ]; then
-        echo "  $log"
-      else
-        echo "    $kind $log"
-      fi
-      i=$((i+1))
-    done
+    cat "${tmpdir:?}/logfile"
   fi
 }
