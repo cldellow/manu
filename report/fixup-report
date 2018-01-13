@@ -8,7 +8,8 @@ if [[ "${MAVEN_CMD_LINE_ARGS:-}" == *"-DskipTests"* ]]; then
   exit 0
 fi
 
-mv "$here"/../format/target/jacoco.exec "$here"/target/
+mv "$here"/../format/target/jacoco.exec "$here"/target/format.jacoco.exec
+mv "$here"/../cli/target/jacoco.exec "$here"/target/cli.jacoco.exec
 
 cp -ar "$here"/../format/target/classes/ "$here"/target/
 cp -ar "$here"/../cli/target/classes/ "$here"/target/
