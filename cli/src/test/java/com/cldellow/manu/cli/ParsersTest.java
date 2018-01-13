@@ -4,6 +4,7 @@ import com.cldellow.manu.format.Interval;
 import org.junit.Test;
 
 import java.security.Key;
+import java.util.Collection;
 
 import static org.junit.Assert.*;
 
@@ -64,4 +65,55 @@ public class ParsersTest {
         Parsers.fieldKind("blah");
     }
 
+    @Test
+    public void emptyFieldDefs() throws Exception{
+        Collection<FieldDef> defs = Parsers.fieldDefs(new ArgHolder(new String[]{}));
+        assertTrue(defs.isEmpty());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void incompleteFieldDef() throws Exception{
+        Parsers.fieldDefs(new ArgHolder(new String[]{"--key"}));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void incompleteFieldDef2() throws Exception{
+        Parsers.fieldDefs(new ArgHolder(new String[]{"foo", "--key"}));
+    }
+
+
+    @Test
+    public void oneFieldDef() throws Exception{
+        Collection<FieldDef> defs = Parsers.fieldDefs(new ArgHolder(new String[]{"pvs", "pvs.file"}));
+        assertEquals(1L, defs.size());
+        FieldDef[] arr = new FieldDef[0];
+        arr = defs.toArray(arr);
+        assertEquals("pvs", arr[0].getName());
+        assertEquals("pvs.file", arr[0].getFile());
+    }
+
+    @Test
+    public void oneFieldDefWithFlags() throws Exception{
+        Collection<FieldDef> defs = Parsers.fieldDefs(new ArgHolder(new String[]{"--id", "--lossy", "pvs", "pvs.file"}));
+        assertEquals(1L, defs.size());
+        FieldDef[] arr = new FieldDef[0];
+        arr = defs.toArray(arr);
+        assertEquals("pvs", arr[0].getName());
+        assertEquals("pvs.file", arr[0].getFile());
+        assertEquals(KeyKind.ID, arr[0].getKeyKind());
+        assertEquals(FieldKind.LOSSY, arr[0].getFieldKind());
+    }
+
+
+    @Test
+    public void twoFieldDefs() throws Exception{
+        Collection<FieldDef> defs = Parsers.fieldDefs(new ArgHolder(new String[]{"pvs", "pvs.file", "edits", "edits.file"}));
+        assertEquals(2L, defs.size());
+        FieldDef[] arr = new FieldDef[0];;
+        arr = defs.toArray(arr);
+        assertEquals("pvs", arr[0].getName());
+        assertEquals("pvs.file", arr[0].getFile());
+        assertEquals("edits", arr[1].getName());
+        assertEquals("edits.file", arr[1].getFile());
+    }
 }

@@ -2,6 +2,8 @@ package com.cldellow.manu.cli;
 
 import com.cldellow.manu.format.Interval;
 
+import java.util.Collection;
+
 public class Write {
     public static void main(String[] _args) {
         // TODO: use a proper argparse library
@@ -12,6 +14,10 @@ public class Write {
             String outputFile = args.next();
             long epochMs = Parsers.epochMs(args.next());
             Interval interval = Parsers.interval(args.next());
+
+            Collection<FieldDef> defs = Parsers.fieldDefs(args);
+            if(defs.isEmpty())
+                throw new NotEnoughArgsException();
 
         } catch(NotEnoughArgsException nae) {
             usage();
@@ -28,6 +34,7 @@ public class Write {
                 "--fixed1, represents a number with 1 decimal point\n" +
                 "--fixed2, represents a number with 2 decimal points\n" +
                 "--lossy, represents an integer; series that have only small numbers with little variation may be lossily stored\n" +
+                "\n" +
                 "key-kind is one of:\n" +
                 "\n" +
                 "--key, the key is a string with an entry in keys.index (default)\n" +
