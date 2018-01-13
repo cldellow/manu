@@ -1,15 +1,7 @@
 #!/bin/bash
-
 set -euo pipefail
 here=$(dirname "${BASH_SOURCE[0]}")/..
-here=$(readlink -f "$here")
 
-coverage_agent=""
-if [ -v coverage ]; then
-  coverage_dir="$here"/target/coverage
-  mkdir -p "$coverage_dir"
-  coverage_agent="-javaagent:$HOME/.m2/repository/org/jacoco/org.jacoco.agent/0.7.9/org.jacoco.agent-0.7.9-runtime.jar=destfile=$coverage_dir/../../../format/target/jacoco.exec"
-fi
+. "$here"/bin/lib.sh
 
-java $coverage_agent \
-  -cp "$(cat "$here"/cp.txt):"$here"/target/classes" com.cldellow.manu.cli.EnsureKeys "$@"
+run_java com.cldellow.manu.cli.EnsureKeys "$@"

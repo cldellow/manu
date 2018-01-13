@@ -1,0 +1,8 @@
+#!/bin/bash
+set -euo pipefail
+
+# travis-ci does the build in two parts; if you're seeing build errors
+# that you can't reproduce locally, this script may help.
+mvn clean
+mvn install -DskipTests
+mvn test

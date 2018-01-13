@@ -8,7 +8,6 @@ import java.util.Vector;
 
 public class EnsureKeys {
     public static void main(String[] args) throws Exception {
-        System.out.println(args.length);
         if(args.length != 1)
             usage();
         Index i = new Index(args[0], false);

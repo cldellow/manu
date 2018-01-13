@@ -1,11 +1,14 @@
 #!/bin/bash
 
 set -euo pipefail
+set -x
 
 here=$(dirname "${BASH_SOURCE[0]}")
 here=$(readlink -f "$here")
 
-export coverage=1
+if [ ! -v coverage ]; then
+  export coverage=1
+fi
 
 "$here"/../ensure-keys || true
 echo "x" | "$here"/../ensure-keys /tmp/foo.bar || true
