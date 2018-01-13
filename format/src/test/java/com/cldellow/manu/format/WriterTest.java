@@ -1,26 +1,26 @@
 package com.cldellow.manu.format;
 
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
-
-import static org.junit.Assert.*;
 
 
 public class WriterTest {
+    boolean print = false;
     private String dbLoc = "/tmp/manu-test.data";
 
     @After
     public void cleanup() throws Exception {
         File f = new File(dbLoc);
-        if(f.exists())
+        if (f.exists())
             f.delete();
     }
 
@@ -34,17 +34,17 @@ public class WriterTest {
         String[] fieldNames = {"int"};
         FieldType[] fieldTypes = {FieldType.INT};
         FieldEncoder[] encoders = {new CopyEncoder()};
-        int[] datapoints = {1, 2, 3, 4, 5, 6, 7,8, 9, 10};
-        int[] datapoints2 = {2, 3, 4, 5, 6, 7, 8,9, 10, 11};
+        int[] datapoints = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        int[] datapoints2 = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 
         Record[] records = {
-                new SimpleRecord(recordOffset + 0, encoders, new int[][] {datapoints}),
-                new SimpleRecord(recordOffset + 1, encoders, new int[][] {datapoints2})
+                new SimpleRecord(recordOffset + 0, encoders, new int[][]{datapoints}),
+                new SimpleRecord(recordOffset + 1, encoders, new int[][]{datapoints2})
         };
 
         Writer.write(
                 dbLoc,
-                (short)1024,
+                (short) 1024,
                 epochMs,
                 numDatapoints,
                 interval,
@@ -65,17 +65,17 @@ public class WriterTest {
         String[] fieldNames = {"int", "decimal"};
         FieldType[] fieldTypes = {FieldType.INT, FieldType.FIXED1};
         FieldEncoder[] encoders = {new CopyEncoder(), new CopyEncoder()};
-        int[] datapoints = {1, 2, 3, 4, 5, 6, 7,8, 9, 10};
-        int[] datapoints2 = {2, 3, 4, 5, 6, 7, 8,9, 10, 11};
+        int[] datapoints = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        int[] datapoints2 = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 
         Record[] records = {
-                new SimpleRecord(recordOffset + 0, encoders, new int[][] {datapoints, datapoints2}),
-                new SimpleRecord(recordOffset + 1, encoders, new int[][] {datapoints2, datapoints})
+                new SimpleRecord(recordOffset + 0, encoders, new int[][]{datapoints, datapoints2}),
+                new SimpleRecord(recordOffset + 1, encoders, new int[][]{datapoints2, datapoints})
         };
 
         Writer.write(
                 dbLoc,
-                (short)1024,
+                (short) 1024,
                 epochMs,
                 numDatapoints,
                 interval,
@@ -98,14 +98,14 @@ public class WriterTest {
         FieldEncoder[] encoders = {new PFOREncoder()};
         int[] datapoints = new int[numDatapoints];
         Random r = new Random();
-        for(int i = 0; i < numDatapoints; i++)
-            datapoints[i] = (150 + (12 - (i % 24)) * Math.abs(r.nextInt()) % 4 ) / 4;
+        for (int i = 0; i < numDatapoints; i++)
+            datapoints[i] = (150 + (12 - (i % 24)) * Math.abs(r.nextInt()) % 4) / 4;
         Record[] records = new Record[numRecords];
-        for(int i = 0; i < numRecords; i++)
-            records[i] = new SimpleRecord(recordOffset + i, encoders, new int[][] {datapoints});
+        for (int i = 0; i < numRecords; i++)
+            records[i] = new SimpleRecord(recordOffset + i, encoders, new int[][]{datapoints});
         Writer.write(
                 dbLoc,
-                (short)256,
+                (short) 256,
                 epochMs,
                 numDatapoints,
                 interval,
@@ -116,8 +116,7 @@ public class WriterTest {
                 Arrays.asList(records).iterator());
     }
 
-
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testTooFewRows() throws Exception {
         Long epochMs = System.currentTimeMillis();
         int numDatapoints = 10;
@@ -127,15 +126,15 @@ public class WriterTest {
         String[] fieldNames = {"int"};
         FieldType[] fieldTypes = {FieldType.INT};
         FieldEncoder[] encoders = {new CopyEncoder()};
-        int[] datapoints = {1, 2, 3, 4, 5, 6, 7,8, 9, 10};
+        int[] datapoints = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
         Record[] records = {
-                new SimpleRecord(recordOffset + 0, encoders, new int[][] {datapoints})
+                new SimpleRecord(recordOffset + 0, encoders, new int[][]{datapoints})
         };
 
         Writer.write(
                 dbLoc,
-                (short)1024,
+                (short) 1024,
                 epochMs,
                 numDatapoints,
                 interval,
@@ -146,7 +145,7 @@ public class WriterTest {
                 Arrays.asList(records).iterator());
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testTooManyRows() throws Exception {
         Long epochMs = System.currentTimeMillis();
         int numDatapoints = 10;
@@ -156,16 +155,16 @@ public class WriterTest {
         String[] fieldNames = {"int"};
         FieldType[] fieldTypes = {FieldType.INT};
         FieldEncoder[] encoders = {new CopyEncoder()};
-        int[] datapoints = {1, 2, 3, 4, 5, 6, 7,8, 9, 10};
+        int[] datapoints = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
         Record[] records = {
-                new SimpleRecord(recordOffset + 0, encoders, new int[][] {datapoints}),
-                new SimpleRecord(recordOffset + 1, encoders, new int[][] {datapoints})
+                new SimpleRecord(recordOffset + 0, encoders, new int[][]{datapoints}),
+                new SimpleRecord(recordOffset + 1, encoders, new int[][]{datapoints})
         };
 
         Writer.write(
                 dbLoc,
-                (short)1024,
+                (short) 1024,
                 epochMs,
                 numDatapoints,
                 interval,
@@ -176,7 +175,7 @@ public class WriterTest {
                 Arrays.asList(records).iterator());
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testFieldMismatch() throws Exception {
         Long epochMs = System.currentTimeMillis();
         int numDatapoints = 10;
@@ -186,16 +185,16 @@ public class WriterTest {
         String[] fieldNames = {"int"};
         FieldType[] fieldTypes = {FieldType.INT, FieldType.INT};
         FieldEncoder[] encoders = {new CopyEncoder()};
-        int[] datapoints = {1, 2, 3, 4, 5, 6, 7,8, 9, 10};
+        int[] datapoints = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
         Record[] records = {
-                new SimpleRecord(recordOffset + 0, encoders, new int[][] {datapoints}),
-                new SimpleRecord(recordOffset + 1, encoders, new int[][] {datapoints})
+                new SimpleRecord(recordOffset + 0, encoders, new int[][]{datapoints}),
+                new SimpleRecord(recordOffset + 1, encoders, new int[][]{datapoints})
         };
 
         Writer.write(
                 dbLoc,
-                (short)1024,
+                (short) 1024,
                 epochMs,
                 numDatapoints,
                 interval,
@@ -205,4 +204,5 @@ public class WriterTest {
                 fieldTypes,
                 Arrays.asList(records).iterator());
     }
+
 }

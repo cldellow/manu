@@ -95,7 +95,8 @@ public class Writer {
             fe.encode(r.getValues(field), tmpArray, outPos);
             // TODO: add variable length size encoding
             dos.writeByte(fe.id());
-            dos.writeInt(outPos.get());
+            if(fe.isVariableLength())
+                dos.writeInt(outPos.get());
             for(int i = 0; i < outPos.get(); i++) {
                 dos.writeInt(tmpArray[i]);
             }

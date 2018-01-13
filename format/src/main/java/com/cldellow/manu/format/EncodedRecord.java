@@ -50,8 +50,12 @@ public class EncodedRecord implements Record {
     public int[] getValues(int field) {
         FieldEncoder encoder = getEncoder(field);
         buffer.position(fieldContentOffsets[field]);
-        IntBuffer intBuffer = buffer.asIntBuffer();
-        intBuffer.get(tmp, 0, fieldLengths[field]);
+        if(encoder.isVariableLength()) {
+            IntBuffer intBuffer = buffer.asIntBuffer();
+            intBuffer.get(tmp, 0, fieldLengths[field]);
+        } else {
+            fieldLengths[field] = encoder.getLength();
+        }
         encoder.decode(tmp, fieldLengths[field], rv, new IntWrapper(0));
         return rv;
     }

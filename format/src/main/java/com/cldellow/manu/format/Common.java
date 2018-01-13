@@ -19,6 +19,8 @@ class Common {
                 return new CopyEncoder();
             case 1:
                 return new PFOREncoder();
+            case 2:
+                return new AverageEncoder();
             default:
                 throw new IllegalArgumentException(String.format("unknown encoder: %d", id));
         }

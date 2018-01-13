@@ -7,6 +7,9 @@ import me.lemire.integercompression.IntWrapper;
 public class CopyEncoder implements FieldEncoder {
     public int id() { return 0; }
 
+    public boolean isVariableLength() { return true; }
+    public int getLength() { return -1; }
+
     public void encode(int[] data, int[] encoded, IntWrapper encodedLength) {
         System.arraycopy(data, 0, encoded, 0, data.length);
         encodedLength.set(data.length);
