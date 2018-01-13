@@ -4,46 +4,11 @@ set -euo pipefail
 here=$(dirname "${BASH_SOURCE[0]}")
 here=$(readlink -f "$here")
 
-
-echo ok
 if [[ "${MAVEN_CMD_LINE_ARGS:-}" == *"-DskipTests"* ]]; then
-  echo "-DskipTests, returning"
   exit 0
 fi
+
 mv "$here"/../format/target/jacoco.exec "$here"/target/
 
 cp -ar "$here"/../format/target/classes/ "$here"/target/
 cp -ar "$here"/../cli/target/classes/ "$here"/target/
-exit 0
-f="$here"/target/site/jacoco-aggregate/jacoco.xml
-
-ls -l "$f"
-
-groups=$(xml2 < "$f" | grep ^/report/group/@name= | sed -e 's#^/report/group/@name=##')
-
-echo "$groups" | while read -r group; do
-  id=$RANDOM
-  start=$(date +%s%3N)
-  echo $group
-  dir="$here"/target/"$group"
-  mkdir -p "$dir"
-  newf="$dir"/jacoco.xml
-  name=${group#manu-}
-
-  (
-    echo "/report/@name=$group"
-    echo "/report/sessioninfo/@id=$id"
-    echo "/report/sessioninfo/@start=$start"
-    echo "/report/sessioninfo/@dump=$start"
-    xml2 < "$f" | awk "
-      /^\/report\/counter/ { next; }
-      /^\/report\/group\/@name=/ { in_group = 0; }
-      in_group { print "'$'"0 }
-      /^\/report\/group\/@name=$group/ { in_group = 1; }
-    " | sed -e 's#^/report/group#/report#'
-  ) | 2xml | sed -e 's#<report/>##' > "$newf"
-  ls -l "$newf"
-  mv "$newf" "$here"/../"$name"/target/jacoco.xml
-done
-
-mv "$f" "$f.processed"
