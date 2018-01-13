@@ -60,7 +60,7 @@ public class Parsers {
         return dt.toDateTime(DateTimeZone.UTC).getMillis();
     }
 
-    public static Collection<FieldDef> fieldDefs(ArgHolder arg) throws NotEnoughArgsException {
+    public static Vector<FieldDef> fieldDefs(ArgHolder arg) throws NotEnoughArgsException {
         Vector<FieldDef> rv = new Vector<FieldDef>();
 
         FieldDef def = null;

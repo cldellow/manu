@@ -74,14 +74,27 @@ public class IndexTest {
     }
 
     @Test
+    public void testEmptyHasZeroRows() throws SQLException {
+        Index index = null;
+        try {
+            index = new Index(dbLoc, false);
+            assertEquals(0, index.getNumRows());
+        } finally {
+            if (index != null) index.close();
+        }
+    }
+
+    @Test
     public void testAddAndGetKey() throws SQLException {
         Index index = null;
         try {
             index = new Index(dbLoc, false);
             int id = index.add("somekey");
             assertNotEquals(-1, id);
+            assertEquals(0, id);
             int id2 = index.get("somekey");
             assertEquals(id, id2);
+            assertEquals(1L, index.getNumRows());
         } finally {
             if (index != null) index.close();
         }

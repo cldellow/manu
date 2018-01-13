@@ -30,7 +30,7 @@ public class Index {
             statement.setString(1, key);
             ResultSet rs = statement.executeQuery();
             if (rs.next())
-                return rs.getInt(1);
+                return rs.getInt(1) - 1;
             return -1;
         } finally {
             statement.close();
@@ -40,7 +40,7 @@ public class Index {
     public String get(int id) throws SQLException {
         PreparedStatement statement = conn.prepareStatement("SELECT key FROM keys WHERE rowid = ?");
         try {
-            statement.setInt(1, id);
+            statement.setInt(1, id + 1);
             ResultSet rs = statement.executeQuery();
             if (rs.next())
                 return rs.getString(1);
@@ -77,6 +77,17 @@ public class Index {
         }
     }
 
+    public int getNumRows() throws SQLException {
+        PreparedStatement statement = conn.prepareStatement("SELECT MAX(rowid) FROM keys");
+
+        try {
+            ResultSet rs = statement.executeQuery();
+            rs.next();
+            return rs.getInt(1);
+        } finally {
+            statement.close();
+        }
+    }
 
     private void ensureSchema() throws SQLException {
         Statement statement = conn.createStatement();

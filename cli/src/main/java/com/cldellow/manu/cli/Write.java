@@ -3,11 +3,13 @@ package com.cldellow.manu.cli;
 import com.cldellow.manu.format.Index;
 import com.cldellow.manu.format.Interval;
 
+import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Vector;
 
 public class Write {
-    public static void main(String[] _args) throws SQLException {
+    public static void main(String[] _args) throws Exception {
         // TODO: use a proper argparse library
         try {
             ArgHolder args = new ArgHolder(_args);
@@ -17,12 +19,20 @@ public class Write {
             long epochMs = Parsers.epochMs(args.next());
             Interval interval = Parsers.interval(args.next());
 
-            Collection<FieldDef> defs = Parsers.fieldDefs(args);
-            if(defs.isEmpty())
+            Vector<FieldDef> defs = Parsers.fieldDefs(args);
+            if (defs.isEmpty())
                 throw new NotEnoughArgsException();
 
             Index i = new Index(indexFile, true);
-        } catch(NotEnoughArgsException nae) {
+            int numRows = i.getNumRows();
+            int fields[][][] = new int[defs.size()][][];
+            for (int def = 0; def < defs.size(); def++) {
+                fields[def] = new int[numRows][];
+
+                FileParser fp = new FileParser(defs.get(def).getFile());
+
+            }
+        } catch (NotEnoughArgsException nae) {
             usage();
             System.exit(1);
         }
