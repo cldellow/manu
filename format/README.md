@@ -23,23 +23,6 @@ At 1 byte/value, ~370MB.
 
 When serializing, a different encoder can be selected for each field in each record.
 
-Encoder 0 for integers and floats is the identity function - it just copies the input array.
-
-# Operations
-## Reads
-- get-key key
-  - Returns the ID for the key.
-- describe-file file
-  - Returns metadata about the file - start time, interval, # of datapoints, # of items, field descriptions.
-- iterate-rows file
-  -	Walks the file, returning an array of arrays of datapoints for each record.
-
-## Writes
-- ensure-keys key1, key2, …, keyN
-  -	Given a set of keys, return their IDs, inserting them if needed.
-- write-file start unit num-datapoints field-descriptors record-offset num-records iterator[array[array[_]]
-  -	You can pass null arrays to indicate no data for a record.
-
-## Future work
-- merge file-1 file-2 … file-n
-  -	Concatenate N files. Designed to let you partition data, eg you have 1 file with 10 years of data, and 1 file with this year’s data. When the year ticks over, you merge them.
+- `0` -  `CopyEncoder`, the identity function - it just copies the input array
+- `1` -  `PFOREncoder`, uses FastPFOR128
+- `2` -  `AverageEncoder`, lossy, stores the # of non-zero points and sum of values
