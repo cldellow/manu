@@ -18,16 +18,22 @@ if [ ! -v coverage ]; then
   export coverage=1
 fi
 
-function test_no_args_is_error {
+function test_ensure_keys_no_args_is_error {
   run "$here"/../ensure-keys
 
   assert_exit_code 1
 }
 
-function test_can_add_key_from_stdin {
+function test_ensure_keys_can_add_key_from_stdin {
   echo "x" | run "$here"/../ensure-keys /tmp/foo.bar
 
   assert_exit_code 0
+}
+
+function test_write_no_args_is_error {
+  run "$here"/../write
+
+  assert_exit_code 1
 }
 
 while read -r fn; do

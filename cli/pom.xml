@@ -18,6 +18,10 @@
       <artifactId>junit</artifactId>
     </dependency>
     <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.cldellow</groupId>
       <artifactId>manu-format</artifactId>
     </dependency>

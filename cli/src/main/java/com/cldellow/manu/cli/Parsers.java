@@ -1,0 +1,61 @@
+package com.cldellow.manu.cli;
+
+import com.cldellow.manu.format.Interval;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
+
+import java.security.Key;
+
+public class Parsers {
+    public static Interval interval(String name) {
+        if(name.equals("minute"))
+            return Interval.MINUTE;
+        if(name.equals("hour"))
+            return Interval.HOUR;
+        if(name.equals("day"))
+            return Interval.DAY;
+        if(name.equals("week"))
+            return Interval.WEEK;
+        if(name.equals("month"))
+            return Interval.MONTH;
+        if(name.equals("quarter"))
+            return Interval.QUARTER;
+        if(name.equals("year"))
+            return Interval.YEAR;
+
+        throw new IllegalArgumentException(
+                String.format("unknown interval: %s", name));
+    }
+
+    public static KeyKind keyKind(String flag) {
+        if(flag.equals("--key"))
+            return KeyKind.KEY;
+        if(flag.equals("--id"))
+            return KeyKind.ID;
+
+        throw new IllegalArgumentException(
+                String.format("unknown key kind: %s", flag));
+    }
+
+    public static FieldKind fieldKind(String flag) {
+        if(flag.equals("--int"))
+            return FieldKind.INT;
+        if(flag.equals("--fixed1"))
+            return FieldKind.FIXED1;
+        if(flag.equals("--fixed2"))
+            return FieldKind.FIXED2;
+        if(flag.equals("--lossy"))
+            return FieldKind.LOSSY;
+
+        throw new IllegalArgumentException(
+                String.format("unknown field kind: %s", flag));
+    }
+
+    public static long epochMs(String string) {
+        DateTimeFormatter iso8601 = ISODateTimeFormat.dateTimeParser();
+        DateTime dt = iso8601.parseDateTime(string);
+        return dt.toDateTime(DateTimeZone.UTC).getMillis();
+    }
+}
