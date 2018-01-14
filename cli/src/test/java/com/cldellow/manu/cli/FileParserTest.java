@@ -64,6 +64,27 @@ public class FileParserTest {
 
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidLine() throws Exception {
+        FileParser fp = new FileParser(getFile("nonewline.tsv"));
+        System.out.println(fp.getNumFields());
+        fp.close();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidLine2() throws Exception {
+        FileParser fp = new FileParser(getFile("nonewline2.tsv"));
+        assertEquals(2, fp.getNumFields());
+        Iterator<FileParser.RowIterator.Row> it = fp.getIterator();
+        assertTrue(it.hasNext());
+        FileParser.RowIterator.Row row = it.next();
+        assertTrue(it.hasNext());
+        row = it.next();
+
+        fp.close();
+    }
+
+
     @Test(expected=IllegalArgumentException.class)
     public void testParseRowsRaggedTooLong() throws Exception {
         FileParser fp = new FileParser(getFile("ragged.tsv"));

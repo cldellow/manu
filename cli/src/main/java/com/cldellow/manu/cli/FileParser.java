@@ -23,8 +23,9 @@ public class FileParser {
 
         // Read the first line to determine how many fields there are
         boolean done = false;
+        byte b = 0;
         while (!done && buffer.hasRemaining()) {
-            byte b = buffer.get();
+            b = buffer.get();
             if (b == '\t')
                 numFields++;
             if (b == '\n') {
@@ -32,6 +33,10 @@ public class FileParser {
                 done = true;
             }
         }
+
+        if(b != '\n')
+            throw new IllegalArgumentException(String.format(
+                    "%s: first line lacks newline", fileName));
 
         buffer.position(0);
     }
@@ -90,7 +95,7 @@ public class FileParser {
 
                 int i = 0;
                 int numInts = getNumFields() - 1;
-                while(i < numInts) {
+                while(i < numInts && buffer.hasRemaining()) {
                     int value = 0;
                     if(next >= '0' && next <= '9') {
                         while(next >= '0' && next <= '9') {
@@ -109,14 +114,20 @@ public class FileParser {
                         next = buffer.get();
                     }
                 }
-                if(next != '\n')
+
+                if(next != '\n') {
+                    if(!buffer.hasRemaining())
+                        throw new IllegalArgumentException(String.format(
+                                "%s: row %d malformed, does not end in newline",
+                                fileName, currentRow));
+
                     throw new IllegalArgumentException(String.format(
                             "%s: row %d malformed: at least %d columns, expected %d",
-                            fileName, currentRow, i+1, numInts));
+                            fileName, currentRow, i + 1, numInts));
+                }
                 currentRow++;
-
-
             }
+
 
             public String getKey() {
                 return key;
