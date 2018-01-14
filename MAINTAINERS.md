@@ -26,6 +26,8 @@ See http://central.sonatype.org/pages/working-with-pgp-signatures.html
 
 3. Publish to Sonatype
 
+Set a non SNAPSHOT version.
+
 ```
 mvn versions:set -DnewVersion=x.y.z
 RELEASE=1 mvn clean deploy
@@ -33,13 +35,12 @@ RELEASE=1 mvn clean deploy
 
 4. Validate
 
-The build is not flagged as eligible for release to Maven Central.
+The build should flow to Maven Central automatically.
 
-Inspect it at https://oss.sonatype.org/ or https://oss.sonatype.org/content/repositories/snapshots/com/cldellow/
+Inspect it at:
 
-If 's good, do `mvn nexus-staging:release`
-
-Else, `mvn nexus-staging:drop`
+- https://oss.sonatype.org/
+- https://oss.sonatype.org/content/repositories/snapshots/com/cldellow/
 
 See also:
 
