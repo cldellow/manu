@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/cldellow/manu.svg?branch=master)](https://travis-ci.org/cldellow/manu)
 [![codecov](https://codecov.io/gh/cldellow/manu/branch/master/graph/badge.svg)](https://codecov.io/gh/cldellow/manu)
+[![Maven Central](https://img.shields.io/maven-central/v/com.cldellow/manu.svg)](https://mvnrepository.com/artifact/com.cldellow/manu)
 
 A time series storage format for integers and floats, using efficient delta encodings from [FastPFOR](https://github.com/lemire/JavaFastPFOR).
 
