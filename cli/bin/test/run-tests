@@ -61,9 +61,28 @@ EOF
   awk -F $'\t' '{print $1}' "$pvs_file" | run "$here"/../ensure-keys "$keys_index"
   assert_exit_code 0
 
-  run "$here"/../write "$keys_index" "$output_file" 1970-01-01 hour pageviews "$pvs_file"
+  run "$here"/../write "$keys_index" "$output_file" 1970-01-01 hour --fixed1 pageviews "$pvs_file"
   assert_exit_code 0
 }
+
+function test_write_two_fields {
+  pvs_file="$tmpdir"/pvs.file
+  keys_index="$tmpdir"/keys.index
+  output_file="$tmpdir"/output
+  cat > "$pvs_file".spaces <<EOF
+a 1 2 3
+b 123 123 123
+c 456 456 456
+EOF
+  tr ' ' '\t' < "$pvs_file".spaces > "$pvs_file"
+
+  awk -F $'\t' '{print $1}' "$pvs_file" | run "$here"/../ensure-keys "$keys_index"
+  assert_exit_code 0
+
+  run "$here"/../write "$keys_index" "$output_file" 1970-01-01 hour --lossy pageviews "$pvs_file" --fixed2 edits "$pvs_file"
+  assert_exit_code 0
+}
+
 
 function run_test {
   fn="$1"
