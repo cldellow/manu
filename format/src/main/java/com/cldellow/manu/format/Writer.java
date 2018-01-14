@@ -48,8 +48,8 @@ public class Writer {
                 if(currentRecord == numRecords)
                     throwRecordNumberException(currentRecord, numRecords);
                 recordPositions[currentRecord] = dos.size();
+                writeRecord(currentRecord, numFields, numDatapoints, dos, records.next(), tmpArray);
                 currentRecord++;
-                writeRecord(dos, records.next(), numFields, tmpArray);
             }
 
             IntegratedIntegerCODEC codec =  Common.getRowListCodec();
@@ -86,13 +86,18 @@ public class Writer {
             throwRecordNumberException(currentRecord, numRecords);
     }
 
-    private static void writeRecord(DataOutputStream dos, Record r, int numFields, int[] tmpArray) throws IOException {
+    private static void writeRecord(int currentRecord, int numFields, int numDatapoints, DataOutputStream dos, Record r, int[] tmpArray) throws IOException {
         final IntWrapper outPos = new IntWrapper(0);
 
         for(int field = 0; field < numFields; field++) {
             FieldEncoder fe = r.getEncoder(field);
             outPos.set(0);
-            fe.encode(r.getValues(field), tmpArray, outPos);
+            int[] values = r.getValues(field);
+            if(values.length != numDatapoints)
+                throw new IllegalArgumentException(String.format(
+                        "record %d, field %d has %d values; expected %d",
+                        currentRecord, field, values.length, numDatapoints));
+            fe.encode(values, tmpArray, outPos);
             // TODO: add variable length size encoding
             dos.writeByte(fe.getId());
             if(fe.isVariableLength())
