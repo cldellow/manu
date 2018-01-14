@@ -27,3 +27,18 @@ Reads a list of newline-separated keys from `list-of-keys` and ensures they exis
 eg:
 
 `./bin/write keys.index output 2017-01-01T00:00Z hour --lossy pageviews pageviews-file`
+
+## read
+
+`./bin/read keys.indes input-file key-kind [[--key-name needle-1], ...] [[--key-regex needle-1], ...] [[field-name-1], ...]`
+
+`key-kind` is one of:
+
+- `--key`, the key is printed as a string _(default)_
+- `--id`, the key is printed as an integer
+
+`--key-name` (`-n`) and `--key-regex` (`-r`) filter the results to only keys that
+are exactly that string or that match a regex with that string.
+
+If no field names are specified, all fields are printed in the order
+they are present in the file.

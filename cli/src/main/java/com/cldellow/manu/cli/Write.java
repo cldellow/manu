@@ -85,7 +85,13 @@ public class Write {
                                 defs.get(def).getFile(), currentRow, row.getKey()));
 
 
-                    fields[currentRow][def] = ic.compress(row.getInts());
+                    int[] ints = row.getInts();
+//                    for(int i = 0; i< ints.length;i++) {
+//                        System.out.print( " " + ints[i]);
+//
+//                    }
+//                    System.out.println();
+                    fields[currentRow][def] = ic.compress(ints);
                     currentRow++;
                 }
             }
@@ -145,11 +151,11 @@ public class Write {
         public Record next() {
             int[][] newFields = new int[defs.size()][];
             for (int i = 0; i < defs.size(); i++) {
-                encoders[i] = pfor;
-                if (defs.get(i).getFieldKind() == FieldKind.LOSSY)
-                    encoders[i] = lossy;
-
                 newFields[i] = ic.uncompress(fields[index][i]);
+
+                encoders[i] = pfor;
+                if (defs.get(i).getFieldKind() == FieldKind.LOSSY && AverageEncoder.eligible(newFields[i]));
+                    encoders[i] = lossy;
             }
 
             Record r = new SimpleRecord(index, encoders, newFields);
