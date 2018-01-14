@@ -18,6 +18,8 @@ digraph structs {
   " ];
 
   preamble [ label="<start> 2: records per row list |
+  6: file version\n
+    'MANU' + 2-byte version |
   8: ms since epoch |
   4: num datapoints |
   1: interval\n(minute, ..., year) |

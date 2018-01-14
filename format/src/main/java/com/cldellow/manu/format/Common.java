@@ -6,6 +6,7 @@ import me.lemire.integercompression.differential.IntegratedIntegerCODEC;
 import me.lemire.integercompression.differential.IntegratedVariableByte;
 
 class Common {
+    public static short getVersion() { return 1; }
     public static IntegratedIntegerCODEC getRowListCodec() {
         return new
                 IntegratedComposition(

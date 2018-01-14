@@ -30,15 +30,15 @@ eg:
 
 ## read
 
-`./bin/read keys.indes input-file key-kind [[--key-name needle-1], ...] [[--key-regex needle-1], ...] [[field-name-1], ...]`
+`./bin/read keys.index input-file [key-kind] [[--key-id key-id-1], ...] [[--key-name needle-1], ...] [[--key-regex needle-1], ...] [[field-name-1], ...]`
 
 `key-kind` is one of:
 
 - `--key`, the key is printed as a string _(default)_
 - `--id`, the key is printed as an integer
 
-`--key-name` (`-n`) and `--key-regex` (`-r`) filter the results to only keys that
-are exactly that string or that match a regex with that string.
+`--key-name` (`-n`), `--key-regex` (`-r`) and `--key-id` (`-i`) filter the
+results to only keys that match those clauses.
 
 If no field names are specified, all fields are printed in the order
 they are present in the file.

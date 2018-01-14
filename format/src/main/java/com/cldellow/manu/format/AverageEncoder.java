@@ -65,7 +65,9 @@ public class AverageEncoder implements FieldEncoder {
         int sum = buf.getShort();
         dataLength.set(data.length);
 
-        int delta = sum / numKnown;
+        int delta = 0;
+        if(numKnown > 0)
+            delta = sum / numKnown;
 
         for(int i = 0; i < numKnown; i++) {
             data[i] = delta;

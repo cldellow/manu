@@ -28,10 +28,16 @@ public class Reader {
     private final FileChannel channel;
     private final MappedByteBuffer buffer;
 
-    public Reader(String fileName) throws FileNotFoundException, IOException {
+    public Reader(String fileName) throws FileNotFoundException, IOException, NotManuException {
         RandomAccessFile raf = new RandomAccessFile(fileName, "r");
         channel = raf.getChannel();
         buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, raf.length());
+
+        byte[] magicPreamble = new byte[] { 'M', 'A', 'N', 'U', 0, (byte)Common.getVersion()};
+        for(int i = 0; i < magicPreamble.length; i++)
+            if(!buffer.hasRemaining() || buffer.get() != magicPreamble[i])
+                throw new NotManuException();
+
         rowListSize = buffer.getShort();
         epochMs = buffer.getLong();
         numDatapoints = buffer.getInt();
@@ -41,6 +47,7 @@ public class Reader {
         numFields = buffer.get();
         fieldTypes = new FieldType[numFields];
         fieldNames = new String[numFields];
+
         for (int i = 0; i < numFields; i++) {
             fieldTypes[i] = FieldType.valueOf(buffer.get());
         }

@@ -93,6 +93,7 @@ public class Writer {
             FieldEncoder fe = r.getEncoder(field);
             outPos.set(0);
             int[] values = r.getValues(field);
+
             if(values.length != numDatapoints)
                 throw new IllegalArgumentException(String.format(
                         "record %d, field %d has %d values; expected %d",
@@ -117,13 +118,18 @@ public class Writer {
                 int numRecords,
                 String[] fieldNames,
                 FieldType[] fieldTypes) throws IOException {
+        dos.writeByte('M');
+        dos.writeByte('A');
+        dos.writeByte('N');
+        dos.writeByte('U');
+        dos.writeShort(Common.getVersion());
         dos.writeShort(rowListSize);
         dos.writeLong(epochMs);
         dos.writeInt(numDatapoints);
         dos.writeByte(interval.getValue());
         dos.writeInt(recordOffset);
         dos.writeInt(numRecords);
-        dos.writeByte(fieldNames.length);
+        dos.writeByte((byte)fieldNames.length);
         for(FieldType fieldType : fieldTypes) {
             dos.writeByte(fieldType.getValue());
         }

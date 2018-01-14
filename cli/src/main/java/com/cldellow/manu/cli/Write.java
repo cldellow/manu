@@ -10,10 +10,10 @@ import java.util.Vector;
 public class Write {
     private int numRows;
     private int fields[][][];
-    private FieldEncoder pfor = new PFOREncoder();
-    private FieldEncoder lossy = new AverageEncoder();
+    private final FieldEncoder pfor = new PFOREncoder();
+    private final FieldEncoder lossy = new AverageEncoder();
     private Vector<FieldDef> defs;
-    private IntCompressor ic = new IntCompressor();
+    private final IntCompressor ic = new IntCompressor();
 
     private Write(String[] _args) throws Exception {
         // TODO: use a proper argparse library
@@ -25,6 +25,7 @@ public class Write {
             long epochMs = Parsers.epochMs(args.next());
             Interval interval = Parsers.interval(args.next());
 
+            // Parsers.fieldDefs consumes the rest of the args array
             defs = Parsers.fieldDefs(args);
             if (defs.isEmpty())
                 throw new NotEnoughArgsException();
@@ -84,14 +85,7 @@ public class Write {
                                 "%s: row %d cites unknown key %s",
                                 defs.get(def).getFile(), currentRow, row.getKey()));
 
-
-                    int[] ints = row.getInts();
-//                    for(int i = 0; i< ints.length;i++) {
-//                        System.out.print( " " + ints[i]);
-//
-//                    }
-//                    System.out.println();
-                    fields[currentRow][def] = ic.compress(ints);
+                    fields[currentRow][def] = ic.compress(row.getInts());
                     currentRow++;
                 }
             }
@@ -142,19 +136,20 @@ public class Write {
 
     class RecordIterator implements Iterator<Record> {
         int index = 0;
-        private FieldEncoder[] encoders = new FieldEncoder[defs.size()];
 
         public boolean hasNext() {
             return index < numRows;
         }
 
         public Record next() {
+            FieldEncoder[] encoders = new FieldEncoder[defs.size()];
+
             int[][] newFields = new int[defs.size()][];
             for (int i = 0; i < defs.size(); i++) {
                 newFields[i] = ic.uncompress(fields[index][i]);
 
                 encoders[i] = pfor;
-                if (defs.get(i).getFieldKind() == FieldKind.LOSSY && AverageEncoder.eligible(newFields[i]));
+                if (defs.get(i).getFieldKind() == FieldKind.LOSSY && AverageEncoder.eligible(newFields[i]))
                     encoders[i] = lossy;
             }
 
