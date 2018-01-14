@@ -12,6 +12,7 @@
     <license>
       <name>Eclipse Public License 1.0</name>
       <url>https://www.eclipse.org/legal/epl-v10.html</url>
+      <distribution>repo</distribution>
     </license>
   </licenses>
   <developers>
