@@ -84,8 +84,29 @@ public class FileParserTest {
         fp.close();
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidLine3() throws Exception {
+        FileParser fp = new FileParser(getFile("non-numeric.tsv"));
+        assertEquals(2, fp.getNumFields());
+        Iterator<FileParser.RowIterator.Row> it = fp.getIterator();
+        assertTrue(it.hasNext());
+        FileParser.RowIterator.Row row = it.next();
+        assertTrue(it.hasNext());
+        fp.close();
+    }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test
+    public void testOnlyOneColumn() throws Exception {
+        FileParser fp = new FileParser(getFile("only-one-column.tsv"));
+        assertEquals(1, fp.getNumFields());
+        Iterator<FileParser.RowIterator.Row> it = fp.getIterator();
+        assertTrue(it.hasNext());
+        FileParser.RowIterator.Row row = it.next();
+        assertFalse(it.hasNext());
+        fp.close();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
     public void testParseRowsRaggedTooLong() throws Exception {
         FileParser fp = new FileParser(getFile("ragged.tsv"));
         assertEquals(4, fp.getNumFields());
@@ -112,7 +133,6 @@ public class FileParserTest {
         it.next();
         assertFalse(it.hasNext());
     }
-
 
 
     @Test(expected = IllegalArgumentException.class)
