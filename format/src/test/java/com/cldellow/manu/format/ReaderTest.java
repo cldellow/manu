@@ -13,6 +13,11 @@ import static junit.framework.TestCase.assertEquals;
 public class ReaderTest {
     private String dbLoc = "/tmp/manu-test.data";
 
+    String getFile(String path) {
+        ClassLoader classLoader = getClass().getClassLoader();
+        return classLoader.getResource(path).getFile();
+    }
+
     @After
     public void cleanup() throws Exception {
         File f = new File(dbLoc);
@@ -22,24 +27,24 @@ public class ReaderTest {
 
     private Iterator<Record> getIterator() throws Exception {
         Long epochMs = System.currentTimeMillis();
-        int numDatapoints = 10;
+        int numDatapoints = 3;
         Interval interval = Interval.DAY;
         int recordOffset = 123;
         int numRecords = 2;
         String[] fieldNames = {"int"};
         FieldType[] fieldTypes = {FieldType.INT};
         FieldEncoder[] encoders = {new CopyEncoder()};
-        int[] datapoints = {1, 2, 3, 4, 5, 6, 7,8, 9, 10};
-        int[] datapoints2 = {2, 3, 4, 5, 6, 7, 8,9, 10, 11};
+        int[] datapoints = {1, 1, 1};
+        int[] datapoints2 = {123, 124, 125};
 
         Record[] records = {
-                new SimpleRecord(0, encoders, new int[][] {datapoints}),
-                new SimpleRecord(1, encoders, new int[][] {datapoints2})
+                new SimpleRecord(0, new FieldEncoder[] { new AverageEncoder() }, new int[][]{datapoints}),
+                new SimpleRecord(1, new FieldEncoder[] { new PFOREncoder() }, new int[][]{datapoints2})
         };
 
         Writer.write(
                 dbLoc,
-                (short)1024,
+                (short) 1024,
                 epochMs,
                 numDatapoints,
                 interval,
@@ -64,6 +69,30 @@ public class ReaderTest {
     public void testIteratorRemove() throws Exception {
         Iterator<Record> records = getIterator();
         records.remove();
+    }
+
+    @Test
+    public void testMixed() throws Exception {
+        Iterator<Record> records = getIterator();
+        Record r = records.next();
+        int[] data = r.getValues(0);
+        assertEquals(3, data.length);
+        assertEquals(1, data[0]);
+
+        r = records.next();
+        data = r.getValues(0);
+        assertEquals(3, data.length);
+        assertEquals(123, data[0]);
+    }
+
+    @Test(expected = NotManuException.class)
+    public void testNotManu() throws Exception {
+        new Reader(getFile("not-a-manu"));
+    }
+
+    @Test(expected = NotManuException.class)
+    public void testNotManu2() throws Exception {
+        new Reader(getFile("not-a-manu2"));
     }
 
 
@@ -153,7 +182,7 @@ public class ReaderTest {
         }
         assertEquals(numRecords, recordIndex - recordOffset);
 
-        for(recordIndex = recordOffset; recordIndex < recordOffset + numRecords; recordIndex++) {
+        for (recordIndex = recordOffset; recordIndex < recordOffset + numRecords; recordIndex++) {
             Record r = reader.get(recordIndex);
             assertEquals(recordIndex, r.getId());
             for (int fieldIndex = 0; fieldIndex < numFields; fieldIndex++) {

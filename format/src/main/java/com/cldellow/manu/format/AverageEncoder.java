@@ -31,7 +31,7 @@ public class AverageEncoder implements FieldEncoder {
     }
 
     public int getLength() {
-        return -1;
+        return 1;
     }
 
     public void encode(int[] data, int[] encoded, IntWrapper encodedLength) {
@@ -69,9 +69,13 @@ public class AverageEncoder implements FieldEncoder {
         if(numKnown > 0)
             delta = sum / numKnown;
 
+        int error = sum - (numKnown * delta);
         for(int i = 0; i < numKnown; i++) {
             data[i] = delta;
+            if(error > 0) {
+                data[i]++;
+                error--;
+            }
         }
-        data[0] += sum - (numKnown * delta);
     }
 }

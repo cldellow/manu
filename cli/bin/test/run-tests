@@ -23,6 +23,12 @@ if [ ! -v coverage ]; then
   export coverage=1
 fi
 
+function tabsify {
+  f=${1:?must provide file}
+  tr ' ' '\t' < "$f" > "$f".tabs
+  mv "$f".tabs "$f"
+}
+
 function test_ensure_keys_no_args_is_error {
   run "$here"/../ensure-keys
 
@@ -52,7 +58,7 @@ function test_write {
   keys_index="$tmpdir"/keys.index
   output_file="$tmpdir"/output
   cat > "$pvs_file".spaces <<EOF
-a 789 789 789
+a 1 1 1
 b 123 123 123
 c 456 456 456
 EOF
@@ -61,7 +67,7 @@ EOF
   awk -F $'\t' '{print $1}' "$pvs_file" | run "$here"/../ensure-keys "$keys_index"
   assert_exit_code 0
 
-  run "$here"/../write "$keys_index" "$output_file" 1970-01-01T00:00.002 hour --fixed1 pageviews "$pvs_file"
+  run "$here"/../write "$keys_index" "$output_file" 1970-01-01T00:00.002 hour --lossy pageviews "$pvs_file"
   assert_exit_code 0
 
   run "$here"/../read "$keys_index" "$output_file"
@@ -70,6 +76,94 @@ EOF
   "$here"/../read "$keys_index" "$output_file" > "$tmpdir"/roundtrip
   run diff "$pvs_file" "$tmpdir"/roundtrip
   assert_exit_code 0
+}
+
+function test_write_invalid_input {
+  pvs_file="$tmpdir"/pvs.file
+  keys_index="$tmpdir"/keys.index
+  output_file="$tmpdir"/output
+  cat > "$pvs_file" <<EOF
+a
+EOF
+
+  run "$here"/../ensure-keys "$keys_index" < "$pvs_file"
+  assert_exit_code 0
+
+  run "$here"/../write "$keys_index" "$output_file" 1970-01-01T00:00.002 hour --fixed1 pageviews "$pvs_file"
+  assert_exit_code 1
+}
+
+function test_write_unknown_key {
+  pvs_file="$tmpdir"/pvs.file
+  keys_index="$tmpdir"/keys.index
+  output_file="$tmpdir"/output
+  cat > "$pvs_file" <<EOF
+b 1
+EOF
+  tabsify "$pvs_file"  
+
+  echo "a" | run "$here"/../ensure-keys "$keys_index"
+  assert_exit_code 0
+
+  run "$here"/../write "$keys_index" "$output_file" 1970-01-01T00:00.002 hour --fixed1 pageviews "$pvs_file"
+  assert_exit_code 1
+}
+
+function test_write_unknown_key_int {
+  pvs_file="$tmpdir"/pvs.file
+  keys_index="$tmpdir"/keys.index
+  output_file="$tmpdir"/output
+  cat > "$pvs_file" <<EOF
+123 1
+EOF
+  tabsify "$pvs_file"  
+
+  echo "a" | run "$here"/../ensure-keys "$keys_index"
+  assert_exit_code 0
+
+  run "$here"/../write "$keys_index" "$output_file" 1970-01-01T00:00.002 hour --id pageviews "$pvs_file"
+  assert_exit_code 1
+}
+
+
+function test_write_int_key {
+  pvs_file="$tmpdir"/pvs.file
+  keys_index="$tmpdir"/keys.index
+  output_file="$tmpdir"/output
+  cat > "$pvs_file" <<EOF
+0 1
+EOF
+  tabsify "$pvs_file"  
+
+  echo "a" | run "$here"/../ensure-keys "$keys_index"
+  assert_exit_code 0
+
+  run "$here"/../write "$keys_index" "$output_file" 1970-01-01T00:00.002 hour --id --fixed1 pageviews "$pvs_file"
+  assert_exit_code 0
+
+  run "$here"/../read "$keys_index" "$output_file" --key-name "a"
+  assert_exit_code 0
+
+  "$here"/../read "$keys_index" "$output_file" --id --key-name "a" > "$tmpdir"/out
+  run diff "$tmpdir"/out "$pvs_file"
+  assert_exit_code 0
+
+  "$here"/../read "$keys_index" "$output_file" --id --key-id 0 > "$tmpdir"/out
+  run diff "$tmpdir"/out "$pvs_file"
+  assert_exit_code 0
+
+  "$here"/../read "$keys_index" "$output_file" --id --key-regex a > "$tmpdir"/out
+  run diff "$tmpdir"/out "$pvs_file"
+  assert_exit_code 0
+
+  "$here"/../read "$keys_index" "$output_file" --id --key-regex b > "$tmpdir"/out
+  run diff "$tmpdir"/out "$pvs_file"
+  assert_exit_code 1
+
+
+
+  "$here"/../read "$keys_index" "$output_file" --key-name "a" | sed -e 's/a/0/' > "$tmpdir"/out
+  run diff "$tmpdir"/out "$pvs_file"
 }
 
 function test_write_two_fields {
@@ -86,9 +180,39 @@ EOF
   awk -F $'\t' '{print $1}' "$pvs_file" | run "$here"/../ensure-keys "$keys_index"
   assert_exit_code 0
 
-  run "$here"/../write "$keys_index" "$output_file" 1970-01-01 hour --lossy pageviews "$pvs_file" --fixed2 edits "$pvs_file"
+  run "$here"/../write "$keys_index" "$output_file" 1970-01-01 hour pageviews "$pvs_file" --fixed2 edits "$pvs_file"
   assert_exit_code 0
 }
+
+function test_write_two_fields_uneven {
+  pvs_file="$tmpdir"/pvs.file
+  pvs2_file="$tmpdir"/pvs2.file
+  keys_index="$tmpdir"/keys.index
+  output_file="$tmpdir"/output
+  cat > "$pvs_file".spaces <<EOF
+a 1 2 3
+EOF
+  tr ' ' '\t' < "$pvs_file".spaces > "$pvs_file"
+
+  cat > "$pvs2_file".spaces <<EOF
+a 1 2
+EOF
+  tr ' ' '\t' < "$pvs2_file".spaces > "$pvs2_file"
+
+
+  awk -F $'\t' '{print $1}' "$pvs_file" | run "$here"/../ensure-keys "$keys_index"
+  assert_exit_code 0
+
+  run "$here"/../write "$keys_index" "$output_file" 1970-01-01 hour --lossy pageviews "$pvs_file" --fixed2 edits "$pvs2_file"
+  assert_exit_code 1
+}
+
+function test_read_no_args_is_error {
+  run "$here"/../read
+
+  assert_exit_code 1
+}
+
 
 
 function run_test {

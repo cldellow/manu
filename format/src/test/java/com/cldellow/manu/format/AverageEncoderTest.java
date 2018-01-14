@@ -26,6 +26,14 @@ public class AverageEncoderTest {
     }
 
     @Test
+    public void uniformBigNumbersNotOk() {
+        assertFalse(AverageEncoder.eligible(new int[] { 20, 20, 20 }));
+    }
+
+    @Test
+    public void emptyOk() { assertTrue(AverageEncoder.eligible(new int[] {})); }
+
+    @Test
     public void negativeNumbersNotOk() {
         assertFalse(AverageEncoder.eligible(new int[] { -1, 2, 1, 3, 4, 5, 0, 23}));
     }
@@ -38,10 +46,10 @@ public class AverageEncoderTest {
 
     @Test
     public void getLength() {
-        assertEquals(-1L, new AverageEncoder().getLength());
+        assertEquals(1L, new AverageEncoder().getLength());
     }
 
-    private void roundtrip(int[] data) throws Exception {
+    private void roundtrip(int[] data, boolean isExact) throws Exception {
         IntWrapper length = new IntWrapper(0);
         int[] newData = EncoderTools.roundtrip(data, new AverageEncoder(), length);
 
@@ -62,15 +70,36 @@ public class AverageEncoderTest {
 
         assertEquals((long)numPoints[0], numPoints[1]);
         assertEquals((long)sum[0], sum[1]);
+
+        if(isExact) {
+            for(int i = 0; i< data.length; i++)
+                assertEquals(data[i], newData[i]);
+        }
     }
 
     @Test
     public void encodeDense() throws Exception {
-        roundtrip(new int[] {1, 2, 3, 1, 2, 3});
+        roundtrip(new int[] {1, 2, 3, 1, 2, 3}, false);
     }
 
     @Test
     public void encodeSparse() throws Exception {
-        roundtrip(new int[] {0, 0, 0, 1, 2, 1, 0});
+        roundtrip(new int[] {0, 0, 0, 1, 2, 1, 0}, false);
     }
+
+    @Test
+    public void encodeLotsOfError() throws Exception {
+        roundtrip(new int[] {2, 2, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, false);
+    }
+
+    @Test
+    public void encodeEmpty() throws Exception {
+        roundtrip(new int[] {}, false);
+    }
+
+    @Test
+    public void encodeExact() throws Exception {
+        roundtrip(new int[] {1, 1, 1}, true);
+    }
+
 }

@@ -53,4 +53,31 @@ public class ReadArgs {
             throw new NotEnoughArgsException(errMsg, nean);
         }
     }
+
+    public boolean filterKeys() {
+        return !names.isEmpty() || !patterns.isEmpty() || !ids.isEmpty();
+    }
+
+    public boolean[] printFields(String[] fieldNames) {
+        boolean[] rv = new boolean[fieldNames.length];
+        for (int i = 0; i < rv.length; i++) {
+            rv[i] = fields.isEmpty();
+        }
+
+        for(int i = 0; i < fields.size(); i++) {
+            boolean knownField = false;
+            for (int j = 0; j < fieldNames.length; j++) {
+                if (fields.get(i).equals(fieldNames[j])) {
+                    knownField = true;
+                    rv[j] = true;
+                    break;
+                }
+            }
+
+            if(!knownField)
+                throw new IllegalArgumentException("unknown field: " + fields.get(i));
+        }
+
+        return rv;
+    }
 }

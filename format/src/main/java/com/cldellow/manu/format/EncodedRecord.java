@@ -32,19 +32,19 @@ public class EncodedRecord implements Record {
         // Determine the offsets of all the fields.
         buffer.position(recordStart);
 
-        for(int i = 0; i < numFields; i++) {
+        for (int i = 0; i < numFields; i++) {
             fieldOffsets[i] = buffer.position();
             int encoderId = buffer.get();
             fieldEncoders[i] = Common.getEncoder(encoderId);
-            if(fieldEncoders[i].isVariableLength()) {
+            if (fieldEncoders[i].isVariableLength()) {
                 int length = buffer.getInt();
                 fieldLengths[i] = length;
             } else {
                 fieldLengths[i] = fieldEncoders[i].getLength();
             }
             fieldContentOffsets[i] = buffer.position();
-            buffer.position(buffer.position() + 4*fieldLengths[i]);
-         }
+            buffer.position(buffer.position() + 4 * fieldLengths[i]);
+        }
     }
 
     public int getId() {
@@ -54,12 +54,10 @@ public class EncodedRecord implements Record {
     public int[] getValues(int field) {
         FieldEncoder encoder = getEncoder(field);
         buffer.position(fieldContentOffsets[field]);
-        if(encoder.isVariableLength()) {
-            IntBuffer intBuffer = buffer.asIntBuffer();
-            intBuffer.get(tmp, 0, fieldLengths[field]);
-        } else {
-            fieldLengths[field] = encoder.getLength();
-        }
+
+        IntBuffer intBuffer = buffer.asIntBuffer();
+        intBuffer.get(tmp, 0, fieldLengths[field]);
+
         encoder.decode(tmp, fieldLengths[field], rv, new IntWrapper(0));
         return rv;
     }

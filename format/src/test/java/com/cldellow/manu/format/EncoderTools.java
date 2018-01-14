@@ -4,7 +4,7 @@ import me.lemire.integercompression.IntWrapper;
 
 public class EncoderTools {
     public static int[] roundtrip(int[] data, FieldEncoder encoder, IntWrapper encodedLength) throws Exception {
-        int[] encoded = new int[data.length * 2];
+        int[] encoded = new int[10 + data.length * 2];
         encoder.encode(data, encoded, encodedLength);
 
         int[] decoded = new int[data.length];

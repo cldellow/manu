@@ -10,16 +10,17 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Vector;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class IndexTest {
     private String dbLoc = "/tmp/manu-test.db";
 
     @After
     public void cleanup() throws Exception {
-      File f = new File(dbLoc);
-      if(f.exists())
-          f.delete();
+        File f = new File(dbLoc);
+        if (f.exists())
+            f.delete();
     }
 
 
@@ -29,9 +30,17 @@ public class IndexTest {
         try {
             index = new Index(dbLoc, false);
         } finally {
-            if(index != null) index.close();
+            if (index != null) index.close();
         }
     }
+
+    @Test
+    public void testDoubleCloseOk() throws Exception {
+        Index index = new Index(dbLoc, false);
+        index.close();
+        index.close();
+    }
+
 
     @Test(expected = SQLException.class)
     public void testEmptyIndexNotOKWhenReadOnly() throws Exception {
@@ -39,7 +48,7 @@ public class IndexTest {
         try {
             index = new Index(dbLoc, true);
         } finally {
-            if(index != null) index.close();
+            if (index != null) index.close();
         }
     }
 

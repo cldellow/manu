@@ -15,26 +15,11 @@ public class Read {
 
             Reader reader = new Reader(args.inputFile);
             Index index = new Index(args.indexFile, true);
-            boolean filterKeys = !args.names.isEmpty() || !args.patterns.isEmpty() || !args.ids.isEmpty();
-            boolean[] printFields = new boolean[reader.numFields];
-            for (int i = 0; i < printFields.length; i++) {
-                printFields[i] = args.fields.isEmpty();
-            }
+            boolean filterKeys = args.filterKeys();
+            boolean[] printFields = args.printFields(reader.fieldNames);
 
-            for(int i = 0; i < args.fields.size(); i++) {
-                boolean knownField = false;
-                for (int j = 0; j < reader.fieldNames.length; j++) {
-                    if (args.fields.get(i).equals(reader.fieldNames[j])) {
-                        knownField = true;
-                        printFields[j] = true;
-                        break;
-                    }
-                }
-
-                if(!knownField)
-                    throw new IllegalArgumentException("unknown field: " + args.fields.get(i));
-            }
-
+            // TODO: consider only doing a full scan for --key-regex,
+            // for --key-id and --key-name, convert to ID and lookup by ID
             Iterator<Record> it = reader.records;
             while (it.hasNext()) {
                 Record record = it.next();
@@ -48,21 +33,21 @@ public class Read {
                             break;
                         }
 
-                    key = index.get(record.getId());
+                    if (!args.names.isEmpty() || !args.patterns.isEmpty()) {
+                        key = index.get(record.getId());
 
+                        for (int i = 0; i < args.names.size(); i++)
+                            if (key.equals(args.names.get(i))) {
+                                printRecord = true;
+                                break;
+                            }
 
-
-                    for (int i = 0; i < args.names.size(); i++)
-                        if (key.equals(args.names.get(i))) {
-                            printRecord = true;
-                            break;
-                        }
-
-                    for (int i = 0; i < args.patterns.size(); i++)
-                        if (args.patterns.get(i).matcher(key).find()) {
-                            printRecord = true;
-                            break;
-                        }
+                        for (int i = 0; i < args.patterns.size(); i++)
+                            if (args.patterns.get(i).matcher(key).find()) {
+                                printRecord = true;
+                                break;
+                            }
+                    }
                 }
 
                 if (!printRecord)
