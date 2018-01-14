@@ -57,6 +57,40 @@ public class WriterTest {
                 Arrays.asList(records).iterator());
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testWriteTooManyValues() throws Exception {
+        Writer w = new Writer(); // to satisy jacoco
+
+        Long epochMs = System.currentTimeMillis();
+        int numDatapoints = 5;
+        Interval interval = Interval.DAY;
+        int recordOffset = 123;
+        int numRecords = 2;
+        String[] fieldNames = {"int"};
+        FieldType[] fieldTypes = {FieldType.INT};
+        FieldEncoder[] encoders = {new CopyEncoder()};
+        int[] datapoints = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        int[] datapoints2 = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+
+        Record[] records = {
+                new SimpleRecord(recordOffset + 0, encoders, new int[][]{datapoints}),
+                new SimpleRecord(recordOffset + 1, encoders, new int[][]{datapoints2})
+        };
+
+        Writer.write(
+                dbLoc,
+                (short) 1024,
+                epochMs,
+                numDatapoints,
+                interval,
+                recordOffset,
+                numRecords,
+                fieldNames,
+                fieldTypes,
+                Arrays.asList(records).iterator());
+    }
+
+
     @Test
     public void testTwoField() throws Exception {
         Long epochMs = System.currentTimeMillis();
