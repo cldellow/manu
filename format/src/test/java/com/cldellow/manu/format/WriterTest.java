@@ -26,6 +26,8 @@ public class WriterTest {
 
     @Test
     public void testSingleField() throws Exception {
+        Writer w = new Writer(); // to satisy jacoco
+
         Long epochMs = System.currentTimeMillis();
         int numDatapoints = 10;
         Interval interval = Interval.DAY;
