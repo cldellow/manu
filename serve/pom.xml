@@ -24,6 +24,10 @@
       <artifactId>slf4j-jdk14</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.dropwizard.metrics</groupId>
+      <artifactId>metrics-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.cldellow</groupId>
       <artifactId>manu-format</artifactId>
     </dependency>

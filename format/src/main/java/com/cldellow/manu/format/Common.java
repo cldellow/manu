@@ -26,4 +26,12 @@ class Common {
                 throw new IllegalArgumentException(String.format("unknown encoder: %d", id));
         }
     }
+
+    public static FieldEncoder[] getEncoders() {
+        FieldEncoder[] encoders = new FieldEncoder[3];
+        for(int i = 0; i < encoders.length; i++)
+            encoders[i] = getEncoder(i);
+
+        return encoders;
+    }
 }

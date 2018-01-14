@@ -10,11 +10,11 @@ public class EncodedRecord implements Record {
     private final ByteBuffer buffer;
     private final int numFields;
 
-    private final FieldEncoder[] fieldEncoders;
     private final int[] fieldOffsets;
     private final int[] fieldContentOffsets;
     private final int[] fieldLengths;
 
+    private final int[] encoderIds;
     private final int[] tmp;
     private final int[] rv;
 
@@ -26,7 +26,7 @@ public class EncodedRecord implements Record {
         this.rv = rv;
 
         this.fieldOffsets = new int[numFields];
-        this.fieldEncoders = new FieldEncoder[numFields];
+        this.encoderIds = new int[numFields];
         this.fieldContentOffsets = new int[numFields];
         this.fieldLengths = new int[numFields];
         // Determine the offsets of all the fields.
@@ -35,12 +35,12 @@ public class EncodedRecord implements Record {
         for (int i = 0; i < numFields; i++) {
             fieldOffsets[i] = buffer.position();
             int encoderId = buffer.get();
-            fieldEncoders[i] = Common.getEncoder(encoderId);
-            if (fieldEncoders[i].isVariableLength()) {
+            encoderIds[i] = encoderId;
+            if (ThreadEncoders.get()[encoderId].isVariableLength()) {
                 int length = buffer.getInt();
                 fieldLengths[i] = length;
             } else {
-                fieldLengths[i] = fieldEncoders[i].getLength();
+                fieldLengths[i] = ThreadEncoders.get()[encoderId].getLength();
             }
             fieldContentOffsets[i] = buffer.position();
             buffer.position(buffer.position() + 4 * fieldLengths[i]);
@@ -63,8 +63,6 @@ public class EncodedRecord implements Record {
     }
 
     public FieldEncoder getEncoder(int field) {
-        // TODO: figure out if we should guarantee that these are threadsafe
-        // so we can get rid of this defensive clone
-        return Common.getEncoder(fieldEncoders[field].getId());
+        return ThreadEncoders.get()[encoderIds[field]];
     }
 }

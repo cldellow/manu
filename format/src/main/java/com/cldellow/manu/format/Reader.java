@@ -64,7 +64,16 @@ public class Reader {
     }
 
     public Record get(int id) throws FileNotFoundException, IOException {
-        return new RecordIterator(id - recordOffset, (id - recordOffset) / rowListSize).next();
+        RecordIterator it = new RecordIterator(
+                id - recordOffset,
+                (id - recordOffset) / rowListSize
+        );
+
+        try {
+            return it.next();
+        } finally {
+            it.close();
+        }
     }
 
     /*
