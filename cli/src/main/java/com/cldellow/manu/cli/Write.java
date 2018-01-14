@@ -44,18 +44,7 @@ public class Write {
             for (int def = 0; def < defs.size(); def++) {
                 int currentRow = 0;
                 fieldNames[def] = defs.get(def).getName();
-                switch (defs.get(def).getFieldKind()) {
-                    case INT:
-                    case LOSSY:
-                        fieldTypes[def] = FieldType.INT;
-                        break;
-                    case FIXED1:
-                        fieldTypes[def] = FieldType.FIXED1;
-                        break;
-                    case FIXED2:
-                        fieldTypes[def] = FieldType.FIXED2;
-                        break;
-                }
+                fieldTypes[def] = defs.get(def).getFieldKind().getFieldType();
 
                 FileParser fp = new FileParser(defs.get(def).getFile());
                 if (fp.getNumFields() <= 1)
