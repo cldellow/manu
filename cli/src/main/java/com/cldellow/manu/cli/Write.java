@@ -77,11 +77,12 @@ public class Write {
                         id = Integer.parseInt(row.getKey());
                     else {
                         id = index.get(row.getKey());
-                        if (id == -1)
-                            throw new IllegalArgumentException(String.format(
-                                    "%s: row %d cites unknown key %s",
-                                    defs.get(def).getFile(), currentRow, row.getKey()));
                     }
+
+                    if (id < 0 || id >= numRows)
+                        throw new IllegalArgumentException(String.format(
+                                "%s: row %d cites unknown key %s",
+                                defs.get(def).getFile(), currentRow, row.getKey()));
 
 
                     fields[currentRow][def] = ic.compress(row.getInts());
