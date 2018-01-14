@@ -41,6 +41,9 @@ Inspect it at:
 
 - https://oss.sonatype.org/
 - https://oss.sonatype.org/content/repositories/snapshots/com/cldellow/
+- https://oss.sonatype.org/content/repositories/releases/com/cldellow/
+- https://repo.maven.apache.org/maven2/com/cldellow/
+- https://mvnrepository.com/artifact/com.cldellow/manu
 
 See also:
 
