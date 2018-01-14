@@ -8,6 +8,8 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>manu-format</artifactId>
+  <name>${project.groupId}:${project.artifactId}</name>
+  <url>https://github.com/cldellow/manu</url>
   <packaging>jar</packaging>
   <properties>
     <manu.root>${basedir}/..</manu.root>

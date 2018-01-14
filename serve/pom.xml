@@ -8,7 +8,9 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>manu-serve</artifactId>
-  <packaging>jar</packaging>
+  <name>${project.groupId}:${project.artifactId}</name>
+  <url>https://github.com/cldellow/manu</url>
+  <packaging>pom</packaging>
   <properties>
     <manu.root>${basedir}/..</manu.root>
   </properties>
