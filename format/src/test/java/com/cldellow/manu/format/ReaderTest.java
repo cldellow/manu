@@ -167,7 +167,7 @@ public class ReaderTest {
             assertEquals(fieldTypes[i], reader.fieldTypes[i]);
         }
 
-        Iterator<Record> records = reader.records;
+        Reader.RecordIterator records = reader.records;
         int recordIndex = recordOffset;
         while (records.hasNext()) {
             Record r = records.next();
@@ -194,6 +194,6 @@ public class ReaderTest {
                 }
             }
         }
-        reader.close();
+        records.close();
     }
 }

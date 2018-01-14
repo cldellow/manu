@@ -3,6 +3,7 @@ package com.cldellow.manu.format;
 import me.lemire.integercompression.IntWrapper;
 import me.lemire.integercompression.differential.IntegratedIntegerCODEC;
 
+import java.io.Closeable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -21,17 +22,17 @@ public class Reader {
     public final int numRecords;
     public final String[] fieldNames;
     public final FieldType[] fieldTypes;
-    public final Iterator<Record> records;
+    public final RecordIterator records;
     public final int numFields;
 
+    private final String fileName;
     private final long rowListOffset;
-    private final FileChannel channel;
-    private final MappedByteBuffer buffer;
 
     public Reader(String fileName) throws FileNotFoundException, IOException, NotManuException {
+        this.fileName = fileName;
         RandomAccessFile raf = new RandomAccessFile(fileName, "r");
-        channel = raf.getChannel();
-        buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, raf.length());
+        FileChannel channel = raf.getChannel();
+        MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, raf.length());
 
         byte[] magicPreamble = new byte[] { 'M', 'A', 'N', 'U', 0, (byte)Common.getVersion()};
         for(int i = 0; i < magicPreamble.length; i++)
@@ -58,17 +59,13 @@ public class Reader {
             fieldNames[i] = new String(utf, "UTF-8");
         }
         rowListOffset = buffer.getInt();
+        channel.close();
         records = new RecordIterator(0, 0);
     }
 
-    public Record get(int id) {
+    public Record get(int id) throws FileNotFoundException, IOException {
         return new RecordIterator(id - recordOffset, (id - recordOffset) / rowListSize).next();
     }
-
-    public void close() throws IOException {
-        channel.close();
-    }
-
 
     /*
     private String getSummary() {
@@ -88,12 +85,15 @@ public class Reader {
     }
     */
 
-    class RecordIterator implements Iterator<Record> {
+    class RecordIterator implements Iterator<Record>, Closeable {
         private IntegratedIntegerCODEC codec = Common.getRowListCodec();
         private int currentRecord;
         private int currentRowList;
         private int[] rowOffsets = null;
 
+        private final RandomAccessFile raf;
+        private final FileChannel channel;
+        private final MappedByteBuffer buffer;
         // we re-use this array; but use rowOffsets as the source of truth for
         // availability of more data.
         private int recordsInThisRowList = 0;
@@ -102,9 +102,17 @@ public class Reader {
         private int[] rv = new int[numDatapoints];
         private int[] tmp = new int[numDatapoints + 256];
 
-        RecordIterator(int currentRecord, int currentRowList) {
+        RecordIterator(int currentRecord, int currentRowList) throws FileNotFoundException, IOException {
             this.currentRecord = currentRecord;
             this.currentRowList = currentRowList;
+
+            raf = new RandomAccessFile(fileName, "r");
+            channel = raf.getChannel();
+            buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, raf.length());
+        }
+
+        public void close() throws IOException {
+            channel.close();
         }
 
         public boolean hasNext() {

@@ -30,6 +30,8 @@
   </scm>
   <properties>
     <manu.root>${basedir}</manu.root>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
   <modules>
     <module>format</module>
@@ -87,6 +89,16 @@
         <artifactId>JavaFastPFOR</artifactId>
         <version>0.1.11</version>
       </dependency> 
+      <dependency>
+        <groupId>com.sparkjava</groupId>
+        <artifactId>spark-core</artifactId>
+        <version>2.7.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-jdk14</artifactId>
+        <version>1.7.25</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <build>

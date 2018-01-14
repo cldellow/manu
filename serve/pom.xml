@@ -10,8 +10,22 @@
   <artifactId>manu-serve</artifactId>
   <name>${project.groupId}:${project.artifactId}</name>
   <url>https://github.com/cldellow/manu</url>
-  <packaging>pom</packaging>
+  <packaging>jar</packaging>
   <properties>
     <manu.root>${basedir}/..</manu.root>
   </properties>
+  <dependencies>
+    <dependency>
+      <groupId>com.sparkjava</groupId>
+      <artifactId>spark-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.cldellow</groupId>
+      <artifactId>manu-format</artifactId>
+    </dependency>
+  </dependencies>
 </project>
