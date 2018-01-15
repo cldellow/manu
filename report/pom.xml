@@ -23,6 +23,14 @@
       <groupId>com.cldellow</groupId>
       <artifactId>manu-cli</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.cldellow</groupId>
+      <artifactId>manu-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.cldellow</groupId>
+      <artifactId>manu-serve</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
