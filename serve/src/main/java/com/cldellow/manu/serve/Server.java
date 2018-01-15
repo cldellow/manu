@@ -17,7 +17,8 @@ public class Server {
     private final Meter requests = metrics.meter("requests");
     final JmxReporter reporter = JmxReporter.forRegistry(metrics).build();
 
-    public Server() throws Exception {
+    public Server(int port) throws Exception {
+        port(port);
         i = new Index("/home/cldellow/src/manu/keys", true);
         r = new Reader("/home/cldellow/src/manu/pvs.out");
     }
@@ -25,8 +26,15 @@ public class Server {
     public void run() {
         reporter.start();
 
-        get("/hello", (request, response) ->
+        post("/api", (request, response) ->
         {
+//            System.out.println(request.body());
+            System.out.println(request.params("bar"));
+            System.out.println(request.queryParams("bar"));
+
+            String bar[] = request.queryParamsValues("bar");
+            for(int i = 0; i < bar.length; i++)
+                System.out.println(bar[i]);
             requests.mark();
             Record rec = r.get(4329);
             int[] vals = rec.getValues(0);
