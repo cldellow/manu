@@ -1,5 +1,6 @@
 package com.cldellow.manu.format;
 
+import org.joda.time.DateTime;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -21,6 +22,18 @@ public class IntervalTest {
         assertEquals(Interval.QUARTER, Interval.valueOf(5));
         assertEquals(6, Interval.YEAR.getValue());
         assertEquals(Interval.YEAR, Interval.valueOf(6));
+    }
 
+    @Test
+    public void testAdd() {
+        DateTime s1 = new DateTime(2008, 1, 1, 0, 0, 0);
+
+        assertEquals(s1.plusMinutes(1), Interval.MINUTE.add(s1, 1));
+        assertEquals(s1.plusHours(1), Interval.HOUR.add(s1, 1));
+        assertEquals(s1.plusDays(1), Interval.DAY.add(s1, 1));
+        assertEquals(s1.plusWeeks(1), Interval.WEEK.add(s1, 1));
+        assertEquals(s1.plusMonths(1), Interval.MONTH.add(s1, 1));
+        assertEquals(s1.plusMonths(3), Interval.QUARTER.add(s1, 1));
+        assertEquals(s1.plusYears(1), Interval.YEAR.add(s1, 1));
     }
 }

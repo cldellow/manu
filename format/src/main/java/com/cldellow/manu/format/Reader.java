@@ -2,6 +2,8 @@ package com.cldellow.manu.format;
 
 import me.lemire.integercompression.IntWrapper;
 import me.lemire.integercompression.differential.IntegratedIntegerCODEC;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import java.io.Closeable;
 import java.io.FileNotFoundException;
@@ -24,6 +26,8 @@ public class Reader {
     public final FieldType[] fieldTypes;
     public final RecordIterator records;
     public final int numFields;
+    public final DateTime from;
+    public final DateTime to;
 
     public final String fileName;
     private final long rowListOffset;
@@ -43,6 +47,10 @@ public class Reader {
         epochMs = buffer.getLong();
         numDatapoints = buffer.getInt();
         interval = Interval.valueOf(buffer.get());
+
+        from = new DateTime(epochMs, DateTimeZone.UTC);
+        to = interval.add(from, numDatapoints);
+
         recordOffset = buffer.getInt();
         numRecords = buffer.getInt();
         numFields = buffer.get();
