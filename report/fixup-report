@@ -10,6 +10,8 @@ fi
 
 mv "$here"/../format/target/jacoco.exec "$here"/target/format.jacoco.exec
 mv "$here"/../cli/target/jacoco.exec "$here"/target/cli.jacoco.exec
+mv "$here"/../serve/target/jacoco.exec "$here"/target/serve.jacoco.exec
 
 cp -ar "$here"/../format/target/classes/ "$here"/target/
 cp -ar "$here"/../cli/target/classes/ "$here"/target/
+cp -ar "$here"/../serve/target/classes/ "$here"/target/
