@@ -1,9 +1,9 @@
 package com.cldellow.manu.serve;
 
 public class ManuApp {
-    public static void main(String[] args) throws Exception {
-
-        Server server = new Server(6268);
+    public static void main(String[] _args) throws Exception {
+        ServerArgs args = new ServerArgs(_args);
+        Server server = new Server(args.port);
         server.run();
     }
 }
