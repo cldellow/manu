@@ -35,6 +35,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <modules>
+    <module>common</module>
     <module>format</module>
     <module>cli</module>
     <module>serve</module>
@@ -48,6 +49,11 @@
   </distributionManagement>
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>com.cldellow</groupId>
+        <artifactId>manu-common</artifactId>
+        <version>0.2.0-SNAPSHOT</version>
+      </dependency>
       <dependency>
         <groupId>com.cldellow</groupId>
         <artifactId>manu-format</artifactId>

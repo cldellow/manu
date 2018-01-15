@@ -1,6 +1,8 @@
 package com.cldellow.manu.cli;
 
 import com.cldellow.manu.format.*;
+import com.cldellow.manu.common.ArgHolder;
+import com.cldellow.manu.common.NotEnoughArgsException;
 import me.lemire.integercompression.IntCompressor;
 
 import java.io.File;

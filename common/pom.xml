@@ -7,7 +7,7 @@
     <version>0.2.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
-  <artifactId>manu-serve</artifactId>
+  <artifactId>manu-common</artifactId>
   <name>${project.groupId}:${project.artifactId}</name>
   <url>https://github.com/cldellow/manu</url>
   <packaging>jar</packaging>
@@ -18,30 +18,6 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.sparkjava</groupId>
-      <artifactId>spark-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-jdk14</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.dropwizard.metrics</groupId>
-      <artifactId>metrics-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.cldellow</groupId>
-      <artifactId>manu-common</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.cldellow</groupId>
-      <artifactId>manu-format</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
     </dependency>
   </dependencies>
   <build>

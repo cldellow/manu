@@ -3,6 +3,7 @@ package com.cldellow.manu.cli;
 import com.cldellow.manu.format.Index;
 import com.cldellow.manu.format.Reader;
 import com.cldellow.manu.format.Record;
+import com.cldellow.manu.common.NotEnoughArgsException;
 
 import java.util.Iterator;
 

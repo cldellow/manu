@@ -3,6 +3,7 @@ package com.cldellow.manu.cli;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+import com.cldellow.manu.common.NotEnoughArgsException;
 
 public class ReadArgsTest {
     @Test

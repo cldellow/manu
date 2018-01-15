@@ -3,25 +3,21 @@ package com.cldellow.manu.cli;
 import org.junit.Test;
 
 import java.util.Iterator;
+import com.cldellow.manu.common.Common;
 
 import static org.junit.Assert.*;
 
 public class FileParserTest {
-    String getFile(String path) {
-        ClassLoader classLoader = getClass().getClassLoader();
-        return classLoader.getResource(path).getFile();
-    }
-
     @Test
     public void testNumFields() throws Exception {
-        FileParser fp = new FileParser(getFile("simple.tsv"));
+        FileParser fp = new FileParser(new Common().getFile("simple.tsv"));
         assertEquals(4, fp.getNumFields());
         fp.close();
     }
 
     @Test
     public void testParseRows() throws Exception {
-        FileParser fp = new FileParser(getFile("simple.tsv"));
+        FileParser fp = new FileParser(new Common().getFile("simple.tsv"));
         assertEquals(4, fp.getNumFields());
         Iterator<FileParser.RowIterator.Row> it = fp.getIterator();
         assertTrue(it.hasNext());
@@ -66,14 +62,14 @@ public class FileParserTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidLine() throws Exception {
-        FileParser fp = new FileParser(getFile("nonewline.tsv"));
+        FileParser fp = new FileParser(new Common().getFile("nonewline.tsv"));
         System.out.println(fp.getNumFields());
         fp.close();
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidLine2() throws Exception {
-        FileParser fp = new FileParser(getFile("nonewline2.tsv"));
+        FileParser fp = new FileParser(new Common().getFile("nonewline2.tsv"));
         assertEquals(2, fp.getNumFields());
         Iterator<FileParser.RowIterator.Row> it = fp.getIterator();
         assertTrue(it.hasNext());
@@ -86,7 +82,7 @@ public class FileParserTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidLine3() throws Exception {
-        FileParser fp = new FileParser(getFile("non-numeric.tsv"));
+        FileParser fp = new FileParser(new Common().getFile("non-numeric.tsv"));
         assertEquals(2, fp.getNumFields());
         Iterator<FileParser.RowIterator.Row> it = fp.getIterator();
         assertTrue(it.hasNext());
@@ -97,7 +93,7 @@ public class FileParserTest {
 
     @Test
     public void testOnlyOneColumn() throws Exception {
-        FileParser fp = new FileParser(getFile("only-one-column.tsv"));
+        FileParser fp = new FileParser(new Common().getFile("only-one-column.tsv"));
         assertEquals(1, fp.getNumFields());
         Iterator<FileParser.RowIterator.Row> it = fp.getIterator();
         assertTrue(it.hasNext());
@@ -108,7 +104,7 @@ public class FileParserTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseRowsRaggedTooLong() throws Exception {
-        FileParser fp = new FileParser(getFile("ragged.tsv"));
+        FileParser fp = new FileParser(new Common().getFile("ragged.tsv"));
         assertEquals(4, fp.getNumFields());
         Iterator<FileParser.RowIterator.Row> it = fp.getIterator();
         assertTrue(it.hasNext());
@@ -122,7 +118,7 @@ public class FileParserTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseRowsRaggedTooLong2() throws Exception {
-        FileParser fp = new FileParser(getFile("ragged2.tsv"));
+        FileParser fp = new FileParser(new Common().getFile("ragged2.tsv"));
         assertEquals(4, fp.getNumFields());
         Iterator<FileParser.RowIterator.Row> it = fp.getIterator();
         assertTrue(it.hasNext());
@@ -137,7 +133,7 @@ public class FileParserTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseRowsRaggedTooLong3() throws Exception {
-        FileParser fp = new FileParser(getFile("ragged3.tsv"));
+        FileParser fp = new FileParser(new Common().getFile("ragged3.tsv"));
         assertEquals(5, fp.getNumFields());
         Iterator<FileParser.RowIterator.Row> it = fp.getIterator();
         assertTrue(it.hasNext());
@@ -151,7 +147,7 @@ public class FileParserTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void testCannotRemove() throws Exception {
-        FileParser fp = new FileParser(getFile("ragged3.tsv"));
+        FileParser fp = new FileParser(new Common().getFile("ragged3.tsv"));
         assertEquals(5, fp.getNumFields());
         Iterator<FileParser.RowIterator.Row> it = fp.getIterator();
         it.remove();

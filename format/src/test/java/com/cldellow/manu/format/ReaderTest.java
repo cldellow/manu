@@ -3,6 +3,7 @@ package com.cldellow.manu.format;
 import org.junit.After;
 import org.junit.Test;
 
+import com.cldellow.manu.common.Common;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -12,11 +13,6 @@ import static junit.framework.TestCase.assertEquals;
 
 public class ReaderTest {
     private String dbLoc = "/tmp/manu-test.data";
-
-    String getFile(String path) {
-        ClassLoader classLoader = getClass().getClassLoader();
-        return classLoader.getResource(path).getFile();
-    }
 
     @After
     public void cleanup() throws Exception {
@@ -87,12 +83,12 @@ public class ReaderTest {
 
     @Test(expected = NotManuException.class)
     public void testNotManu() throws Exception {
-        new Reader(getFile("not-a-manu"));
+        new Reader(new Common().getFile("not-a-manu"));
     }
 
     @Test(expected = NotManuException.class)
     public void testNotManu2() throws Exception {
-        new Reader(getFile("not-a-manu2"));
+        new Reader(new Common().getFile("not-a-manu2"));
     }
 
 

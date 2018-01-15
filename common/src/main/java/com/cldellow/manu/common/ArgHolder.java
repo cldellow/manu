@@ -1,4 +1,4 @@
-package com.cldellow.manu.cli;
+package com.cldellow.manu.common;
 
 public class ArgHolder {
     private String[] args;

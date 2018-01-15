@@ -25,6 +25,10 @@
     </dependency>
     <dependency>
       <groupId>com.cldellow</groupId>
+      <artifactId>manu-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.cldellow</groupId>
       <artifactId>manu-format</artifactId>
     </dependency>
     <dependency>

@@ -3,6 +3,9 @@ package com.cldellow.manu.cli;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
+import com.cldellow.manu.common.ArgHolder;
+import com.cldellow.manu.common.NotEnoughArgsException;
+
 public class ReadArgs {
     public String indexFile;
     public String inputFile;
