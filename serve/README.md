@@ -88,7 +88,7 @@ The datadir should consist of directories containing your data. The
 name of the directory will be the name exposed in the API.
 
 A collection's directory has:
-- `keys.sqlite` - an index file
+- `keys` - an index file
 - `*.manu` - manu files
 
 All `.manu` files must have the same interval, the same fields, 
