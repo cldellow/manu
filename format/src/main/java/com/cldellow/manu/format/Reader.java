@@ -25,7 +25,7 @@ public class Reader {
     public final RecordIterator records;
     public final int numFields;
 
-    private final String fileName;
+    public final String fileName;
     private final long rowListOffset;
 
     public Reader(String fileName) throws FileNotFoundException, IOException, NotManuException {
