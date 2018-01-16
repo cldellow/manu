@@ -57,7 +57,7 @@ public class Parsers {
     }
 
     public static long epochMs(String string) {
-        DateTimeFormatter iso8601 = ISODateTimeFormat.dateTimeParser();
+        DateTimeFormatter iso8601 = ISODateTimeFormat.dateTimeParser().withZoneUTC();
         DateTime dt = iso8601.parseDateTime(string);
         return dt.toDateTime(DateTimeZone.UTC).getMillis();
     }

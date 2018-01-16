@@ -79,7 +79,7 @@ Nulls indicate an unknown datapoint.
 
 ## Admin
 
-`./serve/bin/serve [--port 6268] [--datadir ./data]`
+`./serve/bin/serve [--port 6268] [--datadir ./datadir]`
 
 Note: the system inspects the files in datadir at startup. Once the service
 is launched, you cannot add or remove files.

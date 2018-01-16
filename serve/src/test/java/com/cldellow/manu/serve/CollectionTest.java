@@ -26,4 +26,12 @@ public class CollectionTest {
 
         Collection.validateReaders("foo", readers);
     }
+
+    @Test
+    public void valid() throws Exception {
+        Collection c = new Collection(new Common().getFile("datadir/hourly"));
+        assertEquals(2, c.readers.length);
+        assertTrue(c.readers[0].epochMs < c.readers[1].epochMs);
+        c.close();
+    }
 }

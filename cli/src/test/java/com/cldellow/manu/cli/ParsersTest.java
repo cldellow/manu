@@ -34,6 +34,7 @@ public class ParsersTest {
     @Test
     public void epochMs() {
         assertEquals(0L, Parsers.epochMs("1970-01-01T00:00Z"));
+        assertEquals(0L, Parsers.epochMs("1970-01-01"));
     }
 
     @Test(expected = IllegalArgumentException.class)

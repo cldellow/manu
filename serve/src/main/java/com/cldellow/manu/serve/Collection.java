@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Comparator;
 
 public class Collection {
     public final String dir;
@@ -56,6 +58,9 @@ public class Collection {
                         readers[i].interval));
             }
         }
+
+        // Sort them chronologically
+        Arrays.sort(readers, new ReaderComparator());
     }
 
     public static boolean isCollection(String dir) {
@@ -73,5 +78,20 @@ public class Collection {
         }
 
         return hasKeys && hasManu;
+    }
+
+    public void close() throws Exception {
+        index.close();
+    }
+
+    private static class ReaderComparator implements Comparator<Reader> {
+        @Override
+        public int compare(Reader reader, Reader t1) {
+            if(reader.epochMs == t1.epochMs)
+                return 0;
+            if(reader.epochMs > t1.epochMs)
+                return 1;
+            return -1;
+        }
     }
 }
