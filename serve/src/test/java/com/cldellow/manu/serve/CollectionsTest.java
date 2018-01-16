@@ -19,8 +19,9 @@ public class CollectionsTest {
         String datadir = new Common().getFile("datadir");
 
         Map<String, Collection> rv = Collections.discover(datadir);
-        assertEquals(2, rv.size());
+        assertEquals(3, rv.size());
         assertTrue(rv.containsKey("hourly"));
+        assertTrue(rv.containsKey("hourly2"));
         assertTrue(rv.containsKey("daily"));
     }
 }

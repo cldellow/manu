@@ -34,4 +34,30 @@ public class CollectionTest {
         assertTrue(c.readers[0].epochMs < c.readers[1].epochMs);
         c.close();
     }
+
+    @Test
+    public void validateReadersSorts() throws Exception {
+        Reader r1 = new Reader(new Common().getFile("datadir/hourly/200801.manu"));
+        Reader r2 = new Reader(new Common().getFile("datadir/hourly/200802.manu"));
+
+        {
+            Reader r[] = new Reader[] { r1, r2};
+            Collection.validateReaders("d", r);
+            assertTrue(r[0].epochMs < r[1].epochMs);
+        }
+
+        {
+            Reader r[] = new Reader[] { r2, r1};
+            Collection.validateReaders("d", r);
+            assertTrue(r[0].epochMs < r[1].epochMs);
+        }
+   }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void validateReadersOverlap() throws Exception {
+        Reader r1 = new Reader(new Common().getFile("datadir/hourly/200801.manu"));
+
+        Reader r[] = new Reader[] { r1, r1};
+            Collection.validateReaders("d", r);
+    }
 }

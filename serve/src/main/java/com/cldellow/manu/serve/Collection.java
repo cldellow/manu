@@ -61,6 +61,12 @@ public class Collection {
 
         // Sort them chronologically
         Arrays.sort(readers, new ReaderComparator());
+        for(int i = 1; i < readers.length; i++) {
+            if(!readers[i-1].to.equals(readers[i].from))
+                throw new IllegalArgumentException(String.format(
+                        "%s: %s is not immediately after %s",
+                        new File(dir).getName(), readers[i-1].fileName, readers[i].fileName));
+        }
     }
 
     public static boolean isCollection(String dir) {
