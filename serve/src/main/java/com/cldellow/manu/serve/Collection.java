@@ -34,9 +34,10 @@ public class Collection {
         }
 
         this.readers = new Reader[numFiles];
+        numFiles = 0;
         for (int i = 0; i < files.length; i++) {
             if (files[i].getName().endsWith((".manu")))
-                readers[i] = new Reader(files[i].getAbsolutePath());
+                readers[numFiles++] = new Reader(files[i].getAbsolutePath());
         }
 
         validateReaders(dir, readers);
