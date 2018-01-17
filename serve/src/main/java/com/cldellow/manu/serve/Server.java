@@ -165,19 +165,24 @@ public class Server {
                         int readerStart = interval.difference(readers[0].from, readers[k].from);
                         int readerEnd = interval.difference(readers[0].from, readers[k].to);
 
-                        // Does this reader have relevant data?
-                        System.out.println(("reader: " + readerStart + " to " + readerEnd + ", startIndex: " + startIndex + " endIndex: " + endIndex));
-                        if(readerStart >= startIndex && endIndex >= readerStart) {
+                        if(readerStart <= endIndex && startIndex <= readerEnd) {
                             Record r = readers[k].get(id);
                             int[] values = r.getValues(fieldId);
-                            int collectionStart = Math.min(0, startIndex - readerStart);
+                            int collectionStart = startIndex - readerStart;
+                            if(collectionStart < 0)
+                                collectionStart = 0;
+
                             int collectionLength = Math.min(readers[k].numDatapoints,
                                     endIndex - (readerStart + collectionStart));
+
+                            if(collectionLength + collectionStart >= readers[k].numDatapoints)
+                                collectionLength--;
+
                             System.arraycopy(
                                     values,
                                     collectionStart,
                                     rv,
-                                    readerStart - startIndex,
+                                    readerStart + collectionStart- startIndex,
                                     collectionLength
                                     //endIndex - readerEnd
 

@@ -66,4 +66,22 @@ public class ServerTest {
                 f.body.trim());
     }
 
+    @Test
+    public void testQuerySpanFiles() throws Exception {
+        HttpResponse f = Http.post("http://localhost:6268/api/daily", "from=2008-01-31&to=2008-02-02&key=a&field=field1");
+        assertEquals(200, f.status);
+        assertEquals("{\"meta\":{\"interval\":\"day\",\"from\":\"2008-01-31T00:00:00.000Z\",\"to\":\"2008-02-02T00:00:00.000Z\"},\"values\":{\"a\":{\"field1\":[31,1]}}}",
+                f.body.trim());
+    }
+
+
+    @Test
+    public void testQueryMoreThanSet() throws Exception {
+        HttpResponse f = Http.post("http://localhost:6268/api/daily", "from=2007-01-31&to=2010-02-02&key=a&field=field1");
+        assertEquals(200, f.status);
+        assertEquals("{\"meta\":{\"interval\":\"day\",\"from\":\"2008-01-01T00:00:00.000Z\",\"to\":\"2008-03-01T00:00:00.000Z\"},\"values\":{\"a\":{\"field1\":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,0]}}}",
+                f.body.trim());
+    }
+
+
 }
