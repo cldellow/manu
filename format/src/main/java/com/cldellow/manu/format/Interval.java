@@ -82,7 +82,7 @@ public enum Interval {
         else if (this == MONTH)
             return p.getMonths();
         else if (this == QUARTER)
-            return p.getMonths() * 3;
+            return p.getMonths() / 3;
 
         return p.getYears();
     }

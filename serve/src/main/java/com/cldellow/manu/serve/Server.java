@@ -27,9 +27,9 @@ public class Server {
     final JmxReporter reporter = JmxReporter.forRegistry(metrics).build();
     private final Meter requests = metrics.meter("requests");
     private final Map<String, Collection> collections;
-    private JsonFactory factory = new JsonFactory();
     private final DateTimeFormatter iso8601 = ISODateTimeFormat.dateTimeParser().withZoneUTC();
     private final DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
+    private JsonFactory factory = new JsonFactory();
 
 
     public Server(int port, Map<String, Collection> collections) throws Exception {
@@ -64,7 +64,7 @@ public class Server {
         gen.writeFieldName("fields");
         gen.writeStartArray();
         String[] fields = collection.readers[0].fieldNames;
-        for(int i =0; i < fields.length; i++)
+        for (int i = 0; i < fields.length; i++)
             gen.writeString(fields[i]);
         gen.writeEndArray();
         gen.writeStringField("interval", collection.readers[0].interval.name().toLowerCase());
@@ -73,7 +73,7 @@ public class Server {
                 fmt.print(collection.readers[0].from));
         gen.writeStringField(
                 "to",
-                fmt.print(collection.readers[collection.readers.length-1].to));
+                fmt.print(collection.readers[collection.readers.length - 1].to));
         gen.writeEndObject();
         gen.flush();
         gen.close();
@@ -97,24 +97,24 @@ public class Server {
             DateTime to = interval.truncate(iso8601.parseDateTime(request.queryParams("to")));
 
             errMsg = "`to` should be after `from`";
-            if(to.isBefore(from))
+            if (to.isBefore(from))
                 throw new Exception(errMsg);
 
-            if(from.isBefore(readers[0].from))
+            if (from.isBefore(readers[0].from))
                 from = readers[0].from;
 
-            if(to.isAfter(readers[readers.length-1].to))
-                to = readers[readers.length-1].to;
+            if (to.isAfter(readers[readers.length - 1].to))
+                to = readers[readers.length - 1].to;
             errMsg = "error parsing `field` parameters";
             String field[] = request.queryParamsValues("field");
             Vector<Integer> fieldIds = new Vector<>();
-            if(field == null) {
-                for(int i = 0; i < readers[0].numFields; i++)
+            if (field == null) {
+                for (int i = 0; i < readers[0].numFields; i++)
                     fieldIds.add(i);
             } else {
-                for(int i = 0; i < readers[0].numFields; i++)
-                    for(int j = 0; j < field.length; j++)
-                        if(field[j].equals(readers[0].fieldNames[i]))
+                for (int i = 0; i < readers[0].numFields; i++)
+                    for (int j = 0; j < field.length; j++)
+                        if (field[j].equals(readers[0].fieldNames[i]))
                             fieldIds.add(i);
             }
 
@@ -122,9 +122,9 @@ public class Server {
             String requestedKeys[] = request.queryParamsValues("key");
             Vector<Integer> ids = new Vector<>();
             Vector<String> keys = new Vector<>();
-            for(int i = 0; i < requestedKeys.length; i++) {
+            for (int i = 0; i < requestedKeys.length; i++) {
                 int id = collection.index.get(requestedKeys[i]);
-                if(id != -1) {
+                if (id != -1) {
                     keys.add(requestedKeys[i]);
                     ids.add(id);
                 }
@@ -144,14 +144,47 @@ public class Server {
             gen.writeEndObject();
             gen.writeFieldName("values");
             gen.writeStartObject();
-            for(int i = 0; i < keys.size(); i++) {
+
+
+            int numMergedDatapoints = interval.difference(from, to);
+            int startIndex = interval.difference(readers[0].from, from);
+            int endIndex = startIndex + numMergedDatapoints;
+            int[] rv = new int[numMergedDatapoints];
+            int[] zeroes = new int[numMergedDatapoints];
+            double[] rvDbl = null;
+            for (int i = 0; i < keys.size(); i++) {
+                int id = ids.get(i);
                 gen.writeFieldName(keys.get(i));
                 gen.writeStartObject();
-                for(int j = 0; j < fieldIds.size(); j++) {
+                for (int j = 0; j < fieldIds.size(); j++) {
                     int fieldId = fieldIds.get(j);
                     gen.writeFieldName(readers[0].fieldNames[fieldId]);
-                    gen.writeStartArray();
-                    gen.writeEndArray();
+
+                    System.arraycopy(zeroes, 0, rv, 0, rv.length);
+                    for (int k = 0; k < readers.length; k++) {
+                        int readerStart = interval.difference(readers[0].from, readers[k].from);
+                        int readerEnd = interval.difference(readers[0].from, readers[k].to);
+
+                        // Does this reader have relevant data?
+                        System.out.println(("reader: " + readerStart + " to " + readerEnd + ", startIndex: " + startIndex + " endIndex: " + endIndex));
+                        if(readerStart >= startIndex && endIndex >= readerStart) {
+                            Record r = readers[k].get(id);
+                            int[] values = r.getValues(fieldId);
+                            int collectionStart = Math.min(0, startIndex - readerStart);
+                            int collectionLength = Math.min(readers[k].numDatapoints,
+                                    endIndex - (readerStart + collectionStart));
+                            System.arraycopy(
+                                    values,
+                                    collectionStart,
+                                    rv,
+                                    readerStart - startIndex,
+                                    collectionLength
+                                    //endIndex - readerEnd
+
+                                    );
+                        }
+                    }
+                    gen.writeArray(rv, 0, rv.length);
                 }
                 gen.writeEndObject();
             }
@@ -163,7 +196,7 @@ public class Server {
             sos.close();
 
             return response.raw();
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return errMsg;
         }
