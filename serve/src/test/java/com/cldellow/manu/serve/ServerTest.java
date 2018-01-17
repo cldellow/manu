@@ -84,4 +84,11 @@ public class ServerTest {
     }
 
 
+    @Test
+    public void testBadArg() throws Exception {
+        HttpResponse f = Http.post("http://localhost:6268/api/daily", "from=2017-01-31&to=2010-02-02&key=a&field=field1");
+        assertEquals(500, f.status);
+        assertEquals("`to` should be after `from`",
+                f.body.trim());
+    }
 }

@@ -55,8 +55,13 @@ public class Http {
 
         try {
             reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        } catch (FileNotFoundException fnfe) {
-            return new HttpResponse(connection.getResponseCode(), "");
+        } catch (Exception e) {
+            StringBuilder sb = new StringBuilder();
+            reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+            String line = null;
+            while((line = reader.readLine()) != null)
+                sb.append(line + "\n");
+            return new HttpResponse(connection.getResponseCode(), sb.toString());
         }
 
         try {

@@ -203,6 +203,7 @@ public class Server {
             return response.raw();
         } catch (Exception e) {
             e.printStackTrace();
+            response.status(500);
             return errMsg;
         }
     }
