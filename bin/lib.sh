@@ -5,7 +5,7 @@ function run_java {
   shift
   coverage_agent=""
   if [ "${coverage:-0}" == "1" ]; then
-    coverage_agent="-javaagent:$HOME/.m2/repository/org/jacoco/org.jacoco.agent/0.7.9/org.jacoco.agent-0.7.9-runtime.jar=destfile=${here:?}/target/jacoco.exec"
+    coverage_agent="-javaagent:$HOME/.m2/repository/org/jacoco/org.jacoco.agent/0.8.0/org.jacoco.agent-0.8.0-runtime.jar=destfile=${here:?}/target/jacoco.exec"
   fi
 
   # Note that hprof can be misleading; only use this as a rough gauge.
