@@ -39,3 +39,5 @@ Examples: pageviews by article in Wikipedia, stock open/close/high/low prices, w
 ## Obligatory
 
 ![Manu](https://www.smbc-comics.com/comics/1429540032-20150420.png)
+
+Credit: [Our Greatest Asset](https://www.smbc-comics.com/comic/our-greatest-asset), Saturday Morning Breakfast Cereal

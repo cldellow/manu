@@ -41,4 +41,12 @@ public class ServerTest {
                 f.body.trim());
     }
 
+    @Test
+    public void testQuery() throws Exception {
+        HttpResponse f = Http.post("http://localhost:6268/api/daily", "from=2008-01-01&to=2008-01-02&key=a");
+        assertEquals(200, f.status);
+        assertEquals("{\"meta\":{\"interval\":\"day\",\"from\":\"2008-01-01T00:00:00.000Z\",\"to\":\"2008-01-02T00:00:00.000Z\"},\"values\":{\"a\":{\"field1\":[],\"field2\":[]}}}",
+                f.body.trim());
+    }
+
 }
