@@ -1,5 +1,6 @@
 package com.cldellow.manu.cli;
 
+import com.cldellow.manu.common.Common;
 import com.cldellow.manu.format.Index;
 
 import java.io.BufferedReader;
@@ -8,7 +9,7 @@ import java.util.Vector;
 
 public class EnsureKeys {
     public static void main(String[] args) throws Exception {
-        if (args.length != 1) {
+        if (args.length != 1 || Common.contains(args, "--help")) {
             usage();
             System.exit(1);
         }

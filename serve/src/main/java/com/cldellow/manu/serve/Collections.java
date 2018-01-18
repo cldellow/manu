@@ -10,6 +10,8 @@ public class Collections {
         Map<String, Collection> rv = new HashMap<>();
         File f = new File(datadir);
         File[] files = f.listFiles();
+        if(files == null)
+            files = new File[0];
 
         for(int i = 0; i < files.length; i++) {
             if(Collection.isCollection(files[i].getAbsolutePath())) {
