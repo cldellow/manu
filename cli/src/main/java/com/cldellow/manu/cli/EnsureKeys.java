@@ -9,9 +9,14 @@ import java.util.Vector;
 
 public class EnsureKeys {
     public static void main(String[] args) throws Exception {
+        int rv = entrypoint(args);
+        System.exit(rv);
+    }
+
+    public static int entrypoint(String[] args) throws Exception {
         if (args.length != 1 || Common.contains(args, "--help")) {
             usage();
-            System.exit(1);
+            return 1;
         }
 
         Index i = new Index(args[0], false);
@@ -25,6 +30,7 @@ public class EnsureKeys {
 
         i.add(keys);
         i.close();
+        return 0;
     }
 
     private static void usage() {

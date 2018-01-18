@@ -29,22 +29,10 @@ function tabsify {
   mv "$f".tabs "$f"
 }
 
-function test_ensure_keys_no_args_is_error {
-  run "$here"/../ensure-keys
-
-  assert_exit_code 1
-}
-
 function test_ensure_keys_can_add_key_from_stdin {
   echo "x" | run "$here"/../ensure-keys /tmp/foo.bar
 
   assert_exit_code 0
-}
-
-function test_write_no_args_is_error {
-  run "$here"/../write
-
-  assert_exit_code 1
 }
 
 function test_write_no_fields_is_error {
@@ -144,6 +132,14 @@ EOF
   run "$here"/../read "$keys_index" "$output_file" --key-name "a"
   assert_exit_code 0
 
+  run "$here"/../read "$keys_index" "$output_file" --key-name "b"
+  assert_exit_code 0
+
+  "$here"/../read "$keys_index" "$output_file" --id --key-name "b" > "$tmpdir"/out
+  if [ ! -e "$tmpdir"/out ] || [ -s "$tmpdir"/out ]; then
+    assert "key-name b had entries" 1 0
+  fi
+
   "$here"/../read "$keys_index" "$output_file" --id --key-name "a" > "$tmpdir"/out
   run diff "$tmpdir"/out "$pvs_file"
   assert_exit_code 0
@@ -151,6 +147,11 @@ EOF
   "$here"/../read "$keys_index" "$output_file" --id --key-id 0 > "$tmpdir"/out
   run diff "$tmpdir"/out "$pvs_file"
   assert_exit_code 0
+
+  "$here"/../read "$keys_index" "$output_file" --id --key-id 1 > "$tmpdir"/out
+  if [ ! -e "$tmpdir"/out ] || [ -s "$tmpdir"/out ]; then
+    assert "key-id 1 had entries" 1 0
+  fi
 
   "$here"/../read "$keys_index" "$output_file" --id --key-regex a > "$tmpdir"/out
   run diff "$tmpdir"/out "$pvs_file"
@@ -206,14 +207,6 @@ EOF
   run "$here"/../write "$keys_index" "$output_file" 1970-01-01 hour --lossy pageviews "$pvs_file" --fixed2 edits "$pvs2_file"
   assert_exit_code 1
 }
-
-function test_read_no_args_is_error {
-  run "$here"/../read
-
-  assert_exit_code 1
-}
-
-
 
 function run_test {
   fn="$1"

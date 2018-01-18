@@ -1,8 +1,9 @@
 package com.cldellow.manu.cli;
 
-import com.cldellow.manu.format.*;
 import com.cldellow.manu.common.ArgHolder;
+import com.cldellow.manu.common.Common;
 import com.cldellow.manu.common.NotEnoughArgsException;
+import com.cldellow.manu.format.*;
 import me.lemire.integercompression.IntCompressor;
 
 import java.io.File;
@@ -10,15 +11,46 @@ import java.util.Iterator;
 import java.util.Vector;
 
 public class Write {
-    private int numRows;
-    private int fields[][][];
+    private final String[] _args;
     private final FieldEncoder pfor = new PFOREncoder();
     private final FieldEncoder lossy = new AverageEncoder();
-    private Vector<FieldDef> defs;
     private final IntCompressor ic = new IntCompressor();
+    private int numRows;
+    private int fields[][][];
+    private Vector<FieldDef> defs;
 
-    private Write(String[] _args) throws Exception {
+    Write(String[] _args) throws Exception {
         // TODO: use a proper argparse library
+        this._args = _args;
+    }
+
+    public static void main(String[] _args) throws Exception {
+        int rv = new Write(_args).entrypoint();
+        System.exit(rv);
+    }
+
+    public static void usage() {
+        System.out.println("./bin/write keys.index output-file timestamp interval [[field-kind-1] [key-kind-1] field-name-1 field-source-1], ...]\n" +
+                "\n" +
+                "field-kind is one of:\n" +
+                "\n" +
+                "--int, represents an integer (default)\n" +
+                "--fixed1, represents a number with 1 decimal point\n" +
+                "--fixed2, represents a number with 2 decimal points\n" +
+                "--lossy, represents an integer; series that have only small numbers with little variation may be lossily stored\n" +
+                "\n" +
+                "key-kind is one of:\n" +
+                "\n" +
+                "--key, the key is a string with an entry in keys.index (default)\n" +
+                "--id, the key is an integer for an entry in keys.index");
+    }
+
+    public int entrypoint() throws Exception {
+        if(Common.contains(_args, "--help")) {
+            usage();
+            return 1;
+        }
+        
         try {
             ArgHolder args = new ArgHolder(_args);
 
@@ -100,29 +132,10 @@ public class Write {
 
         } catch (NotEnoughArgsException nae) {
             usage();
-            System.exit(1);
+            return 1;
         }
 
-    }
-
-    public static void main(String[] _args) throws Exception {
-        new Write(_args);
-    }
-
-    public static void usage() {
-        System.out.println("./bin/write keys.index output-file timestamp interval [[field-kind-1] [key-kind-1] field-name-1 field-source-1], ...]\n" +
-                "\n" +
-                "field-kind is one of:\n" +
-                "\n" +
-                "--int, represents an integer (default)\n" +
-                "--fixed1, represents a number with 1 decimal point\n" +
-                "--fixed2, represents a number with 2 decimal points\n" +
-                "--lossy, represents an integer; series that have only small numbers with little variation may be lossily stored\n" +
-                "\n" +
-                "key-kind is one of:\n" +
-                "\n" +
-                "--key, the key is a string with an entry in keys.index (default)\n" +
-                "--id, the key is an integer for an entry in keys.index");
+        return 0;
     }
 
     class RecordIterator implements Iterator<Record> {

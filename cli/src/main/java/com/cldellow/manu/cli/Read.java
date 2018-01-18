@@ -8,9 +8,14 @@ import com.cldellow.manu.common.NotEnoughArgsException;
 import java.util.Iterator;
 
 public class Read {
+    final String[] _args;
     ReadArgs args;
 
-    private Read(String[] _args) throws Exception {
+    Read(String[] _args) throws Exception {
+        this._args = _args;
+    }
+
+    public int entrypoint() throws Exception {
         try {
             this.args = new ReadArgs(_args);
 
@@ -78,8 +83,10 @@ public class Read {
             }
         } catch (NotEnoughArgsException neae) {
             usage();
-            System.exit(1);
+            return 1;
         }
+
+        return 0;
     }
 
     private static void usage() {
@@ -96,6 +103,7 @@ public class Read {
     }
 
     public static void main(String[] args) throws Exception {
-        new Read(args);
+        int rv = new Read(args).entrypoint();
+        System.exit(rv);
     }
 }
