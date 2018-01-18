@@ -12,7 +12,7 @@ tmp="$artifact_dir"/exec
 cat << EOF > "$tmp"
 #!/bin/sh
 
-exec java -cp \$0 $main "$@"
+exec java -cp \$0 $main "\$@"
 EOF
 
 jar=("$artifact_dir"/manu-"$artifact"-*.jar)
