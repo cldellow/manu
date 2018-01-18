@@ -16,7 +16,7 @@ function run_java {
   fi
 
   # shellcheck disable=SC2086
-  java $profile_agent $coverage_agent \
+  exec java $profile_agent $coverage_agent \
     -cp "$(cat "$here"/cp.txt):$here/target/classes" "$class" "$@"
 }
 

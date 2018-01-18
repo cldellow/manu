@@ -50,7 +50,7 @@ public class Write {
             usage();
             return 1;
         }
-        
+
         try {
             ArgHolder args = new ArgHolder(_args);
 

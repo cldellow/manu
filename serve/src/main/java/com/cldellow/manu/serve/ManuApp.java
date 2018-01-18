@@ -3,6 +3,7 @@ package com.cldellow.manu.serve;
 import com.cldellow.manu.common.Common;
 
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 public class ManuApp {
     public static void main(String[] _args) throws Exception {
@@ -25,6 +26,9 @@ public class ManuApp {
 
         Server server = new Server(args.port, collections);
         server.run();
+
+        CountDownLatch done = new CountDownLatch(1);
+        done.await();
         return 0;
     }
 

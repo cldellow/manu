@@ -1,0 +1,28 @@
+#!/bin/bash
+
+set -euo pipefail
+
+here=$(dirname "${BASH_SOURCE[0]}")
+if [ ! -v coverage ]; then
+  export coverage=1
+fi
+
+function finish {
+  if [ -v pid ]; then
+    kill "$pid"
+  fi
+}
+trap finish EXIT
+
+"$here"/../serve --datadir "$here"/../../src/test/resources/datadir &
+pid=$!
+
+fails=0
+while ! curl localhost:6268/api/daily/meta; do
+  fails=$((fails+1))
+  if [ $fails -gt 10 ]; then
+    echo "Too many failures." > /dev/stderr
+    exit 1
+  fi
+  sleep 1
+done
