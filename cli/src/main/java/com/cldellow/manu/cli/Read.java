@@ -101,9 +101,4 @@ public class Read {
                 "\n" +
                 "If no field names are specified, all fields are printed in the order they are present in the file.");
     }
-
-    public static void main(String[] args) throws Exception {
-        int rv = new Read(args).entrypoint();
-        System.exit(rv);
-    }
 }

@@ -5,4 +5,4 @@ here=$(dirname "${BASH_SOURCE[0]}")/..
 # shellcheck source=cli/bin/lib.sh
 . "$here"/bin/lib.sh
 
-run_java com.cldellow.manu.cli.Read "$@"
+run_java com.cldellow.manu.cli.CliApp read "$@"

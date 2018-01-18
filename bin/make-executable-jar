@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -euo pipefail
+
+artifact=${1:?must specify artifact}
+main=${2:?must specify main class}
+
+here=$(dirname "${BASH_SOURCE[0]}")
+
+artifact_dir="$here"/../"$artifact"/target
+tmp="$artifact_dir"/exec
+cat << EOF > "$tmp"
+#!/bin/sh
+
+exec java -cp \$0 $main "$@"
+EOF
+
+jar=("$artifact_dir"/manu-"$artifact"-*.jar)
+cat "${jar[0]}" >> "$tmp"
+chmod a+x "$tmp"
+mv "$tmp" "${jar[0]}"

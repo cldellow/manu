@@ -17,4 +17,9 @@ public class ManuAppTest {
         assertEquals(2, rv);
     }
 
+    @Test
+    public void testCtor() {
+        new ManuApp();
+    }
+
 }

@@ -24,11 +24,6 @@ public class Write {
         this._args = _args;
     }
 
-    public static void main(String[] _args) throws Exception {
-        int rv = new Write(_args).entrypoint();
-        System.exit(rv);
-    }
-
     public static void usage() {
         System.out.println("./bin/write keys.index output-file timestamp interval [[field-kind-1] [key-kind-1] field-name-1 field-source-1], ...]\n" +
                 "\n" +

@@ -28,3 +28,5 @@ target
 *.iml
 cp.txt
 *.versionsBackup
+dependency-reduced-pom.xml
+out.hprof

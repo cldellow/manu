@@ -8,12 +8,13 @@ import java.io.InputStreamReader;
 import java.util.Vector;
 
 public class EnsureKeys {
-    public static void main(String[] args) throws Exception {
-        int rv = entrypoint(args);
-        System.exit(rv);
+    String[] args;
+
+    public EnsureKeys(String[] args) {
+        this.args = args;
     }
 
-    public static int entrypoint(String[] args) throws Exception {
+    public int entrypoint() throws Exception {
         if (args.length != 1 || Common.contains(args, "--help")) {
             usage();
             return 1;
