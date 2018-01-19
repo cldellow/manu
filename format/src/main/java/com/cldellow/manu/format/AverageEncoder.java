@@ -77,5 +77,8 @@ public class AverageEncoder implements FieldEncoder {
                 error--;
             }
         }
+
+        for(int i = numKnown; i < data.length; i++)
+            data[i] = 0;
     }
 }

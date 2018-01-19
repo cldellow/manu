@@ -48,7 +48,7 @@ function test_write {
   cat > "$pvs_file".spaces <<EOF
 a 1 1 1
 b 123 123 123
-c 456 456 456
+c 2 2 0
 EOF
   tr ' ' '\t' < "$pvs_file".spaces > "$pvs_file"
 
