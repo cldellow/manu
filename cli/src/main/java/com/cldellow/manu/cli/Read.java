@@ -59,24 +59,25 @@ public class Read {
                 if (!printRecord)
                     continue;
 
+                StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < printFields.length; i++) {
                     if (!printFields[i])
                         continue;
 
                     if (args.keyKind == KeyKind.ID)
-                        System.out.print(record.getId());
+                        sb.append(record.getId());
                     else {
                         if (key == null)
                             key = index.get(record.getId());
 
-                        System.out.print(index.get(record.getId()));
+                        sb.append(index.get(record.getId()));
                     }
                     int[] datapoints = record.getValues(i);
                     for (int j = 0; j < reader.numDatapoints; j++) {
-                        System.out.print('\t');
-                        System.out.print(datapoints[j]);
+                        sb.append('\t');
+                        sb.append(datapoints[j]);
                     }
-                    System.out.println();
+                    System.out.println(sb.toString());
                 }
 
 
