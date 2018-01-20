@@ -1,0 +1,5 @@
+#!/bin/sh
+exec 2>&1
+
+# TODO: once 0.2.1 is publishd, this can just be /usr/bin/manu-serve
+exec java -cp /usr/bin/manu-serve com.cldellow.manu.serve.ManuApp --datadir /var/local/manu/datadir

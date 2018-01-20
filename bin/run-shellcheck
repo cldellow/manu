@@ -7,8 +7,11 @@ fi
 
 root=$(dirname "${BASH_SOURCE[0]}")/..
 root=$(readlink -f "$root")
+
+# git ls-files includes symlinks; one of our symlinks is a directory, which
+# upsets grep, so use --no-messages
 # shellcheck disable=SC2046
-sh_shebang_files=$( ( cd "$root" && grep -l '#!/bin/bash' $(git ls-files --full-name) ) || true)
+sh_shebang_files=$( ( cd "$root" && grep --no-messages -l '#!/bin/bash' $(git ls-files --full-name) ) || true)
 
 if [ -z "$sh_shebang_files" ]; then
   echo "Nothing to lint"

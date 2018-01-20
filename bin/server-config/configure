@@ -1,0 +1,110 @@
+#!/bin/bash
+
+set -euo pipefail
+
+manu_version="0.2.0"
+
+me=${BASH_SOURCE[0]}
+me=$(readlink -f "$me")
+here=$(dirname "$me")
+
+tmp=$(mktemp --tmpdir configure.XXXXXX)
+function finish {
+  # Your cleanup code here
+  rm -f "$tmp"
+}
+trap finish EXIT
+
+err() {
+  echo "$(basename "$me"): $1" >&2
+}
+
+ensure_java() {
+  apt-get install openjdk-8-jdk-headless
+}
+
+ensure_htop() {
+  apt-get install htop
+}
+
+ensure_runit() {
+  apt-get install runit
+}
+
+ensure_manu() {
+  local thing file
+  for thing in manu-serve manu-cli; do
+    file="$thing"-"$manu_version".jar
+    if [ ! -e /usr/bin/"$file" ]; then
+      wget https://repo.maven.apache.org/maven2/com/cldellow/"$thing"/"$manu_version"/"$file" -O /usr/bin/"$file"
+    fi
+
+    chmod a+x /usr/bin/"$file"
+    ln -sf /usr/bin/"$file" /usr/bin/"$thing"
+  done
+
+  mkdir -p /var/log/manu-serve
+}
+
+ensure_s3cmd() {
+  apt-get install s3cmd
+}
+
+ensure_manu_data() {
+  ensure_s3cmd
+  mkdir -p /var/local/manu/datadir
+ 
+  s3cmd sync s3://manu-data/live/ /var/local/manu/datadir/
+}
+
+fn_update() {
+  if ifconfig | grep --silent addr:192.168; then
+    err "doesn't look like we're on a droplet, giving up"
+    exit 1
+  fi
+
+  apt-get update
+  if [ -e /var/run/reboot-required ]; then
+    reboot
+  fi
+
+  ensure_htop
+  ensure_java
+  ensure_manu
+  ensure_manu_data
+  ensure_runit
+  # TODO: ensure only port 22/80 are available
+  # TODO: install nginx to front services?
+  # TODO: set up manu.cldellow.com
+}
+
+fn_publish() {
+  # Bootstrap a droplet's filesystems with S3 credentials and a script
+  # to install services.
+  ( cd "$here" && tar cf "$tmp" . )
+  local home
+  home=${HOME#/}
+  tar --append -f "$tmp" --transform "flags=r;s|$home/.s3cld|root/.s3cfg|" ~/.s3cld
+
+  # Remove vim .swp files
+  # CONSIDER: maybe use git ls-files to generate the list of files?
+  tar tf "$tmp" |
+    grep "\\.swp$" |
+    xargs --no-run-if-empty tar --delete -f "$tmp"
+  ssh droplet -- tar xf - -C / < "$tmp"
+  echo "Published $(tar tf "$tmp" | wc -l) files."
+}
+
+fn_do() {
+  "$@"
+}
+
+fn_() {
+  err "usage: ./configure <cmd>"
+  err "  publish - send script to droplet (run this on dev box)"
+  err "  update - provision droplet"
+  exit 1
+}
+
+#shellcheck disable=SC2145
+fn_"$@"

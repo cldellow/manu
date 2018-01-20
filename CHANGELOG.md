@@ -1,3 +1,8 @@
+# 0.2.1
+
+`manu-format`: fix incorrect decoding of lossily encoded data.
+`manu-cli`: `read` is faster
+
 # 0.2.0
 
 `manu-serve` works.
