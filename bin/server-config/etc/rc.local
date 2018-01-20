@@ -1,9 +1,16 @@
 #!/bin/sh
 
-# Set the default policy of the INPUT chain to DROP
 iptables -P INPUT DROP
 
+# Permit ssh/http traffic
 iptables -A INPUT -i eth0 -p tcp --dport http -j ACCEPT
 iptables -A INPUT -i eth0 -p tcp --dport ssh -j ACCEPT
+
+# loopback is wide open
+iptables -A INPUT -i lo -j ACCEPT
+iptables -A OUTPUT -i lo -j ACCEPT
+
+# If we started it, permit inbound traffic
+iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
 exit 0
