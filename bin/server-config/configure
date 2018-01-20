@@ -63,7 +63,13 @@ fn_update() {
     exit 1
   fi
 
-  apt-get update
+  # Ensure apt-get update has been run recently
+  touch --date '2 hours ago' /var/run/last-update-test
+  if [ /var/run/last-update-test -nt /var/run/last-update ]; then
+    apt-get update
+    touch /var/run/last-update
+  fi
+
   if [ -e /var/run/reboot-required ]; then
     reboot
   fi
