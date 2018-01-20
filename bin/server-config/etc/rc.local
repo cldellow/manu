@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Set the default policy of the INPUT chain to DROP
+iptables -P INPUT DROP
+
+iptables -A INPUT -i eth0 -p tcp --dport http -j ACCEPT
+iptables -A INPUT -i eth0 -p tcp --dport ssh -j ACCEPT
+
+exit 0
