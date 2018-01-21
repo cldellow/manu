@@ -17,6 +17,7 @@ public class Write {
     private final IntCompressor ic = new IntCompressor();
     private int numRows;
     private int fields[][][];
+    private int zeroes[];
     private Vector<FieldDef> defs;
 
     Write(String[] _args) throws Exception {
@@ -107,10 +108,12 @@ public class Write {
                     currentRow++;
                 }
             }
+            zeroes = new int[numDatapoints];
 
             Writer.write(
                     outputFile,
                     (short) 1024,
+                    Integer.MIN_VALUE,
                     epochMs,
                     numDatapoints,
                     interval,
@@ -145,7 +148,10 @@ public class Write {
 
             int[][] newFields = new int[defs.size()][];
             for (int i = 0; i < defs.size(); i++) {
-                newFields[i] = ic.uncompress(fields[index][i]);
+                if(fields[index][i] != null)
+                    newFields[i] = ic.uncompress(fields[index][i]);
+                else
+                    newFields[i] = zeroes;
 
                 encoders[i] = pfor;
                 if (defs.get(i).getFieldKind() == FieldKind.LOSSY && AverageEncoder.eligible(newFields[i]))
