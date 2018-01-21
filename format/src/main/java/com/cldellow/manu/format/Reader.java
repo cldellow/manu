@@ -119,7 +119,7 @@ public class Reader {
         private int[] _rowOffsets = new int[rowListSize];
         private int[] _codedRowOffsets = new int[rowListSize * 4 + 32];
         private int[] rv = new int[numDatapoints];
-        private int[] tmp = new int[numDatapoints + 256];
+        private byte[] tmp = new byte[4 * (numDatapoints + 256)];
 
         RecordIterator(int currentRecord, int currentRowList) throws FileNotFoundException, IOException {
             this.currentRecord = currentRecord;

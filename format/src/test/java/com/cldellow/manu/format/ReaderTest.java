@@ -190,9 +190,10 @@ public class ReaderTest {
         int[] numFields = {1, 2};
 
         for (int i = 0; i < numRecords.length; i++)
-            for (int j = 0; j < numFields.length; j++)
+            for (int j = 0; j < numFields.length; j++) {
                 parameterizedTest(numRecords[i], numFields[j]);
-    }
+            }
+        }
 
     private void parameterizedTest(int numRecords, int numFields) throws Exception {
         Long epochMs = System.currentTimeMillis();
@@ -210,7 +211,6 @@ public class ReaderTest {
         FieldEncoder[] encoders = new FieldEncoder[numFields];
         for (int i = 0; i < numFields; i++) {
             encoders[i] = new CopyEncoder();
-            // TODO: test pfor encoder
             if (i == 1)
                 encoders[i] = new PFOREncoder();
         }

@@ -9,7 +9,7 @@ public interface FieldEncoder {
     boolean isVariableLength();
     int getLength();
 
-    void encode(int[] data, int[] encoded, IntWrapper encodedLength);
+    void encode(int[] data, byte[] encoded, IntWrapper encodedLength);
 
-    void decode(int[] encoded, int encodedLength, int[] data, IntWrapper dataLength);
+    void decode(byte[] encoded, int encodedLength, int[] data, IntWrapper dataLength);
 }

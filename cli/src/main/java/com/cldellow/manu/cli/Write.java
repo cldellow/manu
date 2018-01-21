@@ -17,7 +17,6 @@ public class Write {
     private final IntCompressor ic = new IntCompressor();
     private int numRows;
     private int fields[][][];
-    private int zeroes[];
     private Vector<FieldDef> defs;
 
     Write(String[] _args) throws Exception {
@@ -108,7 +107,6 @@ public class Write {
                     currentRow++;
                 }
             }
-            zeroes = new int[numDatapoints];
 
             Writer.write(
                     outputFile,

@@ -31,10 +31,10 @@ public class AverageEncoder implements FieldEncoder {
     }
 
     public int getLength() {
-        return 1;
+        return 4;
     }
 
-    public void encode(int[] data, int[] encoded, IntWrapper encodedLength) {
+    public void encode(int[] data, byte[] encoded, IntWrapper encodedLength) {
         byte[] rv = new byte[4];
         ByteBuffer buf = ByteBuffer.wrap(rv);
 
@@ -52,15 +52,17 @@ public class AverageEncoder implements FieldEncoder {
         buf.putShort((short) numKnown);
         buf.putShort((short) sum);
         buf.position(0);
-        encoded[0] = buf.getInt();
-        encodedLength.set(1);
+
+        encoded[0] = buf.get();
+        encoded[1] = buf.get();
+        encoded[2] = buf.get();
+        encoded[3] = buf.get();
+
+        encodedLength.set(4);
     }
 
-    public void decode(int[] encoded, int encodedLength, int[] data, IntWrapper dataLength) {
-        byte[] rv = new byte[4];
-        ByteBuffer buf = ByteBuffer.wrap(rv);
-        buf.putInt(encoded[0]);
-        buf.position(0);
+    public void decode(byte[] encoded, int encodedLength, int[] data, IntWrapper dataLength) {
+        ByteBuffer buf = ByteBuffer.wrap(encoded);
         int numKnown = buf.getShort();
         int sum = buf.getShort();
         dataLength.set(data.length);

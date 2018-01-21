@@ -1,14 +1,21 @@
 package com.cldellow.manu.format;
 
+import com.pholser.junit.quickcheck.Property;
+import com.pholser.junit.quickcheck.generator.InRange;
+import com.pholser.junit.quickcheck.generator.Size;
+import com.pholser.junit.quickcheck.runner.JUnitQuickcheck;
 import me.lemire.integercompression.IntWrapper;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.beans.Encoder;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+import static org.junit.Assume.assumeThat;
 
+
+@RunWith(JUnitQuickcheck.class)
 public class AverageEncoderTest {
     @Test
     public void testId() {
@@ -46,7 +53,7 @@ public class AverageEncoderTest {
 
     @Test
     public void getLength() {
-        assertEquals(1L, new AverageEncoder().getLength());
+        assertEquals(4L, new AverageEncoder().getLength());
     }
 
     private void roundtrip(int[] data, boolean isExact) throws Exception {
@@ -102,4 +109,10 @@ public class AverageEncoderTest {
         roundtrip(new int[] {1, 1, 1}, true);
     }
 
+    @Property
+    public void encodeRandom(@InRange(min="-1", max="20") int[] ints) throws Exception {
+        if(AverageEncoder.eligible(ints)) {
+            roundtrip(ints, false);
+        }
+    }
 }

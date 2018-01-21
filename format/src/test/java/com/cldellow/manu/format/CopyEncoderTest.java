@@ -1,13 +1,17 @@
 package com.cldellow.manu.format;
 
+import com.pholser.junit.quickcheck.Property;
+import com.pholser.junit.quickcheck.runner.JUnitQuickcheck;
 import me.lemire.integercompression.IntWrapper;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+@RunWith(JUnitQuickcheck.class)
 public class CopyEncoderTest {
     @Test
     public void testId() {
@@ -25,12 +29,13 @@ public class CopyEncoderTest {
         assertEquals(-1L, new CopyEncoder().getLength());
     }
 
-    @Test
-    public void encode() throws Exception {
+    @Property
+    public void encode(int[] ints) throws Exception {
         FieldEncoder encoder = new CopyEncoder();
-
-        int[] bytes = new int[new Random().nextInt(16384)];
         IntWrapper len = new IntWrapper(0);
-        EncoderTools.roundtrip(bytes, encoder, len);
+        int[] actual = EncoderTools.roundtrip(ints, encoder, len);
+        assertEquals(ints.length, actual.length);
+        for(int i = 0; i < ints.length; i++)
+            assertEquals(ints[i], actual[i]);
     }
 }

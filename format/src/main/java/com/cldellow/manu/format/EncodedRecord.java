@@ -15,10 +15,10 @@ public class EncodedRecord implements Record {
     private final int[] fieldLengths;
 
     private final int[] encoderIds;
-    private final int[] tmp;
+    private final byte[] tmp;
     private final int[] rv;
 
-    public EncodedRecord(int id, ByteBuffer buffer, int recordStart, int numFields, int[] tmp, int[] rv) {
+    public EncodedRecord(int id, ByteBuffer buffer, int recordStart, int numFields, byte[] tmp, int[] rv) {
         this.id = id;
         this.buffer = buffer;
         this.numFields = numFields;
@@ -51,7 +51,7 @@ public class EncodedRecord implements Record {
                 fieldLengths[i] = ThreadEncoders.get()[encoderId].getLength();
             }
             fieldContentOffsets[i] = buffer.position();
-            buffer.position(buffer.position() + 4 * fieldLengths[i]);
+            buffer.position(buffer.position() + fieldLengths[i]);
         }
     }
 
@@ -63,8 +63,7 @@ public class EncodedRecord implements Record {
         FieldEncoder encoder = getEncoder(field);
         buffer.position(fieldContentOffsets[field]);
 
-        IntBuffer intBuffer = buffer.asIntBuffer();
-        intBuffer.get(tmp, 0, fieldLengths[field]);
+        buffer.get(tmp, 0, fieldLengths[field]);
 
         encoder.decode(tmp, fieldLengths[field], rv, new IntWrapper(0));
         return rv;

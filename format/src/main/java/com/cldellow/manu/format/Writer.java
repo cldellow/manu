@@ -50,7 +50,9 @@ public class Writer {
         final IntVector rowListPositions = new IntVector();
         final IntVector recordPositions = new IntVector();
         int currentRecord = 0;
-        final int[] tmpArray = new int[131072];
+        final int[] intArray = new int[Common.INT_ARRAY_SIZE];
+        final byte[] byteArray = new byte[intArray.length * 4];
+
 
         try {
             writePreamble(dos, rowListSize, nullValue, epochMs, interval, recordOffset, fieldNames, fieldTypes);
@@ -65,7 +67,7 @@ public class Writer {
                 if (record != null) {
                     if(numDatapoints == -1)
                         numDatapoints = record.getValues(0).length;
-                    writeRecord(currentRecord, numFields, numDatapoints, dos, record, tmpArray);
+                    writeRecord(currentRecord, numFields, numDatapoints, dos, record, byteArray);
                 } else {
                     // If it's the first record in this rowlist, use negative to mark null,
                     // (so we can invert it to get the start of data).
@@ -88,11 +90,11 @@ public class Writer {
                     recordPositions.set(k, recordPositions.get(k) - start);
                     start += recordPositions.get(k);
                 }
-                codec.compress(recordPositions.getArray(), inputPos, howMany, tmpArray, outputPos);
+                codec.compress(recordPositions.getArray(), inputPos, howMany, intArray, outputPos);
                 rowListPositions.add(dos.size());
                 dos.writeShort(outputPos.get());
                 for (int j = 0; j < outputPos.get(); j++)
-                    dos.writeInt(tmpArray[j]);
+                    dos.writeInt(intArray[j]);
             }
             rowListOffset = dos.size();
             for (int i = 0; i < rowListPositions.getSize(); i++)
@@ -115,7 +117,7 @@ public class Writer {
         raf.close();
     }
 
-    private static void writeRecord(int currentRecord, int numFields, int numDatapoints, DataOutputStream dos, Record r, int[] tmpArray) throws IOException {
+    private static void writeRecord(int currentRecord, int numFields, int numDatapoints, DataOutputStream dos, Record r, byte[] byteArray) throws IOException {
         final IntWrapper outPos = new IntWrapper(0);
 
         for (int field = 0; field < numFields; field++) {
@@ -127,7 +129,7 @@ public class Writer {
                 throw new IllegalArgumentException(String.format(
                         "record %d, field %d has %d values; expected %d",
                         currentRecord, field, values.length, numDatapoints));
-            fe.encode(values, tmpArray, outPos);
+            fe.encode(values, byteArray, outPos);
 
             // If the encoder has a fixed length, don't write a size field.
             // Otherwise, write a size field using a byte, short or int
@@ -148,7 +150,7 @@ public class Writer {
                     dos.writeInt(length);
             }
             for (int i = 0; i < outPos.get(); i++) {
-                dos.writeInt(tmpArray[i]);
+                dos.writeByte(byteArray[i]);
             }
         }
     }
