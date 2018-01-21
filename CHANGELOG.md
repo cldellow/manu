@@ -1,7 +1,12 @@
 # 0.2.1
 
 all: support "sparse" files, where not all keys have records
-`manu-format`: support declaring a sentinel value that signals null; support variable length size field; fix incorrect decoding of lossily encoded data
+`manu-format`:
+
+- support declaring a sentinel value that signals null
+- support variable length size field
+- ~4x better space use for fields with a single datapoint
+- fix incorrect decoding of lossily encoded data
 `manu-cli`: `read` is faster
 `manu-serve`: support null fields
 

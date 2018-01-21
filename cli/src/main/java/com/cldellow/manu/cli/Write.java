@@ -13,6 +13,7 @@ import java.util.Vector;
 public class Write {
     private final String[] _args;
     private final FieldEncoder pfor = new PFOREncoder();
+    private final FieldEncoder single = new SingleValueEncoder();
     private final FieldEncoder lossy = new AverageEncoder();
     private final IntCompressor ic = new IntCompressor();
     private int numRows;
@@ -147,7 +148,9 @@ public class Write {
                     allNull = false;
                     newFields[i] = ic.uncompress(fields[index][i]);
                     encoders[i] = pfor;
-                    if (defs.get(i).getFieldKind() == FieldKind.LOSSY && AverageEncoder.eligible(newFields[i]))
+                    if(SingleValueEncoder.eligible(newFields[i]))
+                        encoders[i] = single;
+                    else if (defs.get(i).getFieldKind() == FieldKind.LOSSY && AverageEncoder.eligible(newFields[i]))
                         encoders[i] = lossy;
                 } else
                     someNull = true;

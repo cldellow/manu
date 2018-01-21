@@ -23,13 +23,15 @@ class Common {
                 return new PFOREncoder();
             case 2:
                 return new AverageEncoder();
+            case 3:
+                return new SingleValueEncoder();
             default:
                 throw new IllegalArgumentException(String.format("unknown encoder: %d", id));
         }
     }
 
     public static FieldEncoder[] getEncoders() {
-        FieldEncoder[] encoders = new FieldEncoder[3];
+        FieldEncoder[] encoders = new FieldEncoder[4];
         for(int i = 0; i < encoders.length; i++)
             encoders[i] = getEncoder(i);
 
