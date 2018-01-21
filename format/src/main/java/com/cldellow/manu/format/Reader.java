@@ -104,7 +104,7 @@ public class Reader {
     }
     */
 
-    class RecordIterator implements Iterator<Record>, Closeable {
+    public class RecordIterator implements Iterator<Record>, Closeable {
         private IntegratedIntegerCODEC codec = Common.getRowListCodec();
         private int currentRecord;
         private int currentRowList;
@@ -168,8 +168,15 @@ public class Reader {
                 }
             }
 
-            Record record = new EncodedRecord(recordOffset + currentRecord, buffer, rowOffsets[currentRecord % rowListSize], numFields, tmp, rv);
-            currentRecord += 1;
+            Record record = null;
+
+            boolean isNegative = rowOffsets[currentRecord % rowListSize] < 0;
+            boolean matchesPrevious = currentRecord % rowListSize > 0 &&
+                    (rowOffsets[currentRecord % rowListSize] == rowOffsets[(currentRecord % rowListSize) -1 ]);
+
+            if(!isNegative && !matchesPrevious)
+                record = new EncodedRecord(recordOffset + currentRecord, buffer, rowOffsets[currentRecord % rowListSize], numFields, tmp, rv);
+            currentRecord++;
 
             if (currentRecord % rowListSize == 0) {
                 currentRowList++;

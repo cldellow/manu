@@ -184,7 +184,6 @@ EOF
 
   cat > "$pvs_file" <<EOF
 0 1
-1 0
 EOF
   tabsify "$pvs_file"
 

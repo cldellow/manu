@@ -14,11 +14,10 @@ root="$here"/../../..
 
 resources="$root"/serve/src/test/resources/datadir
 mkdir -p "$resources"
-mkdir -p "$resources"/daily
-mkdir -p "$resources"/hourly
-mkdir -p "$resources"/hourly2
-mkdir -p "$resources"/nulls
 
+# A dataset by hour that spans 2 months; 2 records and 1 field
+mkdir -p "$resources"/hourly
+echo -e a$'\n'b | "$root"/cli/bin/ensure-keys "$resources"/hourly/keys
 (
   echo "a"$'\t'"$(seq --separator=$'\t' 1 744)"
   echo "b"$'\t'"$(seq --separator=$'\t' 2 745)"
@@ -28,37 +27,37 @@ mkdir -p "$resources"/nulls
   echo "a"$'\t'"$(seq --separator=$'\t' 1 696)"
   echo "b"$'\t'"$(seq --separator=$'\t' 2 697)"
 ) > "$tmpdir"/hours-200802.tsv
-
-(
-  echo "a"$'\t'"$(seq --separator=$'\t' 1 31)"
-) > "$tmpdir"/days-200801-field1.tsv
-
-(
-  echo "a"$'\t'"$(seq --separator=$'\t' 101 131)"
-) > "$tmpdir"/days-200801-field2.tsv
-
-
-(
-  echo "a"$'\t'"$(seq --separator=$'\t' 1 29)"
-) > "$tmpdir"/days-200802-field1.tsv
-
-(
-  echo "a"$'\t'"$(seq --separator=$'\t' 101 129)"
-) > "$tmpdir"/days-200802-field2.tsv
-
-echo -e a$'\n'b | "$root"/cli/bin/ensure-keys "$resources"/hourly/keys
-echo "a" | "$root"/cli/bin/ensure-keys "$resources"/daily/keys
-echo -e a$'\n'b | "$root"/cli/bin/ensure-keys "$resources"/hourly2/keys
-
 "$root"/cli/bin/write "$resources"/hourly/keys "$resources"/hourly/200801.manu 2008-01-01 hour field1 "$tmpdir"/hours-200801.tsv
 "$root"/cli/bin/write "$resources"/hourly/keys "$resources"/hourly/200802.manu 2008-02-01 hour field1 "$tmpdir"/hours-200802.tsv
+
+# A dataset by hour that spans 1 month; 2 records and 1 field
+mkdir -p "$resources"/hourly2
+echo -e a$'\n'b | "$root"/cli/bin/ensure-keys "$resources"/hourly2/keys
+"$root"/cli/bin/write "$resources"/hourly2/keys "$resources"/hourly2/month-200801.manu 2008-01-01 hour field1 "$tmpdir"/hours-200801.tsv
+
+# A dataset by day that spans 2 months; 1 record and 1 field
+mkdir -p "$resources"/daily
+echo "a" | "$root"/cli/bin/ensure-keys "$resources"/daily/keys
+echo "a"$'\t'"$(seq --separator=$'\t' 1 31)" > "$tmpdir"/days-200801-field1.tsv
+echo "a"$'\t'"$(seq --separator=$'\t' 101 131)" > "$tmpdir"/days-200801-field2.tsv
+echo "a"$'\t'"$(seq --separator=$'\t' 1 29)" > "$tmpdir"/days-200802-field1.tsv
+echo "a"$'\t'"$(seq --separator=$'\t' 101 129)" > "$tmpdir"/days-200802-field2.tsv
 
 "$root"/cli/bin/write "$resources"/daily/keys "$resources"/daily/200801.manu 2008-01-01 day field1 "$tmpdir"/days-200801-field1.tsv field2 "$tmpdir"/days-200801-field2.tsv
 "$root"/cli/bin/write "$resources"/daily/keys "$resources"/daily/200802.manu 2008-02-01 day field1 "$tmpdir"/days-200802-field1.tsv field2 "$tmpdir"/days-200802-field2.tsv
 
-"$root"/cli/bin/write "$resources"/hourly2/keys "$resources"/hourly2/month-200801.manu 2008-01-01 hour field1 "$tmpdir"/hours-200801.tsv
-
+# A dataset with null fields
+mkdir -p "$resources"/nulls
 echo "a" | "$root"/cli/bin/ensure-keys "$resources"/nulls/keys
 echo "a 11 22 -2147483648 44 55" | sed -e 's/ /\t/g' > "$tmpdir"/nulls.tsv
 echo "a 11 22 -2147483648 44 55" | sed -e 's/ /\t/g' > "$tmpdir"/nulls2.tsv
 "$root"/cli/bin/write "$resources"/nulls/keys "$resources"/nulls/month-200801.manu 2008-01-01 day --fixed1 field1 "$tmpdir"/nulls.tsv --fixed2 field2 "$tmpdir"/nulls2.tsv
+
+# A dataset that spans two files, and has missing records for each record in either file
+mkdir -p "$resources"/sparse
+echo "a" | "$root"/cli/bin/ensure-keys "$resources"/sparse/keys
+echo a$'\t'11 > "$tmpdir"/sparse1.tsv
+"$root"/cli/bin/write "$resources"/sparse/keys "$resources"/sparse/20080101.manu 2008-01-01 day field1 "$tmpdir"/sparse1.tsv
+echo "b" | "$root"/cli/bin/ensure-keys "$resources"/sparse/keys
+echo b$'\t'22 > "$tmpdir"/sparse2.tsv
+"$root"/cli/bin/write "$resources"/sparse/keys "$resources"/sparse/20080102.manu 2008-01-02 day field1 "$tmpdir"/sparse2.tsv

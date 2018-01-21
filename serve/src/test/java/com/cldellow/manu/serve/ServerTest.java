@@ -26,6 +26,10 @@ public class ServerTest {
 
         c = new Collection(new Common().getFile("./datadir/nulls"));
         collections.put("nulls", c);
+
+        c = new Collection(new Common().getFile("./datadir/sparse"));
+        collections.put("sparse", c);
+
         s = new Server(6268, collections);
         s.run();
     }
@@ -110,4 +114,53 @@ public class ServerTest {
         assertEquals("`to` should be after `from`",
                 f.body.trim());
     }
+
+    @Test
+    public void testQuerySparseAFirst() throws Exception {
+        HttpResponse f = Http.post("http://localhost:6268/api/sparse", "from=2008-01-01&to=2008-01-02&key=a");
+        assertEquals(200, f.status);
+        assertEquals("{\"meta\":{\"interval\":\"day\",\"from\":\"2008-01-01T00:00:00.000Z\",\"to\":\"2008-01-02T00:00:00.000Z\"},\"values\":{\"a\":{\"field1\":[11]}}}",
+                f.body.trim());
+    }
+
+    @Test
+    public void testQuerySparseALast() throws Exception {
+        HttpResponse f = Http.post("http://localhost:6268/api/sparse", "from=2008-01-02&to=2008-01-03&key=a");
+        assertEquals(200, f.status);
+        assertEquals("{\"meta\":{\"interval\":\"day\",\"from\":\"2008-01-02T00:00:00.000Z\",\"to\":\"2008-01-03T00:00:00.000Z\"},\"values\":{\"a\":{\"field1\":[null]}}}",
+                f.body.trim());
+    }
+
+    @Test
+    public void testQuerySparseA() throws Exception {
+        HttpResponse f = Http.post("http://localhost:6268/api/sparse", "from=2008-01-01&to=2008-01-03&key=a");
+        assertEquals(200, f.status);
+        assertEquals("{\"meta\":{\"interval\":\"day\",\"from\":\"2008-01-01T00:00:00.000Z\",\"to\":\"2008-01-03T00:00:00.000Z\"},\"values\":{\"a\":{\"field1\":[11,null]}}}",
+                f.body.trim());
+    }
+
+    @Test
+    public void testQuerySparseBFirst() throws Exception {
+        HttpResponse f = Http.post("http://localhost:6268/api/sparse", "from=2008-01-01&to=2008-01-02&key=b");
+        assertEquals(200, f.status);
+        assertEquals("{\"meta\":{\"interval\":\"day\",\"from\":\"2008-01-01T00:00:00.000Z\",\"to\":\"2008-01-02T00:00:00.000Z\"},\"values\":{\"b\":{\"field1\":[null]}}}",
+                f.body.trim());
+    }
+
+    @Test
+    public void testQuerySparseBLast() throws Exception {
+        HttpResponse f = Http.post("http://localhost:6268/api/sparse", "from=2008-01-02&to=2008-01-03&key=b");
+        assertEquals(200, f.status);
+        assertEquals("{\"meta\":{\"interval\":\"day\",\"from\":\"2008-01-02T00:00:00.000Z\",\"to\":\"2008-01-03T00:00:00.000Z\"},\"values\":{\"b\":{\"field1\":[22]}}}",
+                f.body.trim());
+    }
+
+    @Test
+    public void testQuerySparseB() throws Exception {
+        HttpResponse f = Http.post("http://localhost:6268/api/sparse", "from=2008-01-01&to=2008-01-03&key=b");
+        assertEquals(200, f.status);
+        assertEquals("{\"meta\":{\"interval\":\"day\",\"from\":\"2008-01-01T00:00:00.000Z\",\"to\":\"2008-01-03T00:00:00.000Z\"},\"values\":{\"b\":{\"field1\":[null,22]}}}",
+                f.body.trim());
+    }
+
 }

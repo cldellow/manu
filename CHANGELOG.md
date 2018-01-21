@@ -1,7 +1,9 @@
 # 0.2.1
 
-`manu-format`: fix incorrect decoding of lossily encoded data.
+all: support "sparse" files, where not all keys have records
+`manu-format`: support declaring a sentinel value that signals null; fix incorrect decoding of lossily encoded data
 `manu-cli`: `read` is faster
+`manu-serve`: support null fields
 
 # 0.2.0
 

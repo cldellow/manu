@@ -20,10 +20,12 @@ public class CollectionsTest {
         String datadir = new Common().getFile("datadir");
 
         Map<String, Collection> rv = Collections.discover(datadir);
-        assertEquals(4, rv.size());
+        assertEquals(5, rv.size());
         assertTrue(rv.containsKey("hourly"));
         assertTrue(rv.containsKey("hourly2"));
         assertTrue(rv.containsKey("daily"));
+        assertTrue(rv.containsKey("nulls"));
+        assertTrue(rv.containsKey("sparse"));
     }
 
     @Test

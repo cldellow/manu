@@ -63,7 +63,6 @@ public class FileParserTest {
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidLine() throws Exception {
         FileParser fp = new FileParser(new Common().getFile("nonewline.tsv"));
-        System.out.println(fp.getNumFields());
         fp.close();
     }
 

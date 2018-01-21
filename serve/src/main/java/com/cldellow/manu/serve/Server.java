@@ -168,8 +168,6 @@ public class Server {
                         int readerEnd = interval.difference(readers[0].from, readers[k].to);
 
                         if (readerStart <= endIndex && startIndex <= readerEnd) {
-                            Record r = readers[k].get(id);
-                            int[] values = r.getValues(fieldId);
                             int collectionStart = startIndex - readerStart;
                             if (collectionStart < 0)
                                 collectionStart = 0;
@@ -180,15 +178,28 @@ public class Server {
                             if (collectionLength + collectionStart > readers[k].numDatapoints)
                                 collectionLength--;
 
-                            System.arraycopy(
-                                    values,
-                                    collectionStart,
-                                    rv,
-                                    readerStart + collectionStart - startIndex,
-                                    collectionLength
-                                    //endIndex - readerEnd
+                            int[] values = null;
+                            if (readers[k].recordOffset <= id &&
+                                    (readers[k].recordOffset + readers[k].numRecords) > id) {
+                                Record r = readers[k].get(id);
+                                if (r != null)
+                                    values = r.getValues(fieldId);
+                            }
 
-                            );
+                            if (values != null)
+                                System.arraycopy(
+                                        values,
+                                        collectionStart,
+                                        rv,
+                                        readerStart + collectionStart - startIndex,
+                                        collectionLength
+                                        //endIndex - readerEnd
+
+                                );
+                            else {
+                                for (int l = 0; l < collectionLength; l++)
+                                    rv[l + readerStart + collectionStart - startIndex] = readers[0].nullValue;
+                            }
                         }
                     }
                     gen.writeStartArray();

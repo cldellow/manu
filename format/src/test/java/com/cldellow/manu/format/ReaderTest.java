@@ -1,15 +1,15 @@
 package com.cldellow.manu.format;
 
+import com.cldellow.manu.common.Common;
 import org.junit.After;
 import org.junit.Test;
 
-import com.cldellow.manu.common.Common;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.*;
 
 public class ReaderTest {
     private String dbLoc = "/tmp/manu-test.data";
@@ -34,8 +34,8 @@ public class ReaderTest {
         int[] datapoints2 = {123, 124, 125};
 
         Record[] records = {
-                new SimpleRecord(0, new FieldEncoder[] { new AverageEncoder() }, new int[][]{datapoints}),
-                new SimpleRecord(1, new FieldEncoder[] { new PFOREncoder() }, new int[][]{datapoints2})
+                new SimpleRecord(0, new FieldEncoder[]{new AverageEncoder()}, new int[][]{datapoints}),
+                new SimpleRecord(1, new FieldEncoder[]{new PFOREncoder()}, new int[][]{datapoints2})
         };
 
         Writer.write(
@@ -90,6 +90,110 @@ public class ReaderTest {
     @Test(expected = NotManuException.class)
     public void testNotManu2() throws Exception {
         new Reader(new Common().getFile("not-a-manu2"));
+    }
+
+    @Test
+    public void testSparseRecordsIterator() throws Exception {
+        SimpleRecord[] allRecords = new SimpleRecord[]{
+                new SimpleRecord(0, new FieldEncoder[]{new PFOREncoder()}, new int[][]{{1, 2, 3, 4, 5}}),
+                new SimpleRecord(1, new FieldEncoder[]{new PFOREncoder()}, new int[][]{{2, 3, 4, 6, 7}}),
+                new SimpleRecord(2, new FieldEncoder[]{new PFOREncoder()}, new int[][]{{3, 4, 5, 7, 8}}),
+                new SimpleRecord(3, new FieldEncoder[]{new PFOREncoder()}, new int[][]{{4, 5, 6, 8, 9}}),
+                new SimpleRecord(4, new FieldEncoder[]{new PFOREncoder()}, new int[][]{{5, 6, 7, 9, 10}})};
+
+        for (int i = 0; i < 32; i++) {
+            Record[] inRecords = new Record[5];
+            for (int j = 0; j < 5; j++)
+                if (((i >> j) & 1) != 0)
+                    inRecords[j] = allRecords[j];
+
+            Writer.write(dbLoc,
+                    (short) 1024,
+                    Integer.MIN_VALUE,
+                    0L,
+                    5,
+                    Interval.DAY,
+                    0,
+                    5,
+                    new String[]{"field"},
+                    new FieldType[]{FieldType.INT},
+                    Arrays.asList(inRecords).iterator());
+
+            Reader r = new Reader(dbLoc);
+            Record[] outRecords = new Record[5]; //r.records.next(), r.records.next(), r.records.next()};
+
+            for (int j = 0; j < 5; j++) {
+                assertTrue(r.records.hasNext());
+                outRecords[j] = r.records.next();
+            }
+            assertFalse(r.records.hasNext());
+
+            for (int j = 0; j < 5; j++) {
+                if (inRecords[j] == null)
+                    assertNull(outRecords[j]);
+                else {
+                    assertNotNull(outRecords[j]);
+                    assertEquals(j, outRecords[j].getId());
+                    int[] values = outRecords[j].getValues(0);
+                    assertNotNull(values);
+                    for(int k = 0; k < values.length; k++)
+                        assertEquals(inRecords[j].getValues(0)[k], values[k]);
+                }
+            }
+
+            cleanup();
+        }
+    }
+
+    @Test
+    public void testSparseRecordsGet() throws Exception {
+        SimpleRecord[] allRecords = new SimpleRecord[]{
+                new SimpleRecord(0, new FieldEncoder[]{new PFOREncoder()}, new int[][]{{1, 2, 3, 4, 5}}),
+                new SimpleRecord(1, new FieldEncoder[]{new PFOREncoder()}, new int[][]{{2, 3, 4, 6, 7}}),
+                new SimpleRecord(2, new FieldEncoder[]{new PFOREncoder()}, new int[][]{{3, 4, 5, 7, 8}}),
+                new SimpleRecord(3, new FieldEncoder[]{new PFOREncoder()}, new int[][]{{4, 5, 6, 8, 9}}),
+                new SimpleRecord(4, new FieldEncoder[]{new PFOREncoder()}, new int[][]{{5, 6, 7, 9, 10}})};
+
+        for (int i = 0; i < 32; i++) {
+            Record[] inRecords = new Record[5];
+            for (int j = 0; j < 5; j++)
+                if (((i >> j) & 1) != 0)
+                    inRecords[j] = allRecords[j];
+
+            Writer.write(dbLoc,
+                    (short) 1024,
+                    Integer.MIN_VALUE,
+                    0L,
+                    5,
+                    Interval.DAY,
+                    0,
+                    5,
+                    new String[]{"field"},
+                    new FieldType[]{FieldType.INT},
+                    Arrays.asList(inRecords).iterator());
+
+            Reader r = new Reader(dbLoc);
+            Record[] outRecords = new Record[5]; //r.records.next(), r.records.next(), r.records.next()};
+
+            for (int j = 0; j < 5; j++) {
+                outRecords[j] = r.get(j);
+            }
+
+            for (int j = 0; j < 5; j++) {
+                if (inRecords[j] == null)
+                    assertNull(outRecords[j]);
+                else {
+                    assertNotNull(outRecords[j]);
+                    assertEquals(j, outRecords[j].getId());
+                    int[] values = outRecords[j].getValues(0);
+                    assertNotNull(values);
+                    for(int k = 0; k < values.length; k++)
+                        assertEquals(inRecords[j].getValues(0)[k], values[k]);
+                }
+            }
+
+            cleanup();
+        }
     }
 
 

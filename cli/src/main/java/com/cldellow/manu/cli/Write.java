@@ -42,7 +42,7 @@ public class Write {
     }
 
     public int entrypoint() throws Exception {
-        if(Common.contains(_args, "--help")) {
+        if (Common.contains(_args, "--help")) {
             usage();
             return 1;
         }
@@ -104,7 +104,7 @@ public class Write {
                                 "%s: row %d cites unknown key %s",
                                 defs.get(def).getFile(), currentRow, row.getKey()));
 
-                    fields[currentRow][def] = ic.compress(row.getInts());
+                    fields[id][def] = ic.compress(row.getInts());
                     currentRow++;
                 }
             }
@@ -147,18 +147,26 @@ public class Write {
             FieldEncoder[] encoders = new FieldEncoder[defs.size()];
 
             int[][] newFields = new int[defs.size()][];
+            boolean allNull = true;
+            boolean someNull = false;
             for (int i = 0; i < defs.size(); i++) {
-                if(fields[index][i] != null)
+                if (fields[index][i] != null) {
+                    allNull = false;
                     newFields[i] = ic.uncompress(fields[index][i]);
-                else
-                    newFields[i] = zeroes;
-
-                encoders[i] = pfor;
-                if (defs.get(i).getFieldKind() == FieldKind.LOSSY && AverageEncoder.eligible(newFields[i]))
-                    encoders[i] = lossy;
+                    encoders[i] = pfor;
+                    if (defs.get(i).getFieldKind() == FieldKind.LOSSY && AverageEncoder.eligible(newFields[i]))
+                        encoders[i] = lossy;
+                } else
+                    someNull = true;
             }
 
-            Record r = new SimpleRecord(index, encoders, newFields);
+            if (someNull && !allNull)
+                throw new IllegalArgumentException("record " + index + " has a mix of null/non-null fields");
+
+            Record r = null;
+            if (!allNull)
+                r = new SimpleRecord(index, encoders, newFields);
+
             index++;
             return r;
         }

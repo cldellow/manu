@@ -29,6 +29,9 @@ public class Read {
             Iterator<Record> it = reader.records;
             while (it.hasNext()) {
                 Record record = it.next();
+                if(record == null)
+                    continue;
+
                 boolean printRecord = !filterKeys;
                 String key = null;
 

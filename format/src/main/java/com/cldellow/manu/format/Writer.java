@@ -48,8 +48,20 @@ public class Writer {
             while(records.hasNext()) {
                 if(currentRecord == numRecords)
                     throwRecordNumberException(currentRecord, numRecords);
+
                 recordPositions[currentRecord] = dos.size();
-                writeRecord(currentRecord, numFields, numDatapoints, dos, records.next(), tmpArray);
+                Record record = records.next();
+                if(record != null)
+                    writeRecord(currentRecord, numFields, numDatapoints, dos, record, tmpArray);
+                else {
+                    // If it's the first record in this rowlist, use negative to mark null,
+                    // (so we can invert it to get the start of data).
+                    // Otherwise, use the previous record's position.
+                    if(currentRecord % rowListSize == 0)
+                        recordPositions[currentRecord] *= -1;
+                    else
+                        recordPositions[currentRecord] = recordPositions[currentRecord - 1];
+                }
                 currentRecord++;
             }
 
