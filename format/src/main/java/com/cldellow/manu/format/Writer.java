@@ -1,5 +1,6 @@
 package com.cldellow.manu.format;
 
+import com.cldellow.manu.common.IntVector;
 import me.lemire.integercompression.IntWrapper;
 import me.lemire.integercompression.differential.IntegratedIntegerCODEC;
 
@@ -7,7 +8,20 @@ import java.io.*;
 import java.util.Iterator;
 
 public class Writer {
+    private static final int OFFSET_NUM_DATAPOINTS = 20;
+    private static final int OFFSET_NUM_RECORDS = 29;
+
     // TODO: switch to NIO once we have a baseline implementation of writing/reading
+    public static void write(
+            String file,
+            long epochMs,
+            Interval interval,
+            String[] fieldNames,
+            FieldType[] fieldTypes,
+            Iterator<Record> records) throws FileNotFoundException, IOException, Exception {
+        write(file, (short)1024, Integer.MIN_VALUE, epochMs, -1, interval, 0, fieldNames, fieldTypes, records);
+    }
+
     public static void write(
             String file,
             short rowListSize,
@@ -16,7 +30,6 @@ public class Writer {
             int numDatapoints,
             Interval interval,
             int recordOffset,
-            int numRecords,
             String[] fieldNames,
             FieldType[] fieldTypes,
             Iterator<Record> records) throws FileNotFoundException, IOException, Exception {
@@ -34,69 +47,72 @@ public class Writer {
         final int numFields = fieldNames.length;
         int rowListPointerPosition = -1;
         int rowListOffset = -1;
-        final int[] rowListPositions = new int[(numRecords + rowListSize - 1) / rowListSize];
-        final int[] recordPositions = new int[numRecords];
+        final IntVector rowListPositions = new IntVector();
+        final IntVector recordPositions = new IntVector();
         int currentRecord = 0;
         final int[] tmpArray = new int[131072];
+
         try {
-            writePreamble(dos, rowListSize, nullValue, epochMs, numDatapoints, interval, recordOffset, numRecords, fieldNames, fieldTypes);
+            writePreamble(dos, rowListSize, nullValue, epochMs, interval, recordOffset, fieldNames, fieldTypes);
 
             // Stash rowListPosition so we can fix it up later.
             rowListPointerPosition = dos.size();
             dos.writeInt(0); // write a dummy value so the space is allocated
 
             while (records.hasNext()) {
-                if (currentRecord == numRecords)
-                    throwRecordNumberException(currentRecord, numRecords);
-
-                recordPositions[currentRecord] = dos.size();
+                recordPositions.add(dos.size());
                 Record record = records.next();
-                if (record != null)
+                if (record != null) {
+                    if(numDatapoints == -1)
+                        numDatapoints = record.getValues(0).length;
                     writeRecord(currentRecord, numFields, numDatapoints, dos, record, tmpArray);
-                else {
+                } else {
                     // If it's the first record in this rowlist, use negative to mark null,
                     // (so we can invert it to get the start of data).
                     // Otherwise, use the previous record's position.
                     if (currentRecord % rowListSize == 0)
-                        recordPositions[currentRecord] *= -1;
+                        recordPositions.set(currentRecord, recordPositions.get(currentRecord) * -1);
                     else
-                        recordPositions[currentRecord] = recordPositions[currentRecord - 1];
+                        recordPositions.set(currentRecord, recordPositions.get(currentRecord -1));
                 }
                 currentRecord++;
             }
 
             IntegratedIntegerCODEC codec = Common.getRowListCodec();
-            for (int i = 0; i < numRecords; i += rowListSize) {
+            for (int i = 0; i < currentRecord; i += rowListSize) {
                 IntWrapper inputPos = new IntWrapper(i);
                 IntWrapper outputPos = new IntWrapper(0);
-                int howMany = Math.min(numRecords - i, rowListSize);
-                int start = recordPositions[i];
+                int howMany = Math.min(currentRecord - i, rowListSize);
+                int start = recordPositions.get(i);
                 for (int k = i + 1; k < i + howMany; k++) {
-                    recordPositions[k] -= start;
-                    start += recordPositions[k];
+                    recordPositions.set(k, recordPositions.get(k) - start);
+                    start += recordPositions.get(k);
                 }
-                codec.compress(recordPositions, inputPos, howMany, tmpArray, outputPos);
-                rowListPositions[i / rowListSize] = dos.size();
+                codec.compress(recordPositions.getArray(), inputPos, howMany, tmpArray, outputPos);
+                rowListPositions.add(dos.size());
                 dos.writeShort(outputPos.get());
                 for (int j = 0; j < outputPos.get(); j++)
                     dos.writeInt(tmpArray[j]);
             }
             rowListOffset = dos.size();
-            for (int i = 0; i < rowListPositions.length; i++)
-                dos.writeInt(rowListPositions[i]);
+            for (int i = 0; i < rowListPositions.getSize(); i++)
+                dos.writeInt(rowListPositions.get(i));
         } finally {
             dos.flush();
             dos.close();
         }
 
+        if(numDatapoints == -1)
+            throw new IllegalArgumentException("unable to infer numDataPoints");
         // Seek and fixup the rowlistposition
         RandomAccessFile raf = new RandomAccessFile(file, "rw");
         raf.seek(rowListPointerPosition);
         raf.writeInt(rowListOffset);
+        raf.seek(OFFSET_NUM_DATAPOINTS);
+        raf.writeInt(numDatapoints);
+        raf.seek(OFFSET_NUM_RECORDS);
+        raf.writeInt(currentRecord);
         raf.close();
-
-        if (numRecords != currentRecord)
-            throwRecordNumberException(currentRecord, numRecords);
     }
 
     private static void writeRecord(int currentRecord, int numFields, int numDatapoints, DataOutputStream dos, Record r, int[] tmpArray) throws IOException {
@@ -142,10 +158,8 @@ public class Writer {
             short rowListSize,
             int nullValue,
             long epochMs,
-            int numDatapoints,
             Interval interval,
             int recordOffset,
-            int numRecords,
             String[] fieldNames,
             FieldType[] fieldTypes) throws IOException {
         dos.writeByte('M');
@@ -156,10 +170,10 @@ public class Writer {
         dos.writeShort(rowListSize);
         dos.writeInt(nullValue);
         dos.writeLong(epochMs);
-        dos.writeInt(numDatapoints);
+        dos.writeInt(0); // placeholder for numDatapoints
         dos.writeByte(interval.getValue());
         dos.writeInt(recordOffset);
-        dos.writeInt(numRecords);
+        dos.writeInt(0); // placeholder for numRecords
         dos.writeByte((byte) fieldNames.length);
         for (FieldType fieldType : fieldTypes) {
             dos.writeByte(fieldType.getValue());

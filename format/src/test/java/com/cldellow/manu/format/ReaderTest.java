@@ -40,13 +40,8 @@ public class ReaderTest {
 
         Writer.write(
                 dbLoc,
-                (short) 1024,
-                Integer.MIN_VALUE,
                 epochMs,
-                numDatapoints,
                 interval,
-                recordOffset,
-                numRecords,
                 fieldNames,
                 fieldTypes,
                 Arrays.asList(records).iterator());
@@ -101,20 +96,16 @@ public class ReaderTest {
                 new SimpleRecord(3, new FieldEncoder[]{new PFOREncoder()}, new int[][]{{4, 5, 6, 8, 9}}),
                 new SimpleRecord(4, new FieldEncoder[]{new PFOREncoder()}, new int[][]{{5, 6, 7, 9, 10}})};
 
-        for (int i = 0; i < 32; i++) {
+        // NB: we skip i=0, as all sparse records w/o explicit numDataPoints is not supported
+        for (int i = 1; i < 32; i++) {
             Record[] inRecords = new Record[5];
             for (int j = 0; j < 5; j++)
                 if (((i >> j) & 1) != 0)
                     inRecords[j] = allRecords[j];
 
             Writer.write(dbLoc,
-                    (short) 1024,
-                    Integer.MIN_VALUE,
                     0L,
-                    5,
                     Interval.DAY,
-                    0,
-                    5,
                     new String[]{"field"},
                     new FieldType[]{FieldType.INT},
                     Arrays.asList(inRecords).iterator());
@@ -154,20 +145,16 @@ public class ReaderTest {
                 new SimpleRecord(3, new FieldEncoder[]{new PFOREncoder()}, new int[][]{{4, 5, 6, 8, 9}}),
                 new SimpleRecord(4, new FieldEncoder[]{new PFOREncoder()}, new int[][]{{5, 6, 7, 9, 10}})};
 
-        for (int i = 0; i < 32; i++) {
+        // NB: we skip i=0, as all sparse records is not supported
+        for (int i = 1; i < 32; i++) {
             Record[] inRecords = new Record[5];
             for (int j = 0; j < 5; j++)
                 if (((i >> j) & 1) != 0)
                     inRecords[j] = allRecords[j];
 
             Writer.write(dbLoc,
-                    (short) 1024,
-                    Integer.MIN_VALUE,
                     0L,
-                    5,
                     Interval.DAY,
-                    0,
-                    5,
                     new String[]{"field"},
                     new FieldType[]{FieldType.INT},
                     Arrays.asList(inRecords).iterator());
@@ -199,7 +186,7 @@ public class ReaderTest {
 
     @Test
     public void testVarietyOfReads() throws Exception {
-        int[] numRecords = {0, 15, 16, 17, 32, 33};
+        int[] numRecords = {1, 15, 16, 17, 32, 33};
         int[] numFields = {1, 2};
 
         for (int i = 0; i < numRecords.length; i++)
@@ -251,7 +238,6 @@ public class ReaderTest {
                 numDatapoints,
                 interval,
                 recordOffset,
-                numRecords,
                 fieldNames,
                 fieldTypes,
                 Arrays.asList(inRecords).iterator());

@@ -112,13 +112,8 @@ public class Write {
 
             Writer.write(
                     outputFile,
-                    (short) 1024,
-                    Integer.MIN_VALUE,
                     epochMs,
-                    numDatapoints,
                     interval,
-                    0,
-                    numRows,
                     fieldNames,
                     fieldTypes,
                     new RecordIterator());

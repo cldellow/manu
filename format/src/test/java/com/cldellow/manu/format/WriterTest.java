@@ -46,13 +46,8 @@ public class WriterTest {
 
         Writer.write(
                 dbLoc,
-                (short) 1024,
-                Integer.MIN_VALUE,
                 epochMs,
-                numDatapoints,
                 interval,
-                recordOffset,
-                numRecords,
                 fieldNames,
                 fieldTypes,
                 Arrays.asList(records).iterator());
@@ -70,7 +65,7 @@ public class WriterTest {
         String[] fieldNames = {"int"};
         FieldType[] fieldTypes = {FieldType.INT};
         FieldEncoder[] encoders = {new CopyEncoder()};
-        int[] datapoints = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        int[] datapoints = {1, 2, 3, 4, 5};
         int[] datapoints2 = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 
         Record[] records = {
@@ -80,17 +75,42 @@ public class WriterTest {
 
         Writer.write(
                 dbLoc,
-                (short) 1024,
-                Integer.MIN_VALUE,
                 epochMs,
-                numDatapoints,
                 interval,
-                recordOffset,
-                numRecords,
                 fieldNames,
                 fieldTypes,
                 Arrays.asList(records).iterator());
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWriteTooFewValues() throws Exception {
+        Writer w = new Writer(); // to satisy jacoco
+
+        Long epochMs = System.currentTimeMillis();
+        int numDatapoints = 5;
+        Interval interval = Interval.DAY;
+        int recordOffset = 123;
+        int numRecords = 2;
+        String[] fieldNames = {"int"};
+        FieldType[] fieldTypes = {FieldType.INT};
+        FieldEncoder[] encoders = {new CopyEncoder()};
+        int[] datapoints = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        int[] datapoints2 = {2, 3, 4, 5, 6};
+
+        Record[] records = {
+                new SimpleRecord(recordOffset + 0, encoders, new int[][]{datapoints}),
+                new SimpleRecord(recordOffset + 1, encoders, new int[][]{datapoints2})
+        };
+
+        Writer.write(
+                dbLoc,
+                epochMs,
+                interval,
+                fieldNames,
+                fieldTypes,
+                Arrays.asList(records).iterator());
+    }
+
 
 
     @Test
@@ -113,13 +133,8 @@ public class WriterTest {
 
         Writer.write(
                 dbLoc,
-                (short) 1024,
-                Integer.MIN_VALUE,
                 epochMs,
-                numDatapoints,
                 interval,
-                recordOffset,
-                numRecords,
                 fieldNames,
                 fieldTypes,
                 Arrays.asList(records).iterator());
@@ -150,72 +165,11 @@ public class WriterTest {
                 numDatapoints,
                 interval,
                 recordOffset,
-                numRecords,
                 fieldNames,
                 fieldTypes,
                 Arrays.asList(records).iterator());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testTooFewRows() throws Exception {
-        Long epochMs = System.currentTimeMillis();
-        int numDatapoints = 10;
-        Interval interval = Interval.DAY;
-        int recordOffset = 123;
-        int numRecords = 2;
-        String[] fieldNames = {"int"};
-        FieldType[] fieldTypes = {FieldType.INT};
-        FieldEncoder[] encoders = {new CopyEncoder()};
-        int[] datapoints = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-
-        Record[] records = {
-                new SimpleRecord(recordOffset + 0, encoders, new int[][]{datapoints})
-        };
-
-        Writer.write(
-                dbLoc,
-                (short) 1024,
-                Integer.MIN_VALUE,
-                epochMs,
-                numDatapoints,
-                interval,
-                recordOffset,
-                numRecords,
-                fieldNames,
-                fieldTypes,
-                Arrays.asList(records).iterator());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testTooManyRows() throws Exception {
-        Long epochMs = System.currentTimeMillis();
-        int numDatapoints = 10;
-        Interval interval = Interval.DAY;
-        int recordOffset = 123;
-        int numRecords = 1;
-        String[] fieldNames = {"int"};
-        FieldType[] fieldTypes = {FieldType.INT};
-        FieldEncoder[] encoders = {new CopyEncoder()};
-        int[] datapoints = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-
-        Record[] records = {
-                new SimpleRecord(recordOffset + 0, encoders, new int[][]{datapoints}),
-                new SimpleRecord(recordOffset + 1, encoders, new int[][]{datapoints})
-        };
-
-        Writer.write(
-                dbLoc,
-                (short) 1024,
-                Integer.MIN_VALUE,
-                epochMs,
-                numDatapoints,
-                interval,
-                recordOffset,
-                numRecords,
-                fieldNames,
-                fieldTypes,
-                Arrays.asList(records).iterator());
-    }
 
     @Test(expected = IllegalArgumentException.class)
     public void testFieldMismatch() throws Exception {
@@ -236,13 +190,8 @@ public class WriterTest {
 
         Writer.write(
                 dbLoc,
-                (short) 1024,
-                Integer.MIN_VALUE,
                 epochMs,
-                numDatapoints,
                 interval,
-                recordOffset,
-                numRecords,
                 fieldNames,
                 fieldTypes,
                 Arrays.asList(records).iterator());
