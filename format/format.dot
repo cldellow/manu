@@ -38,7 +38,7 @@ digraph structs {
   " ];
 
   record [ label = "<decoder>1: decoder\n*high bits = # of bytes for length |
-  0/1/2/3/4: length\n*only for fields 1..K-1 |
+  0/1/2/4: length |
   content
   " ];
 

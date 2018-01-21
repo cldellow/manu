@@ -1,7 +1,7 @@
 package com.cldellow.manu.format;
 
 import me.lemire.integercompression.IntWrapper;
-import me.lemire.integercompression.differential.*;
+import me.lemire.integercompression.differential.IntegratedIntegerCODEC;
 
 import java.io.*;
 import java.util.Iterator;
@@ -20,8 +20,8 @@ public class Writer {
             String[] fieldNames,
             FieldType[] fieldTypes,
             Iterator<Record> records) throws FileNotFoundException, IOException, Exception {
-        if(fieldNames.length != fieldTypes.length)
-            throw new  IllegalArgumentException(
+        if (fieldNames.length != fieldTypes.length)
+            throw new IllegalArgumentException(
                     String.format(
                             "Number of field names (%d) does not match number of field types (%d).",
                             fieldNames.length,
@@ -45,19 +45,19 @@ public class Writer {
             rowListPointerPosition = dos.size();
             dos.writeInt(0); // write a dummy value so the space is allocated
 
-            while(records.hasNext()) {
-                if(currentRecord == numRecords)
+            while (records.hasNext()) {
+                if (currentRecord == numRecords)
                     throwRecordNumberException(currentRecord, numRecords);
 
                 recordPositions[currentRecord] = dos.size();
                 Record record = records.next();
-                if(record != null)
+                if (record != null)
                     writeRecord(currentRecord, numFields, numDatapoints, dos, record, tmpArray);
                 else {
                     // If it's the first record in this rowlist, use negative to mark null,
                     // (so we can invert it to get the start of data).
                     // Otherwise, use the previous record's position.
-                    if(currentRecord % rowListSize == 0)
+                    if (currentRecord % rowListSize == 0)
                         recordPositions[currentRecord] *= -1;
                     else
                         recordPositions[currentRecord] = recordPositions[currentRecord - 1];
@@ -65,24 +65,24 @@ public class Writer {
                 currentRecord++;
             }
 
-            IntegratedIntegerCODEC codec =  Common.getRowListCodec();
-            for(int i = 0; i < numRecords; i += rowListSize) {
+            IntegratedIntegerCODEC codec = Common.getRowListCodec();
+            for (int i = 0; i < numRecords; i += rowListSize) {
                 IntWrapper inputPos = new IntWrapper(i);
                 IntWrapper outputPos = new IntWrapper(0);
                 int howMany = Math.min(numRecords - i, rowListSize);
                 int start = recordPositions[i];
-                for(int k = i+1; k < i + howMany; k++) {
+                for (int k = i + 1; k < i + howMany; k++) {
                     recordPositions[k] -= start;
                     start += recordPositions[k];
                 }
                 codec.compress(recordPositions, inputPos, howMany, tmpArray, outputPos);
                 rowListPositions[i / rowListSize] = dos.size();
                 dos.writeShort(outputPos.get());
-                for(int j = 0; j < outputPos.get(); j++)
+                for (int j = 0; j < outputPos.get(); j++)
                     dos.writeInt(tmpArray[j]);
             }
             rowListOffset = dos.size();
-            for(int i = 0; i < rowListPositions.length; i++)
+            for (int i = 0; i < rowListPositions.length; i++)
                 dos.writeInt(rowListPositions[i]);
         } finally {
             dos.flush();
@@ -95,43 +95,59 @@ public class Writer {
         raf.writeInt(rowListOffset);
         raf.close();
 
-        if(numRecords != currentRecord)
+        if (numRecords != currentRecord)
             throwRecordNumberException(currentRecord, numRecords);
     }
 
     private static void writeRecord(int currentRecord, int numFields, int numDatapoints, DataOutputStream dos, Record r, int[] tmpArray) throws IOException {
         final IntWrapper outPos = new IntWrapper(0);
 
-        for(int field = 0; field < numFields; field++) {
+        for (int field = 0; field < numFields; field++) {
             FieldEncoder fe = r.getEncoder(field);
             outPos.set(0);
             int[] values = r.getValues(field);
 
-            if(values.length != numDatapoints)
+            if (values.length != numDatapoints)
                 throw new IllegalArgumentException(String.format(
                         "record %d, field %d has %d values; expected %d",
                         currentRecord, field, values.length, numDatapoints));
             fe.encode(values, tmpArray, outPos);
-            // TODO: add variable length size encoding
-            dos.writeByte(fe.getId());
-            if(fe.isVariableLength())
-                dos.writeInt(outPos.get());
-            for(int i = 0; i < outPos.get(); i++) {
+
+            // If the encoder has a fixed length, don't write a size field.
+            // Otherwise, write a size field using a byte, short or int
+            // as appropriate.
+            int length = 0;
+            if (fe.isVariableLength())
+                length = outPos.get();
+
+            byte newId = LengthOps.encode((byte) fe.getId(), length);
+            dos.writeByte(newId);
+            if (fe.isVariableLength()) {
+                int lengthSize = LengthOps.lengthSize(length);
+                if (lengthSize == 0)
+                    dos.writeByte(length);
+                else if (lengthSize == 1)
+                    dos.writeShort(length);
+                else
+                    dos.writeInt(length);
+            }
+            for (int i = 0; i < outPos.get(); i++) {
                 dos.writeInt(tmpArray[i]);
             }
         }
     }
+
     private static void writePreamble(
-                DataOutputStream dos,
-                short rowListSize,
-                int nullValue,
-                long epochMs,
-                int numDatapoints,
-                Interval interval,
-                int recordOffset,
-                int numRecords,
-                String[] fieldNames,
-                FieldType[] fieldTypes) throws IOException {
+            DataOutputStream dos,
+            short rowListSize,
+            int nullValue,
+            long epochMs,
+            int numDatapoints,
+            Interval interval,
+            int recordOffset,
+            int numRecords,
+            String[] fieldNames,
+            FieldType[] fieldTypes) throws IOException {
         dos.writeByte('M');
         dos.writeByte('A');
         dos.writeByte('N');
@@ -144,15 +160,15 @@ public class Writer {
         dos.writeByte(interval.getValue());
         dos.writeInt(recordOffset);
         dos.writeInt(numRecords);
-        dos.writeByte((byte)fieldNames.length);
-        for(FieldType fieldType : fieldTypes) {
+        dos.writeByte((byte) fieldNames.length);
+        for (FieldType fieldType : fieldTypes) {
             dos.writeByte(fieldType.getValue());
         }
 
-        for(String name : fieldNames) {
+        for (String name : fieldNames) {
             byte[] utf = name.getBytes("UTF-8");
             dos.writeByte(utf.length);
-            for(int i = 0; i < utf.length; i++)
+            for (int i = 0; i < utf.length; i++)
                 dos.writeByte(utf[i]);
 
         }

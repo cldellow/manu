@@ -34,10 +34,18 @@ public class EncodedRecord implements Record {
 
         for (int i = 0; i < numFields; i++) {
             fieldOffsets[i] = buffer.position();
-            int encoderId = buffer.get();
+            byte encoderIdRaw = buffer.get();
+            int encoderId = LengthOps.decodeId(encoderIdRaw);
             encoderIds[i] = encoderId;
             if (ThreadEncoders.get()[encoderId].isVariableLength()) {
-                int length = buffer.getInt();
+                int lengthSize = LengthOps.decodeLengthSize(encoderIdRaw);
+                int length;
+                if (lengthSize == 1)
+                    length = (int)(buffer.get() & 0xFF);
+                else if (lengthSize == 2)
+                    length = (int)(buffer.getShort() & 0xFFFF);
+                  else
+                    length = buffer.getInt();
                 fieldLengths[i] = length;
             } else {
                 fieldLengths[i] = ThreadEncoders.get()[encoderId].getLength();
