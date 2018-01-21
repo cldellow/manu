@@ -1,5 +1,6 @@
 package com.cldellow.manu.serve;
 
+import com.cldellow.manu.format.FieldType;
 import com.cldellow.manu.format.Interval;
 import com.cldellow.manu.format.Reader;
 import com.cldellow.manu.format.Record;
@@ -159,42 +160,55 @@ public class Server {
                 for (int j = 0; j < fieldIds.size(); j++) {
                     int fieldId = fieldIds.get(j);
                     gen.writeFieldName(readers[0].fieldNames[fieldId]);
+                    FieldType fieldType = readers[0].fieldTypes[fieldId];
 
                     System.arraycopy(zeroes, 0, rv, 0, rv.length);
                     for (int k = 0; k < readers.length; k++) {
                         int readerStart = interval.difference(readers[0].from, readers[k].from);
                         int readerEnd = interval.difference(readers[0].from, readers[k].to);
 
-                        if(readerStart <= endIndex && startIndex <= readerEnd) {
+                        if (readerStart <= endIndex && startIndex <= readerEnd) {
                             Record r = readers[k].get(id);
                             int[] values = r.getValues(fieldId);
                             int collectionStart = startIndex - readerStart;
-                            if(collectionStart < 0)
+                            if (collectionStart < 0)
                                 collectionStart = 0;
 
                             int collectionLength = Math.min(readers[k].numDatapoints,
                                     endIndex - (readerStart + collectionStart));
 
-                            if(collectionLength + collectionStart > readers[k].numDatapoints)
+                            if (collectionLength + collectionStart > readers[k].numDatapoints)
                                 collectionLength--;
 
                             System.arraycopy(
                                     values,
                                     collectionStart,
                                     rv,
-                                    readerStart + collectionStart- startIndex,
+                                    readerStart + collectionStart - startIndex,
                                     collectionLength
                                     //endIndex - readerEnd
 
-                                    );
+                            );
                         }
                     }
                     gen.writeStartArray();
-                    for(int k = 0; k < rv.length; k++)
-                        if(rv[k] == readers[0].nullValue)
+                    for (int k = 0; k < rv.length; k++) {
+                        int intVal = rv[k];
+                        if (intVal == readers[0].nullValue)
                             gen.writeNull();
-                        else
-                            gen.writeNumber(rv[k]);
+                        else {
+                            if (fieldType == FieldType.INT)
+                                gen.writeNumber(intVal);
+                            else if (fieldType == FieldType.FIXED1) {
+                                double fixed = (double) intVal / 10;
+                                gen.writeNumber(fixed);
+                            } else if (fieldType == FieldType.FIXED2) {
+                                double fixed = (double) intVal / 100;
+                                gen.writeNumber(fixed);
+                            }
+                        }
+                    }
+
                     gen.writeEndArray();
                 }
                 gen.writeEndObject();

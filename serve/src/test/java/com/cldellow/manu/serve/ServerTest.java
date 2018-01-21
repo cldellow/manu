@@ -90,7 +90,7 @@ public class ServerTest {
     public void testQueryNull() throws Exception {
         HttpResponse f = Http.post("http://localhost:6268/api/nulls", "from=2008-01-01&to=2008-01-06&key=a");
         assertEquals(200, f.status);
-        assertEquals("{\"meta\":{\"interval\":\"day\",\"from\":\"2008-01-01T00:00:00.000Z\",\"to\":\"2008-01-06T00:00:00.000Z\"},\"values\":{\"a\":{\"field1\":[1,2,null,4,5]}}}",
+        assertEquals("{\"meta\":{\"interval\":\"day\",\"from\":\"2008-01-01T00:00:00.000Z\",\"to\":\"2008-01-06T00:00:00.000Z\"},\"values\":{\"a\":{\"field1\":[1.1,2.2,null,4.4,5.5],\"field2\":[0.11,0.22,null,0.44,0.55]}}}",
                 f.body.trim());
     }
 
@@ -98,7 +98,7 @@ public class ServerTest {
     public void testQueryNullMiddle() throws Exception {
         HttpResponse f = Http.post("http://localhost:6268/api/nulls", "from=2008-01-02&to=2008-01-05&key=a");
         assertEquals(200, f.status);
-        assertEquals("{\"meta\":{\"interval\":\"day\",\"from\":\"2008-01-02T00:00:00.000Z\",\"to\":\"2008-01-05T00:00:00.000Z\"},\"values\":{\"a\":{\"field1\":[2,null,4]}}}",
+        assertEquals("{\"meta\":{\"interval\":\"day\",\"from\":\"2008-01-02T00:00:00.000Z\",\"to\":\"2008-01-05T00:00:00.000Z\"},\"values\":{\"a\":{\"field1\":[2.2,null,4.4],\"field2\":[0.22,null,0.44]}}}",
                 f.body.trim());
     }
 
