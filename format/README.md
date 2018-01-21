@@ -16,13 +16,11 @@ This is a little less efficient--a random selection of 1M Wikipedia articles tak
 
 Key IDs are contiguous. If a key is missing, it will have an entry in the pointer table, but it’ll be at the same offset as the next entry, and we’ll infer that it’s empty.
 
-At 0.7 bytes/value: ~260MB for 1M items for a year at daily resolution.
-At 1 byte/value, ~370MB.
-
 ### Encoders
 
 When serializing, a different encoder can be selected for each field in each record.
 
-- `0` -  `CopyEncoder`, the identity function - it just copies the input array
-- `1` -  `PFOREncoder`, uses FastPFOR128
-- `2` -  `AverageEncoder`, lossy, stores the # of non-zero points and sum of values
+- `0` - `CopyEncoder`, the identity function - it just copies the input array
+- `1` - `PFOREncoder`, uses FastPFOR128
+- `2` - `AverageEncoder`, lossy, stores the # of non-zero points and sum of values
+- `3` - `SingleValueEncoder`, stores -128..127 in 1 byte, -32768..32767 in 2 bytes, otherwise uses 4 bytes. Only works for a single datapoint.
