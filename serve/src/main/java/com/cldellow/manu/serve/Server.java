@@ -175,7 +175,7 @@ public class Server {
                             int collectionLength = Math.min(readers[k].numDatapoints,
                                     endIndex - (readerStart + collectionStart));
 
-                            if(collectionLength + collectionStart >= readers[k].numDatapoints)
+                            if(collectionLength + collectionStart > readers[k].numDatapoints)
                                 collectionLength--;
 
                             System.arraycopy(
@@ -189,7 +189,13 @@ public class Server {
                                     );
                         }
                     }
-                    gen.writeArray(rv, 0, rv.length);
+                    gen.writeStartArray();
+                    for(int k = 0; k < rv.length; k++)
+                        if(rv[k] == readers[0].nullValue)
+                            gen.writeNull();
+                        else
+                            gen.writeNumber(rv[k]);
+                    gen.writeEndArray();
                 }
                 gen.writeEndObject();
             }

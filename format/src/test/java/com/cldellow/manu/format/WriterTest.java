@@ -47,6 +47,7 @@ public class WriterTest {
         Writer.write(
                 dbLoc,
                 (short) 1024,
+                Integer.MIN_VALUE,
                 epochMs,
                 numDatapoints,
                 interval,
@@ -80,6 +81,7 @@ public class WriterTest {
         Writer.write(
                 dbLoc,
                 (short) 1024,
+                Integer.MIN_VALUE,
                 epochMs,
                 numDatapoints,
                 interval,
@@ -112,6 +114,7 @@ public class WriterTest {
         Writer.write(
                 dbLoc,
                 (short) 1024,
+                Integer.MIN_VALUE,
                 epochMs,
                 numDatapoints,
                 interval,
@@ -142,6 +145,7 @@ public class WriterTest {
         Writer.write(
                 dbLoc,
                 (short) 256,
+                Integer.MIN_VALUE,
                 epochMs,
                 numDatapoints,
                 interval,
@@ -171,6 +175,7 @@ public class WriterTest {
         Writer.write(
                 dbLoc,
                 (short) 1024,
+                Integer.MIN_VALUE,
                 epochMs,
                 numDatapoints,
                 interval,
@@ -201,6 +206,7 @@ public class WriterTest {
         Writer.write(
                 dbLoc,
                 (short) 1024,
+                Integer.MIN_VALUE,
                 epochMs,
                 numDatapoints,
                 interval,
@@ -231,6 +237,7 @@ public class WriterTest {
         Writer.write(
                 dbLoc,
                 (short) 1024,
+                Integer.MIN_VALUE,
                 epochMs,
                 numDatapoints,
                 interval,

@@ -21,6 +21,7 @@ digraph structs {
   4: 'MANU' magic number |
   2: file version |
   2: records per row list |
+  4: null value marker |
   8: ms since epoch |
   4: num datapoints |
   1: interval\n(minute, ..., year) |

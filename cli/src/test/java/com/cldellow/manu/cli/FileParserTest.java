@@ -29,7 +29,7 @@ public class FileParserTest {
             int[] data = row.getInts();
             assertEquals(fp.getNumFields() - 1, data.length);
             assertEquals(1, data[0]);
-            assertEquals(2, data[1]);
+            assertEquals(-2, data[1]);
             assertEquals(3, data[2]);
         }
 

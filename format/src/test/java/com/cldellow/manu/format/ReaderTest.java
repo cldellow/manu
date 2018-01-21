@@ -41,6 +41,7 @@ public class ReaderTest {
         Writer.write(
                 dbLoc,
                 (short) 1024,
+                Integer.MIN_VALUE,
                 epochMs,
                 numDatapoints,
                 interval,
@@ -141,6 +142,7 @@ public class ReaderTest {
         Writer.write(
                 dbLoc,
                 (short) 16,
+                Integer.MIN_VALUE,
                 epochMs,
                 numDatapoints,
                 interval,
@@ -153,6 +155,7 @@ public class ReaderTest {
         Reader reader = new Reader(dbLoc);
         assertEquals(16, reader.rowListSize);
         assertEquals((long) epochMs, reader.epochMs);
+        assertEquals(Integer.MIN_VALUE, reader.nullValue);
         assertEquals(numDatapoints, reader.numDatapoints);
         assertEquals(interval, reader.interval);
         assertEquals(recordOffset, reader.recordOffset);

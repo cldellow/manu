@@ -97,12 +97,19 @@ public class FileParser {
                 int numInts = getNumFields() - 1;
                 while(i < numInts && buffer.hasRemaining()) {
                     int value = 0;
+                    int scale = 1;
+                    if(next == '-') {
+                        scale = -1;
+                        next = buffer.get();
+                    }
+
                     if(next >= '0' && next <= '9') {
                         while(next >= '0' && next <= '9') {
                             value *= 10;
                             value += next - '0';
                             next = buffer.get();
                         }
+                        value *= scale;
                     } else {
                         throw new IllegalArgumentException(String.format(
                                 "%s: row %d malformed: only %d columns, expected %d",

@@ -17,6 +17,7 @@ import java.util.NoSuchElementException;
 
 public class Reader {
     public final short rowListSize;
+    public final int nullValue;
     public final long epochMs;
     public final int numDatapoints;
     public final Interval interval;
@@ -44,6 +45,7 @@ public class Reader {
                 throw new NotManuException();
 
         rowListSize = buffer.getShort();
+        nullValue = buffer.getInt();
         epochMs = buffer.getLong();
         numDatapoints = buffer.getInt();
         interval = Interval.valueOf(buffer.get());

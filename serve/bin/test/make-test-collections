@@ -17,6 +17,7 @@ mkdir -p "$resources"
 mkdir -p "$resources"/daily
 mkdir -p "$resources"/hourly
 mkdir -p "$resources"/hourly2
+mkdir -p "$resources"/nulls
 
 (
   echo "a"$'\t'"$(seq --separator=$'\t' 1 744)"
@@ -57,3 +58,6 @@ echo -e a$'\n'b | "$root"/cli/bin/ensure-keys "$resources"/hourly2/keys
 
 "$root"/cli/bin/write "$resources"/hourly2/keys "$resources"/hourly2/month-200801.manu 2008-01-01 hour field1 "$tmpdir"/hours-200801.tsv
 
+echo "a" | "$root"/cli/bin/ensure-keys "$resources"/nulls/keys
+echo "a 1 2 -2147483648 4 5" | sed -e 's/ /\t/g' > "$tmpdir"/nulls.tsv
+"$root"/cli/bin/write "$resources"/nulls/keys "$resources"/nulls/month-200801.manu 2008-01-01 day field1 "$tmpdir"/nulls.tsv

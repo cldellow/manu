@@ -11,6 +11,7 @@ public class Writer {
     public static void write(
             String file,
             short rowListSize,
+            int nullValue,
             long epochMs,
             int numDatapoints,
             Interval interval,
@@ -38,7 +39,7 @@ public class Writer {
         int currentRecord = 0;
         final int[] tmpArray = new int[131072];
         try {
-            writePreamble(dos, rowListSize, epochMs, numDatapoints, interval, recordOffset, numRecords, fieldNames, fieldTypes);
+            writePreamble(dos, rowListSize, nullValue, epochMs, numDatapoints, interval, recordOffset, numRecords, fieldNames, fieldTypes);
 
             // Stash rowListPosition so we can fix it up later.
             rowListPointerPosition = dos.size();
@@ -111,6 +112,7 @@ public class Writer {
     private static void writePreamble(
                 DataOutputStream dos,
                 short rowListSize,
+                int nullValue,
                 long epochMs,
                 int numDatapoints,
                 Interval interval,
@@ -124,6 +126,7 @@ public class Writer {
         dos.writeByte('U');
         dos.writeShort(Common.getVersion());
         dos.writeShort(rowListSize);
+        dos.writeInt(nullValue);
         dos.writeLong(epochMs);
         dos.writeInt(numDatapoints);
         dos.writeByte(interval.getValue());
