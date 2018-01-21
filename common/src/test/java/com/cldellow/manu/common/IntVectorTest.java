@@ -1,9 +1,13 @@
 package com.cldellow.manu.common;
 
+import com.pholser.junit.quickcheck.Property;
+import com.pholser.junit.quickcheck.runner.JUnitQuickcheck;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static org.junit.Assert.*;
 
+@RunWith(JUnitQuickcheck.class)
 public class IntVectorTest {
     @Test
     public void testVector() {
@@ -55,5 +59,15 @@ public class IntVectorTest {
     public void testVectorSetOOBE() {
         IntVector i = new IntVector();
         i.set(0, 245);
+    }
+
+    @Property public void testLikeArray(int[] ints) {
+        IntVector iv = new IntVector();
+        for(int i = 0; i < ints.length; i++) {
+            assertEquals(i, iv.getSize());
+            iv.add(ints[i]);
+            assertEquals(ints[i], iv.get(i));
+            assertEquals(i + 1, iv.getSize());
+        }
     }
 }

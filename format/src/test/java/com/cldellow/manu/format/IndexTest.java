@@ -1,7 +1,10 @@
 package com.cldellow.manu.format;
 
+import com.pholser.junit.quickcheck.Property;
+import com.pholser.junit.quickcheck.runner.JUnitQuickcheck;
 import org.junit.After;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.sql.Connection;
@@ -13,6 +16,7 @@ import java.util.Vector;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
+@RunWith(JUnitQuickcheck.class)
 public class IndexTest {
     private String dbLoc = "/tmp/manu-test.db";
 
@@ -166,4 +170,20 @@ public class IndexTest {
             if (index != null) index.close();
         }
     }
+
+    /** This test is surprisingly slow. Maybe re-enable it if we switch backends.
+    @Property public void bunchaKeys(String[] keys) throws Exception {
+        Index index = null;
+        try {
+            index = new Index(dbLoc, false);
+            System.err.println(keys.length);
+            for(String key : keys) {
+                int id = index.add(key);
+                assertEquals(id, index.get(key));
+            }
+        } finally {
+            if (index != null) index.close();
+        }
+    }
+    */
 }
