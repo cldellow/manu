@@ -12,7 +12,7 @@ public class EncodedRecordTest {
     public void getId() {
         byte[] bytes = new byte[100];
         ByteBuffer buf = ByteBuffer.wrap(bytes);
-        Record r = new EncodedRecord(123, buf, 0, 1, null, null);
+        Record r = new EncodedRecord(123, buf, 0, bytes.length, 1, null, null);
         assertEquals(123, r.getId());
     }
 }

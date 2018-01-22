@@ -18,7 +18,7 @@ public class EncodedRecord implements Record {
     private final byte[] tmp;
     private final int[] rv;
 
-    public EncodedRecord(int id, ByteBuffer buffer, int recordStart, int numFields, byte[] tmp, int[] rv) {
+    public EncodedRecord(int id, ByteBuffer buffer, int recordStart, int recordEnd, int numFields, byte[] tmp, int[] rv) {
         this.id = id;
         this.buffer = buffer;
         this.numFields = numFields;
@@ -37,7 +37,13 @@ public class EncodedRecord implements Record {
             byte encoderIdRaw = buffer.get();
             int encoderId = LengthOps.decodeId(encoderIdRaw);
             encoderIds[i] = encoderId;
-            if (ThreadEncoders.get()[encoderId].isVariableLength()) {
+
+            // Length is only for the first N-1 fields.
+            if(i == numFields -1) {
+              fieldLengths[i] = recordEnd - buffer.position();
+                System.out.println("computing length; recordStart=" + recordStart + ", recordEnd=" + recordEnd + ", length=" + fieldLengths[i]);
+
+            } else if (ThreadEncoders.get()[encoderId].isVariableLength()) {
                 int lengthSize = LengthOps.decodeLengthSize(encoderIdRaw);
                 int length;
                 if (lengthSize == 1)

@@ -97,6 +97,7 @@ public class Writer {
                     dos.writeInt(intArray[j]);
             }
             rowListOffset = dos.size();
+            System.out.println("WRITER: rowListOffset=" + rowListOffset);
             for (int i = 0; i < rowListPositions.getSize(); i++)
                 dos.writeInt(rowListPositions.get(i));
         } finally {
@@ -140,7 +141,7 @@ public class Writer {
 
             byte newId = LengthOps.encode((byte) fe.getId(), length);
             dos.writeByte(newId);
-            if (fe.isVariableLength()) {
+            if (fe.isVariableLength() && field != numFields - 1) {
                 int lengthSize = LengthOps.lengthSize(length);
                 if (lengthSize == 0)
                     dos.writeByte(length);

@@ -241,7 +241,7 @@ public class ReaderTest {
                 fieldNames,
                 fieldTypes,
                 Arrays.asList(inRecords).iterator());
-
+        System.out.println("READEr START");
         Reader reader = new Reader(dbLoc);
         assertEquals(16, reader.rowListSize);
         assertEquals((long) epochMs, reader.epochMs);
@@ -262,6 +262,7 @@ public class ReaderTest {
             Record r = records.next();
             assertEquals(recordIndex, r.getId());
             for (int fieldIndex = 0; fieldIndex < numFields; fieldIndex++) {
+                System.out.println("testing numRecords="+ numRecords + ", recordIndex=" + recordIndex + ", fieldIndex=" + fieldIndex + ", numFields=" + numFields);
                 int[] vals = r.getValues(fieldIndex);
                 for (int i = 0; i < vals.length; i++) {
                     assertEquals("recordIndex=" + recordIndex + ", fieldIndex=" + fieldIndex + ", i=" + i, datapoints[recordIndex - recordOffset][fieldIndex][i], vals[i]);
