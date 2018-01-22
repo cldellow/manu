@@ -41,12 +41,9 @@ public class ReadWriteTest {
 
         Reader reader = new Reader(dbLoc);
         Record r = reader.records.next();
-        // TODO: rejig this to not emit nulls
-        assertNull(r);
-        assertTrue(reader.records.hasNext());
-        r = reader.records.next();
         assertNotNull(r);
         assertEquals(1, r.getId());
+        assertFalse(reader.records.hasNext());
 
     }
 }

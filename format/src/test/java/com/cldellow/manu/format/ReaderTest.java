@@ -113,11 +113,10 @@ public class ReaderTest {
             Reader r = new Reader(dbLoc);
             Record[] outRecords = new Record[5]; //r.records.next(), r.records.next(), r.records.next()};
 
-            for (int j = 0; j < 5; j++) {
-                assertTrue(r.records.hasNext());
-                outRecords[j] = r.records.next();
+            while(r.records.hasNext()) {
+                Record rec = r.records.next();
+                outRecords[rec.getId()] = rec;
             }
-            assertFalse(r.records.hasNext());
 
             for (int j = 0; j < 5; j++) {
                 if (inRecords[j] == null)
