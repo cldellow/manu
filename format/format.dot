@@ -6,9 +6,12 @@ digraph structs {
   <record1> record 1 |
   <record2> record 2 |
   ... |
-  record N |
+  <recordq> record q |
   <rowlist1>2: row-list 1 length|
   row-list 1\ndelta-encoded |
+  <recordqp1> record q+1 |
+  ... |
+  <recordmqp1> record Mq+1 |
   ... |
   <rowlistm> row-list M |
   <rowlistpos> 4: row-list 1 position |
@@ -38,7 +41,7 @@ digraph structs {
   " ];
 
   record [ label = "<decoder>1: decoder\n*high bits = # of bytes for length |
-  0/1/2/4: length |
+  0/1/2/4: length\n(omitted for last field) |
   content
   " ];
 
@@ -52,4 +55,5 @@ digraph structs {
   composite:record1 -> record:decoder [arrowhead=dot];
   composite:rowlist1 -> composite:record1;
   composite:rowlist1 -> composite:record2;
+  composite:rowlistm -> composite:recordmqp1;
 }
