@@ -241,7 +241,6 @@ public class ReaderTest {
                 fieldNames,
                 fieldTypes,
                 Arrays.asList(inRecords).iterator());
-
         Reader reader = new Reader(dbLoc);
         assertEquals(16, reader.rowListSize);
         assertEquals((long) epochMs, reader.epochMs);

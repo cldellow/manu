@@ -39,9 +39,9 @@ public class Reader {
         FileChannel channel = raf.getChannel();
         MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, raf.length());
 
-        byte[] magicPreamble = new byte[] { 'M', 'A', 'N', 'U', 0, (byte)Common.getVersion()};
-        for(int i = 0; i < magicPreamble.length; i++)
-            if(!buffer.hasRemaining() || buffer.get() != magicPreamble[i])
+        byte[] magicPreamble = new byte[]{'M', 'A', 'N', 'U', 0, (byte) Common.getVersion()};
+        for (int i = 0; i < magicPreamble.length; i++)
+            if (!buffer.hasRemaining() || buffer.get() != magicPreamble[i])
                 throw new NotManuException();
 
         rowListSize = buffer.getShort();
@@ -105,14 +105,13 @@ public class Reader {
     */
 
     public class RecordIterator implements Iterator<Record>, Closeable {
+        private final RandomAccessFile raf;
+        private final FileChannel channel;
+        private final MappedByteBuffer buffer;
         private IntegratedIntegerCODEC codec = Common.getRowListCodec();
         private int currentRecord;
         private int currentRowList;
         private int[] rowOffsets = null;
-
-        private final RandomAccessFile raf;
-        private final FileChannel channel;
-        private final MappedByteBuffer buffer;
         // we re-use this array; but use rowOffsets as the source of truth for
         // availability of more data.
         private int recordsInThisRowList = 0;
@@ -120,6 +119,10 @@ public class Reader {
         private int[] _codedRowOffsets = new int[rowListSize * 4 + 32];
         private int[] rv = new int[numDatapoints];
         private byte[] tmp = new byte[4 * (numDatapoints + 256)];
+
+        // This points at the start of the next rowlist. It's used when inferring the
+        // field length of the last field of the last record of the current rowlist.
+        private int nextRowListStart = 0;
 
         RecordIterator(int currentRecord, int currentRowList) throws FileNotFoundException, IOException {
             this.currentRecord = currentRecord;
@@ -146,6 +149,7 @@ public class Reader {
             if (rowOffsets == null) {
                 buffer.position((int) (rowListOffset + 4 * currentRowList));
                 int rowListStart = buffer.getInt();
+                nextRowListStart = rowListStart;
                 buffer.position(rowListStart);
 
                 short len = buffer.getShort();
@@ -170,12 +174,21 @@ public class Reader {
 
             Record record = null;
 
-            boolean isNegative = rowOffsets[currentRecord % rowListSize] < 0;
-            boolean matchesPrevious = currentRecord % rowListSize > 0 &&
-                    (rowOffsets[currentRecord % rowListSize] == rowOffsets[(currentRecord % rowListSize) -1 ]);
+            boolean isNextRowListStart= rowOffsets[currentRecord % rowListSize] == nextRowListStart;
+            boolean isNextRecord = currentRecord + 1 < numRecords &&
+                    (currentRecord + 1) % rowListSize != 0 &&
+                    rowOffsets[currentRecord % rowListSize] == rowOffsets[(currentRecord + 1) % rowListSize];
 
-            if(!isNegative && !matchesPrevious)
-                record = new EncodedRecord(recordOffset + currentRecord, buffer, rowOffsets[currentRecord % rowListSize], numFields, tmp, rv);
+            if (!isNextRowListStart && !isNextRecord) {
+                int recordStart = rowOffsets[currentRecord % rowListSize];
+                int recordEnd = 0;
+                if ((currentRecord % rowListSize != rowListSize - 1) && currentRecord != numRecords - 1) {
+                    recordEnd = rowOffsets[(currentRecord + 1) % rowListSize];
+                } else
+                    recordEnd = nextRowListStart;
+
+                record = new EncodedRecord(recordOffset + currentRecord, buffer, recordStart, recordEnd, numFields, tmp, rv);
+            }
             currentRecord++;
 
             if (currentRecord % rowListSize == 0) {
