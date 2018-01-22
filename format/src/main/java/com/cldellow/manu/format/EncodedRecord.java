@@ -3,7 +3,6 @@ package com.cldellow.manu.format;
 import me.lemire.integercompression.IntWrapper;
 
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 
 public class EncodedRecord implements Record {
     private final int id;
@@ -39,18 +38,16 @@ public class EncodedRecord implements Record {
             encoderIds[i] = encoderId;
 
             // Length is only for the first N-1 fields.
-            if(i == numFields -1) {
-              fieldLengths[i] = recordEnd - buffer.position();
-                System.out.println("computing length; recordStart=" + recordStart + ", recordEnd=" + recordEnd + ", length=" + fieldLengths[i]);
-
-            } else if (ThreadEncoders.get()[encoderId].isVariableLength()) {
+            if (i == numFields - 1)
+                fieldLengths[i] = recordEnd - buffer.position();
+            else if (ThreadEncoders.get()[encoderId].isVariableLength()) {
                 int lengthSize = LengthOps.decodeLengthSize(encoderIdRaw);
                 int length;
                 if (lengthSize == 1)
-                    length = (int)(buffer.get() & 0xFF);
+                    length = (int) (buffer.get() & 0xFF);
                 else if (lengthSize == 2)
-                    length = (int)(buffer.getShort() & 0xFFFF);
-                  else
+                    length = (int) (buffer.getShort() & 0xFFFF);
+                else
                     length = buffer.getInt();
                 fieldLengths[i] = length;
             } else {

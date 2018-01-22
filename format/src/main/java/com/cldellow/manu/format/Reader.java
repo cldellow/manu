@@ -149,16 +149,7 @@ public class Reader {
             if (rowOffsets == null) {
                 buffer.position((int) (rowListOffset + 4 * currentRowList));
                 int rowListStart = buffer.getInt();
-                if(!buffer.hasRemaining()) {
-
-                    buffer.position((int)rowListOffset);
-                    nextRowListStart = buffer.getInt();
-
-                    System.out.println("no row lists remaining, so nextRowListStart = first rowList: " + nextRowListStart);
-                } else {
-                    nextRowListStart = buffer.getInt();
-                    System.out.println("row lists remaining, so nextRowListStart = " + nextRowListStart);
-                }
+                nextRowListStart = rowListStart;
                 buffer.position(rowListStart);
 
                 short len = buffer.getShort();
@@ -183,19 +174,19 @@ public class Reader {
 
             Record record = null;
 
-            boolean isNegative = rowOffsets[currentRecord % rowListSize] < 0;
-            boolean matchesPrevious = currentRecord % rowListSize > 0 &&
-                    (rowOffsets[currentRecord % rowListSize] == rowOffsets[(currentRecord % rowListSize) - 1]);
+            boolean isNextRowListStart= rowOffsets[currentRecord % rowListSize] == nextRowListStart;
+            boolean isNextRecord = currentRecord + 1 < numRecords &&
+                    (currentRecord + 1) % rowListSize != 0 &&
+                    rowOffsets[currentRecord % rowListSize] == rowOffsets[(currentRecord + 1) % rowListSize];
 
-            if (!isNegative && !matchesPrevious) {
+            if (!isNextRowListStart && !isNextRecord) {
                 int recordStart = rowOffsets[currentRecord % rowListSize];
                 int recordEnd = 0;
                 if ((currentRecord % rowListSize != rowListSize - 1) && currentRecord != numRecords - 1) {
                     recordEnd = rowOffsets[(currentRecord + 1) % rowListSize];
-                } else {
-                    System.out.println("computing recordEnd from nextRowListStart=" + nextRowListStart + ", recordStart=" + recordStart);
+                } else
                     recordEnd = nextRowListStart;
-                }
+
                 record = new EncodedRecord(recordOffset + currentRecord, buffer, recordStart, recordEnd, numFields, tmp, rv);
             }
             currentRecord++;

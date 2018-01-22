@@ -68,14 +68,6 @@ public class Writer {
                     if (numDatapoints == -1)
                         numDatapoints = record.getValues(0).length;
                     writeRecord(currentRecord, numFields, numDatapoints, dos, record, byteArray);
-                } else {
-                    // If it's the first record in this rowlist, use negative to mark null,
-                    // (so we can invert it to get the start of data).
-                    // Otherwise, use the previous record's position.
-                    if (currentRecord % rowListSize == 0)
-                        recordPositions.set(currentRecord, recordPositions.get(currentRecord) * -1);
-                    else
-                        recordPositions.set(currentRecord, recordPositions.get(currentRecord - 1));
                 }
                 currentRecord++;
 
@@ -88,7 +80,6 @@ public class Writer {
                 writeRowList(dos, rowListSize, currentRecord, recordPositions, rowListPositions, intArray);
 
             rowListOffset = dos.size();
-            System.out.println("WRITER: rowListOffset=" + rowListOffset);
             for (int i = 0; i < rowListPositions.getSize(); i++)
                 dos.writeInt(rowListPositions.get(i));
         } finally {
