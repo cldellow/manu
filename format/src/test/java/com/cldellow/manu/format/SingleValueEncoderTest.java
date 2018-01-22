@@ -76,4 +76,9 @@ public class SingleValueEncoderTest {
         assertFalse(SingleValueEncoder.eligible(new int[] { }));
         assertFalse(SingleValueEncoder.eligible(new int[] { 1,2}));
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void encodeIneligible() throws Exception {
+        new SingleValueEncoder().encode(new int [] {}, new byte[100], new IntWrapper(0));
+    }
 }

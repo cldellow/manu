@@ -201,9 +201,4 @@ public class Writer {
 
         }
     }
-
-    private static void throwRecordNumberException(int currentRecord, int numRecords) {
-        throw new IllegalArgumentException(String.format(
-                "numRecords (%d) != currentRecord (%d)", numRecords, currentRecord));
-    }
 }

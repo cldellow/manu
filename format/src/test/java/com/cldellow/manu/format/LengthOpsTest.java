@@ -12,6 +12,8 @@ import static org.junit.Assume.assumeThat;
 
 @RunWith(JUnitQuickcheck.class)
 public class LengthOpsTest {
+    @Test public void ctor() { new LengthOps(); }
+
     @Test
     public void decodeId() {
         byte id = 12;
