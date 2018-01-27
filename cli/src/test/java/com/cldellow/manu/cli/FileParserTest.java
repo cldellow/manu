@@ -181,14 +181,14 @@ public class FileParserTest {
 
 
         Random r = new Random();
-        int nullValue = r.nextInt(128) - 128;
+        int nullValue = r.nextInt(128) - 64;
         int rows = r.nextInt(100) + 1;
         int cols = r.nextInt(100) + 1;
         int[][] ints = new int[rows][];
         for (int i = 0; i < rows; i++) {
             ints[i] = new int[cols];
             for (int j = 0; j < cols; j++)
-                ints[i][j] = r.nextInt(128) - 128;
+                ints[i][j] = r.nextInt(128) - 64;
         }
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(tmpFile));
