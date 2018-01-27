@@ -12,5 +12,8 @@ server {
 
   location / {
     proxy_pass http://localhost:6268;
+
+    expires 10m;
+    add_header Cache-Control "public";
   }
 }
