@@ -9,29 +9,42 @@ me=$(readlink -f "$me")
 here=$(dirname "$me")
 
 tmp=$(mktemp --tmpdir configure.XXXXXX)
+tmp2=$(mktemp --tmpdir configure.XXXXXX)
 function finish {
   # Your cleanup code here
-  rm -f "$tmp"
+  rm -f "$tmp" "$tmp2"
 }
 trap finish EXIT
+
+set_name() {
+  local name
+  name=${1:-${FUNCNAME[1]}}
+  echo "$name" > "$tmp2"
+}
+
+set_name "$(basename "$me")"
 
 err() {
   echo "$(basename "$me"): $1" >&2
 }
 
 ensure_java() {
+  set_name
   apt-get install openjdk-8-jdk-headless
 }
 
 ensure_htop() {
+  set_name
   apt-get install htop
 }
 
 ensure_runit() {
+  set_name
   apt-get install runit
 }
 
 ensure_manu() {
+  set_name
   local thing file
   for thing in manu-serve manu-cli; do
     file="$thing"-"$manu_version".jar
@@ -44,20 +57,24 @@ ensure_manu() {
   done
 
   mkdir -p /var/log/manu-serve
+  sv restart manu-serve
 }
 
 ensure_s3cmd() {
+  set_name
   apt-get install s3cmd
 }
 
 ensure_manu_data() {
   ensure_s3cmd
+  set_name
   mkdir -p /var/local/manu/datadir
  
   s3cmd sync s3://manu-data/live/ /var/local/manu/datadir/
 }
 
 ensure_nginx() {
+  set_name
   # We expect the first install to fail; since it'll detect 2 servers trying
   # to listen on port 80.
   apt-get install nginx || true
@@ -72,7 +89,15 @@ ensure_nginx() {
   /etc/init.d/nginx reload
 }
 
+ensure_certbot() {
+  set_name
+  apt-get install certbot
+}
+
 fn_update() {
+  exec > >(while read -r ln; do printf "%-16s> %s\n" "$(cat "$tmp2")" "$ln"; done)
+  exec 2> >(while read -r ln; do printf "%-16s> %s\n" "$(cat "$tmp2")" "$ln" >&2; done)
+
   if ifconfig | grep --silent addr:192.168; then
     err "doesn't look like we're on a droplet, giving up"
     exit 1
@@ -82,6 +107,10 @@ fn_update() {
   touch --date '2 hours ago' /var/run/last-update-test
   if [ /var/run/last-update-test -nt /var/run/last-update ]; then
     apt-get update
+    apt-get install software-properties-common
+    add-apt-repository ppa:certbot/certbot
+    apt-get update
+
     touch /var/run/last-update
   fi
 
@@ -94,9 +123,9 @@ fn_update() {
   ensure_manu
   ensure_manu_data
   ensure_runit
+  ensure_certbot
   ensure_nginx
 
-  sv restart manu-serve
 }
 
 fn_publish() {
