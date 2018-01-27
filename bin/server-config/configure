@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-manu_version="0.2.0"
+manu_version="0.2.1"
 
 me=${BASH_SOURCE[0]}
 me=$(readlink -f "$me")

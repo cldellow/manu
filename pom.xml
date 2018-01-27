@@ -4,7 +4,7 @@
   <groupId>com.cldellow</groupId>
   <artifactId>manu</artifactId>
   <packaging>pom</packaging>
-  <version>0.2.1-SNAPSHOT</version>
+  <version>0.3.0-SNAPSHOT</version>
   <name>${project.groupId}:${project.artifactId}</name>
   <url>https://github.com/cldellow/manu</url>
   <description>Utilities to manage timeseries data.</description>
@@ -52,27 +52,27 @@
       <dependency>
         <groupId>com.cldellow</groupId>
         <artifactId>manu-common</artifactId>
-        <version>0.2.1-SNAPSHOT</version>
+        <version>0.3.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>com.cldellow</groupId>
         <artifactId>manu-format</artifactId>
-        <version>0.2.1-SNAPSHOT</version>
+        <version>0.3.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>com.cldellow</groupId>
         <artifactId>manu-cli</artifactId>
-        <version>0.2.1-SNAPSHOT</version>
+        <version>0.3.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>com.cldellow</groupId>
         <artifactId>manu-serve</artifactId>
-        <version>0.2.1-SNAPSHOT</version>
+        <version>0.3.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>com.cldellow</groupId>
         <artifactId>manu-report</artifactId>
-        <version>0.2.1-SNAPSHOT</version>
+        <version>0.3.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>junit</groupId>

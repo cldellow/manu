@@ -7,7 +7,7 @@ all: support "sparse" files, where not all keys have records
 - support variable length size field
 - ~4x better space use for fields with a single datapoint
 - fix incorrect decoding of lossily encoded data
-`manu-cli`: `read` is faster
+`manu-cli`: `read` is faster, support null fields
 `manu-serve`: support null fields
 
 # 0.2.0
