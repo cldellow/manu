@@ -58,11 +58,15 @@ ensure_manu_data() {
 }
 
 ensure_nginx() {
-  apt-get install nginx
+  # We expect the first install to fail; since it'll detect 2 servers trying
+  # to listen on port 80.
+  apt-get install nginx || true
   # Disable the standard "Welcome to nginx" site
   if [ -e /etc/nginx/sites-enabled/default ]; then
     rm /etc/nginx/sites-enabled/default
   fi
+  # Ensure that it really did install.
+  apt-get install nginx
 
   nginx -t
   /etc/init.d/nginx reload
@@ -91,10 +95,12 @@ fn_update() {
   ensure_manu_data
   ensure_runit
   ensure_nginx
-  # TODO: set up manu.cldellow.com
+
+  sv restart manu-serve
 }
 
 fn_publish() {
+  target=${1:-droplet}
   # Bootstrap a droplet's filesystems with S3 credentials and a script
   # to install services.
   ( cd "$here" && tar cf "$tmp" . )
@@ -107,9 +113,9 @@ fn_publish() {
   tar tf "$tmp" |
     grep "\\.swp$" |
     xargs --no-run-if-empty tar --delete -f "$tmp"
-  ssh droplet -- tar xf - -C / --no-same-permissions < "$tmp"
+  ssh "$target" -- tar xf - -C / --no-same-permissions < "$tmp"
   echo "Published $(tar tf "$tmp" | wc -l) files."
-  ssh droplet -- /configure update
+  ssh "$target" -- /configure update
 }
 
 fn_do() {
