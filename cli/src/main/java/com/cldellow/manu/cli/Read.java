@@ -76,7 +76,8 @@ public class Read {
                     int[] datapoints = record.getValues(i);
                     for (int j = 0; j < reader.numDatapoints; j++) {
                         sb.append('\t');
-                        sb.append(datapoints[j]);
+                        if(datapoints[j] != reader.nullValue)
+                            sb.append(datapoints[j]);
                     }
                     System.out.println(sb.toString());
                 }

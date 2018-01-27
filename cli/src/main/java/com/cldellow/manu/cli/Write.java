@@ -76,7 +76,7 @@ public class Write {
                 fieldNames[def] = defs.get(def).getName();
                 fieldTypes[def] = defs.get(def).getFieldKind().getFieldType();
 
-                FileParser fp = new FileParser(defs.get(def).getFile());
+                FileParser fp = new FileParser(defs.get(def).getFile(), Integer.MIN_VALUE);
                 if (fp.getNumFields() <= 1)
                     throw new IllegalArgumentException(String.format(
                             "%s: not enough fields, expected at least 2, got %d (are you using tabs?)",
