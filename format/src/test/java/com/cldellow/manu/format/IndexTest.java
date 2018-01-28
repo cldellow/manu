@@ -1,6 +1,5 @@
 package com.cldellow.manu.format;
 
-import com.pholser.junit.quickcheck.Property;
 import com.pholser.junit.quickcheck.runner.JUnitQuickcheck;
 import org.junit.After;
 import org.junit.Test;
@@ -11,6 +10,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Vector;
 
 import static org.junit.Assert.assertEquals;
@@ -171,19 +171,58 @@ public class IndexTest {
         }
     }
 
-    /** This test is surprisingly slow. Maybe re-enable it if we switch backends.
-    @Property public void bunchaKeys(String[] keys) throws Exception {
+    /**
+     * This test is surprisingly slow. Maybe re-enable it if we switch backends.
+     *
+     * @Property public void bunchaKeys(String[] keys) throws Exception {
+     * Index index = null;
+     * try {
+     * index = new Index(dbLoc, false);
+     * System.err.println(keys.length);
+     * for(String key : keys) {
+     * int id = index.add(key);
+     * assertEquals(id, index.get(key));
+     * }
+     * } finally {
+     * if (index != null) index.close();
+     * }
+     * }
+     */
+
+    @Test
+    public void addBulk() throws Exception {
+        Vector<String> toInsert = new Vector<String>();
+        toInsert.add("0");
+        toInsert.add("1");
+
         Index index = null;
         try {
             index = new Index(dbLoc, false);
-            System.err.println(keys.length);
-            for(String key : keys) {
-                int id = index.add(key);
-                assertEquals(id, index.get(key));
-            }
+            HashMap<String, Integer> rv = index.add(toInsert);
+            assertEquals(0, rv.get("0").intValue());
+            assertEquals(index.get("0"), rv.get("0").intValue());
+            assertEquals(1, rv.get("1").intValue());
+            assertEquals(index.get("1"), rv.get("1").intValue());
+
         } finally {
             if (index != null) index.close();
         }
     }
-    */
+
+    @Test
+    public void getBulk() throws Exception {
+        Index index = null;
+        try {
+            index = new Index(dbLoc, false);
+            int foo = index.add("foo");
+            Vector<String> keys = new Vector<>();
+            keys.add("foo");
+            keys.add("bar");
+            HashMap<String, Integer> rv = index.get(keys);
+            assertEquals(foo, rv.get("foo").intValue());
+            assertEquals(1, rv.size());
+        } finally {
+            if (index != null) index.close();
+        }
+    }
 }

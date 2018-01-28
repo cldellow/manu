@@ -2,6 +2,8 @@ package com.cldellow.manu.format;
 
 import java.sql.*;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Vector;
 
 public class Index {
     private Connection conn = null;
@@ -50,7 +52,37 @@ public class Index {
         }
     }
 
-    public void add(Collection<String> keys) throws SQLException {
+    public HashMap<String, Integer> get(Collection<String> keys) throws SQLException {
+        if(keys.isEmpty())
+            return new HashMap<String, Integer>();
+
+        StringBuilder qs = new StringBuilder();
+        HashMap<String, Integer> rv = new HashMap<>();
+        for(int i = 0; i < keys.size(); i++) {
+            if(i > 0)
+                qs.append(',');
+            qs.append('?');
+        }
+
+        PreparedStatement statement = conn.prepareStatement("SELECT key, rowid FROM keys WHERE key in (" + qs.toString() + ")");
+        try {
+            int i = 1;
+            for(String key: keys)
+                statement.setString(i++, key);
+            ResultSet rs = statement.executeQuery();
+            while(rs.next()) {
+                String key = rs.getString(1);
+                int id = rs.getInt(2) - 1;
+                rv.put(key, id);
+            }
+        } finally {
+            statement.close();
+        }
+
+        return rv;
+    }
+
+    public HashMap<String, Integer> add(Collection<String> keys) throws SQLException {
         conn.setAutoCommit(false);
         PreparedStatement statement = conn.prepareStatement("INSERT OR IGNORE INTO keys VALUES (?)");
         try {
@@ -63,6 +95,8 @@ public class Index {
             conn.setAutoCommit(true);
 
         }
+
+        return get(keys);
     }
 
     public int add(String key) throws SQLException {
