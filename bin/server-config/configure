@@ -168,7 +168,7 @@ fn_publish() {
   tar tf "$tmp" |
     grep "\\.swp$" |
     xargs --no-run-if-empty tar --delete -f "$tmp"
-  ssh "$target" -- tar xf - -C / --no-same-permissions < "$tmp"
+  cat "$tmp" | gzip -9 - | ssh "$target" -- tar xzf - -C / --no-same-permissions
   echo "Published $(tar tf "$tmp" | wc -l) files."
 
   if [ $# -eq 2 ]; then
