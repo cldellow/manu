@@ -1,13 +1,15 @@
 server {
-  listen 8080;
+  listen 8080 default_server;
 
-  server_name manu.cldellow.com;
+  server_name cldellow.com;
 
   access_log /var/log/nginx/$host.log combined_ms;
   error_log /var/log/nginx/error.$host.log notice;
 
   location / {
-    proxy_pass http://localhost:6268;
+    proxy_pass http://cldellow.github.io;
+    proxy_set_header Host            $host;
+    proxy_set_header X-Forwarded-For $remote_addr;
 
     expires 10m;
     add_header Cache-Control "public";
@@ -15,9 +17,9 @@ server {
 }
 
 server {
-  listen 80;
+  listen 80 default_server;
 
-  server_name manu.cldellow.com;
+  server_name cldellow.com;
 
   access_log /var/log/nginx/$host.log combined_ms;
   error_log /var/log/nginx/error.$host.log notice;
@@ -34,7 +36,7 @@ server {
 server {
   listen 443 ssl;
 
-  server_name manu.cldellow.com;
+  server_name cldellow.com;
 
   access_log /var/log/nginx/$host.log combined_ms;
   error_log /var/log/nginx/error.$host.log notice;

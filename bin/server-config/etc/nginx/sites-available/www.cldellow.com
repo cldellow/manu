@@ -1,23 +1,7 @@
 server {
-  listen 8080;
-
-  server_name manu.cldellow.com;
-
-  access_log /var/log/nginx/$host.log combined_ms;
-  error_log /var/log/nginx/error.$host.log notice;
-
-  location / {
-    proxy_pass http://localhost:6268;
-
-    expires 10m;
-    add_header Cache-Control "public";
-  }
-}
-
-server {
   listen 80;
 
-  server_name manu.cldellow.com;
+  server_name www.cldellow.com;
 
   access_log /var/log/nginx/$host.log combined_ms;
   error_log /var/log/nginx/error.$host.log notice;
@@ -27,14 +11,14 @@ server {
   }
 
   location / {
-    return 301 https://$host$request_uri;
+    return 301 https://cldellow.com$request_uri;
   }
 }
 
 server {
   listen 443 ssl;
 
-  server_name manu.cldellow.com;
+  server_name www.cldellow.com;
 
   access_log /var/log/nginx/$host.log combined_ms;
   error_log /var/log/nginx/error.$host.log notice;
@@ -44,8 +28,6 @@ server {
   }
 
   location / {
-    proxy_set_header Host $host;
-    proxy_set_header X-Forwarded-For $remote_addr;
-    proxy_pass http://localhost:6081;
+    return 301 https://cldellow.com$request_uri;
   }
 }

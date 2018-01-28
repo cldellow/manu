@@ -4,6 +4,7 @@ iptables -P INPUT DROP
 
 # Permit ssh/http traffic
 iptables -A INPUT -i eth0 -p tcp --dport http -j ACCEPT
+iptables -A INPUT -i eth0 -p tcp --dport https -j ACCEPT
 iptables -A INPUT -i eth0 -p tcp --dport ssh -j ACCEPT
 
 # loopback is wide open
@@ -12,5 +13,8 @@ iptables -A OUTPUT -i lo -j ACCEPT
 
 # If we started it, permit inbound traffic
 iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# Hetzner floating IP; doesn't hurt on Digital Ocean machine
+ip addr add 94.130.188.141/32 dev eth0
 
 exit 0

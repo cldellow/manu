@@ -75,23 +75,54 @@ ensure_manu_data() {
 
 ensure_nginx() {
   set_name
-  # We expect the first install to fail; since it'll detect 2 servers trying
-  # to listen on port 80.
-  apt-get install nginx || true
+  apt-get install nginx
   # Disable the standard "Welcome to nginx" site
   if [ -e /etc/nginx/sites-enabled/default ]; then
     rm /etc/nginx/sites-enabled/default
   fi
-  # Ensure that it really did install.
-  apt-get install nginx
 
+  s3cmd get --force s3://manu-data/keys/cldellow.com/fullchain.pem /etc/nginx/fullchain.pem;
+  s3cmd get --force s3://manu-data/keys/cldellow.com/privkey.pem /etc/nginx/privkey.pem;
   nginx -t
   /etc/init.d/nginx reload
 }
 
 ensure_certbot() {
+  # Run on the dev box to renew SSL certificates.
   set_name
+  apt-get install software-properties-common
+  add-apt-repository ppa:certbot/certbot
+  apt-get update
   apt-get install certbot
+  apt-get install python-pip
+  pip install future
+  pip install certbot-external-auth
+}
+
+renew_certs() {
+  # Usage:
+  # ./configure publish droplet renew_certs
+  ensure_certbot
+  certbot certonly --webroot \
+    -w /var/www/certbot/ \
+    -d www.cldellow.com \
+    -d cldellow.com \
+    -d manu.cldellow.com \
+    -d certbot.cldellow.co
+
+  now=$(TZ=UTC date -Iseconds | tr -d ':-' | sed -e 's/+.*//')
+  for x in fullchain.pem privkey.pem; do
+    f=$(readlink -f /etc/letsencrypt/live/www.cldellow.com/"$x")
+    s3cmd put "$f" s3://manu-data/keys/cldellow.com/"$x"
+    s3cmd put "$f" s3://manu-data/keys/cldellow.com/"$now"/"$x"
+  done
+}
+
+ensure_varnish() {
+  set_name
+  apt-get install varnish
+  systemctl daemon-reload
+  service varnish restart
 }
 
 fn_update() {
@@ -107,10 +138,6 @@ fn_update() {
   touch --date '2 hours ago' /var/run/last-update-test
   if [ /var/run/last-update-test -nt /var/run/last-update ]; then
     apt-get update
-    apt-get install software-properties-common
-    add-apt-repository ppa:certbot/certbot
-    apt-get update
-
     touch /var/run/last-update
   fi
 
@@ -123,9 +150,8 @@ fn_update() {
   ensure_manu
   ensure_manu_data
   ensure_runit
-  ensure_certbot
   ensure_nginx
-
+  ensure_varnish
 }
 
 fn_publish() {
@@ -144,7 +170,12 @@ fn_publish() {
     xargs --no-run-if-empty tar --delete -f "$tmp"
   ssh "$target" -- tar xf - -C / --no-same-permissions < "$tmp"
   echo "Published $(tar tf "$tmp" | wc -l) files."
-  ssh "$target" -- /configure update
+
+  if [ $# -eq 2 ]; then
+    ssh "$target" -- /configure "do" "$2"
+  else
+    ssh "$target" -- /configure update
+  fi
 }
 
 fn_do() {
