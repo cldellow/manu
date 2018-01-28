@@ -81,6 +81,7 @@ ensure_nginx() {
     rm /etc/nginx/sites-enabled/default
   fi
 
+  s3cmd get --force s3://manu-data/keys/dhparam.pem /etc/nginx/dhparam.pem;
   s3cmd get --force s3://manu-data/keys/cldellow.com/fullchain.pem /etc/nginx/fullchain.pem;
   s3cmd get --force s3://manu-data/keys/cldellow.com/privkey.pem /etc/nginx/privkey.pem;
   nginx -t
