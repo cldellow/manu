@@ -3,8 +3,8 @@ server {
 
   server_name cldellow.com;
 
-  access_log /var/log/nginx/$host.log combined_ms;
-  error_log /var/log/nginx/error.$host.log notice;
+  access_log /var/log/nginx/cldellow.com.log combined_ms;
+  error_log /var/log/nginx/error.cldellow.com.log notice;
 
   location / {
     proxy_pass http://cldellow.github.io;
@@ -21,8 +21,8 @@ server {
 
   server_name cldellow.com;
 
-  access_log /var/log/nginx/$host.log combined_ms;
-  error_log /var/log/nginx/error.$host.log notice;
+  access_log /var/log/nginx/cldellow.com.log combined_ms;
+  error_log /var/log/nginx/error.cldellow.com.log notice;
 
   location /.well-known/acme-challenge {
     return 301 $scheme://certbot.cldellow.com$request_uri;
@@ -38,8 +38,8 @@ server {
 
   server_name cldellow.com;
 
-  access_log /var/log/nginx/$host.log combined_ms;
-  error_log /var/log/nginx/error.$host.log notice;
+  access_log /var/log/nginx/cldellow.com.log combined_ms;
+  error_log /var/log/nginx/error.cldellow.com.log notice;
 
   location /.well-known/acme-challenge {
     return 301 $scheme://certbot.cldellow.com$request_uri;

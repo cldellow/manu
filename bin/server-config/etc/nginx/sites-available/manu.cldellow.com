@@ -3,8 +3,8 @@ server {
 
   server_name manu.cldellow.com;
 
-  access_log /var/log/nginx/$host.log combined_ms;
-  error_log /var/log/nginx/error.$host.log notice;
+  access_log /var/log/nginx/manu.cldellow.com.log combined_ms;
+  error_log /var/log/nginx/error.manu.cldellow.com.log notice;
 
   location / {
     proxy_pass http://localhost:6268;
@@ -19,8 +19,8 @@ server {
 
   server_name manu.cldellow.com;
 
-  access_log /var/log/nginx/$host.log combined_ms;
-  error_log /var/log/nginx/error.$host.log notice;
+  access_log /var/log/nginx/manu.cldellow.com.log combined_ms;
+  error_log /var/log/nginx/error.manu.cldellow.com.log notice;
 
   location /.well-known/acme-challenge {
     return 301 $scheme://certbot.cldellow.com$request_uri;
@@ -36,8 +36,8 @@ server {
 
   server_name manu.cldellow.com;
 
-  access_log /var/log/nginx/$host.log combined_ms;
-  error_log /var/log/nginx/error.$host.log notice;
+  access_log /var/log/nginx/manu.cldellow.com.log combined_ms;
+  error_log /var/log/nginx/error.manu.cldellow.com.log notice;
 
   location /.well-known/acme-challenge {
     return 301 $scheme://certbot.cldellow.com$request_uri;
