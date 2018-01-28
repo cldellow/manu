@@ -11,8 +11,12 @@ here=$(dirname "$me")
 tmp=$(mktemp --tmpdir configure.XXXXXX)
 tmp2=$(mktemp --tmpdir configure.XXXXXX)
 function finish {
-  # Your cleanup code here
+  local rv=$?
   rm -f "$tmp" "$tmp2"
+
+  if [ "$rv" -ne "0" ]; then
+    echo -e "\e[91mThere were errors."
+  fi
 }
 trap finish EXIT
 
@@ -127,8 +131,8 @@ ensure_varnish() {
 }
 
 fn_update() {
-  exec > >(while read -r ln; do printf "%-16s> %s\\n" "$(cat "$tmp2")" "$ln"; done)
-  exec 2> >(while read -r ln; do printf "%-16s> %s\\n" "$(cat "$tmp2")" "$ln" >&2; done)
+  exec > >(while read -r ln; do printf "\e[90m%-16s>\e[39m %s\\n" "$(cat "$tmp2")" "$ln"; done)
+  exec 2> >(while read -r ln; do printf "\e[91m%-16s>\e[39m %s\\n" "$(cat "$tmp2")" "$ln" >&2; done)
 
   if ifconfig | grep --silent addr:192.168; then
     err "doesn't look like we're on a droplet, giving up"
