@@ -108,7 +108,7 @@ renew_certs() {
     -d www.cldellow.com \
     -d cldellow.com \
     -d manu.cldellow.com \
-    -d certbot.cldellow.co
+    -d certbot.cldellow.com
 
   now=$(TZ=UTC date -Iseconds | tr -d ':-' | sed -e 's/+.*//')
   for x in fullchain.pem privkey.pem; do
@@ -126,8 +126,8 @@ ensure_varnish() {
 }
 
 fn_update() {
-  exec > >(while read -r ln; do printf "%-16s> %s\n" "$(cat "$tmp2")" "$ln"; done)
-  exec 2> >(while read -r ln; do printf "%-16s> %s\n" "$(cat "$tmp2")" "$ln" >&2; done)
+  exec > >(while read -r ln; do printf "%-16s> %s\\n" "$(cat "$tmp2")" "$ln"; done)
+  exec 2> >(while read -r ln; do printf "%-16s> %s\\n" "$(cat "$tmp2")" "$ln" >&2; done)
 
   if ifconfig | grep --silent addr:192.168; then
     err "doesn't look like we're on a droplet, giving up"
@@ -172,6 +172,7 @@ fn_publish() {
   echo "Published $(tar tf "$tmp" | wc -l) files."
 
   if [ $# -eq 2 ]; then
+    # shellcheck disable=SC2029
     ssh "$target" -- /configure "do" "$2"
   else
     ssh "$target" -- /configure update

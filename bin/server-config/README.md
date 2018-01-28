@@ -12,6 +12,10 @@ On a dev machine:
 ./bin/server-config/configure publish [machine] [command]
 ```
 
+`./bin/server-config/configure publish droplet renew_certs` will renew the SSL
+certs and stash the new key and certificate in S3, where subsequent deploys will
+retrieve it.
+
 ## How load balancing works
 
 * nginx listens on port 80 and redirects to SSL
