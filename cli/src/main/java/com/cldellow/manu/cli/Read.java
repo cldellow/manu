@@ -5,16 +5,29 @@ import com.cldellow.manu.format.Reader;
 import com.cldellow.manu.format.Record;
 import com.cldellow.manu.common.NotEnoughArgsException;
 
+import java.sql.SQLException;
 import java.util.Iterator;
 
 public class Read {
+    private final int KEY_BATCH_SIZE = 128;
+
     final String[] _args;
     ReadArgs args;
+    String[] keyNames = null;
+    int keyNameIndex = Integer.MAX_VALUE - KEY_BATCH_SIZE;
 
     Read(String[] _args) throws Exception {
         this._args = _args;
     }
 
+    private String getKeyName(Index index, int id) throws SQLException {
+        if(id < keyNameIndex || id >= keyNameIndex + KEY_BATCH_SIZE) {
+            keyNameIndex = id;
+            keyNames = index.get(keyNameIndex, KEY_BATCH_SIZE);
+        }
+
+        return keyNames[id - keyNameIndex];
+    }
     public int entrypoint() throws Exception {
         try {
             this.args = new ReadArgs(_args);
@@ -41,7 +54,7 @@ public class Read {
                         }
 
                     if (!args.names.isEmpty() || !args.patterns.isEmpty()) {
-                        key = index.get(record.getId());
+                        key = getKeyName(index, record.getId());
 
                         for (int i = 0; i < args.names.size(); i++)
                             if (key.equals(args.names.get(i))) {
@@ -69,9 +82,9 @@ public class Read {
                         sb.append(record.getId());
                     else {
                         if (key == null)
-                            key = index.get(record.getId());
+                            key = getKeyName(index, record.getId());
 
-                        sb.append(index.get(record.getId()));
+                        sb.append(key);
                     }
                     int[] datapoints = record.getValues(i);
                     for (int j = 0; j < reader.numDatapoints; j++) {

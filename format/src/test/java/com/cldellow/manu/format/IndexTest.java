@@ -225,4 +225,32 @@ public class IndexTest {
             if (index != null) index.close();
         }
     }
+
+    @Test
+    public void getIdBulk() throws Exception {
+        Index index = null;
+        try {
+            index = new Index(dbLoc, false);
+            int foo = index.add("foo");
+            int bar = index.add("bar");
+            String[] keys = index.get(0, 3);
+            assertEquals(3, keys.length);
+            assertEquals("foo", keys[0]);
+            assertEquals("bar", keys[1]);
+            assertEquals(null, keys[2]);
+        } finally {
+            if (index != null) index.close();
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void getIdBulkInvalid() throws Exception {
+        Index index = null;
+        try {
+            index = new Index(dbLoc, false);
+            index.get(0, 0);
+        } finally {
+            if (index != null) index.close();
+        }
+    }
 }

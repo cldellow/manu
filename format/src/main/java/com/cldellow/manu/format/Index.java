@@ -52,6 +52,30 @@ public class Index {
         }
     }
 
+    public String[] get(int id, int howMany) throws SQLException {
+        if(howMany < 1)
+            throw new IllegalArgumentException("howMany must be >= 1");
+
+        String[] rv = new String[howMany];
+        for(int i = 0; i < rv.length; i++)
+            rv[i] = null;
+
+        PreparedStatement statement = conn.prepareStatement("SELECT rowid, key FROM keys WHERE rowid >= ? AND rowid < ?");
+        try {
+            statement.setInt(1, id + 1);
+            statement.setInt(2, id + 1 + howMany);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                int actualId = rs.getInt(1);
+                String key = rs.getString(2);
+                rv[actualId-1-id] = key;
+            }
+            return rv;
+        } finally {
+            statement.close();
+        }
+    }
+
     public HashMap<String, Integer> get(Collection<String> keys) throws SQLException {
         if(keys.isEmpty())
             return new HashMap<String, Integer>();
