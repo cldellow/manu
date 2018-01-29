@@ -1,3 +1,8 @@
+# 0.2.2
+
+- `manu-cli`: faster read
+- `manu-format`: add bulk add/get operations to the index
+
 # 0.2.1
 
 all: support "sparse" files, where not all keys have records

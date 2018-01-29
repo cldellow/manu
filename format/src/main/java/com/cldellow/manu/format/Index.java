@@ -1,155 +1,153 @@
 package com.cldellow.manu.format;
 
-import java.sql.*;
+import org.iq80.leveldb.DB;
+import org.iq80.leveldb.Options;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Vector;
+
+import static org.fusesource.leveldbjni.JniDBFactory.*;
 
 public class Index {
-    private Connection conn = null;
+    DB db;
+    private final byte[] NUM_ROW_KEYS = new byte[] { 0 };
 
-    public Index(String file, boolean readOnly) throws SQLException {
+    public Index(String file, boolean readOnly) throws IOException {
         String maybeRo = "";
-        if (readOnly)
-            maybeRo = "?mode=ro";
-
-        conn = DriverManager.getConnection("jdbc:sqlite:file:" + file + maybeRo);
-
-        if (!readOnly)
-            ensureSchema();
+        Options options = new Options();
+        options.createIfMissing(true);
+        db = factory.open(new File(file), options);
     }
 
-    public void close() throws SQLException {
-        if (conn != null) {
-            conn.close();
-            conn = null;
+    public void close() throws IOException {
+        if (db != null) {
+            db.close();
+            db = null;
         }
+    }
+
+    private int toInt(byte[] bytes) {
+        if (bytes == null)
+            return -1;
+        ByteBuffer buf = ByteBuffer.wrap(bytes);
+        return buf.getInt();
+    }
+
+    private byte[] toBytes(int i) {
+        byte[] bytes = new byte[4];
+        ByteBuffer buf = ByteBuffer.wrap(bytes);
+        buf.putInt(i);
+        return bytes;
+    }
+
+    private byte[] getStringKey(String key) {
+        return bytes("_" + key);
+    }
+
+    private byte[] getIntKey(int id) {
+        byte[] rv = new byte[5];
+        ByteBuffer buf = ByteBuffer.wrap(rv);
+        buf.put((byte) '-');
+        buf.putInt(id);
+        return rv;
     }
 
     public int get(String key) throws SQLException {
-        PreparedStatement statement = conn.prepareStatement("SELECT rowid FROM keys WHERE key = ?");
-        try {
-            statement.setString(1, key);
-            ResultSet rs = statement.executeQuery();
-            if (rs.next())
-                return rs.getInt(1) - 1;
-            return -1;
-        } finally {
-            statement.close();
-        }
+        return toInt(db.get(getStringKey(key)));
     }
 
     public String get(int id) throws SQLException {
-        PreparedStatement statement = conn.prepareStatement("SELECT key FROM keys WHERE rowid = ?");
-        try {
-            statement.setInt(1, id + 1);
-            ResultSet rs = statement.executeQuery();
-            if (rs.next())
-                return rs.getString(1);
+        byte[] bytes = db.get(getIntKey(id));
+        if (bytes == null)
             return null;
-        } finally {
-            statement.close();
-        }
+
+        return asString(bytes);
     }
 
     public String[] get(int id, int howMany) throws SQLException {
-        if(howMany < 1)
+        if (howMany < 1)
             throw new IllegalArgumentException("howMany must be >= 1");
 
         String[] rv = new String[howMany];
-        for(int i = 0; i < rv.length; i++)
+        for (int i = 0; i < rv.length; i++)
             rv[i] = null;
 
-        PreparedStatement statement = conn.prepareStatement("SELECT rowid, key FROM keys WHERE rowid >= ? AND rowid < ?");
-        try {
-            statement.setInt(1, id + 1);
-            statement.setInt(2, id + 1 + howMany);
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
-                int actualId = rs.getInt(1);
-                String key = rs.getString(2);
-                rv[actualId-1-id] = key;
-            }
-            return rv;
-        } finally {
-            statement.close();
-        }
+        //TODO: optimize
+        for (int k = id; k < id + howMany; k++)
+            rv[k - id] = get(k);
+        return rv;
     }
 
     public HashMap<String, Integer> get(Collection<String> keys) throws SQLException {
-        if(keys.isEmpty())
+        if (keys.isEmpty())
             return new HashMap<String, Integer>();
 
-        StringBuilder qs = new StringBuilder();
         HashMap<String, Integer> rv = new HashMap<>();
-        for(int i = 0; i < keys.size(); i++) {
-            if(i > 0)
-                qs.append(',');
-            qs.append('?');
-        }
-
-        PreparedStatement statement = conn.prepareStatement("SELECT key, rowid FROM keys WHERE key in (" + qs.toString() + ")");
-        try {
-            int i = 1;
-            for(String key: keys)
-                statement.setString(i++, key);
-            ResultSet rs = statement.executeQuery();
-            while(rs.next()) {
-                String key = rs.getString(1);
-                int id = rs.getInt(2) - 1;
+        for(String key : keys) {
+            int id = get(key);
+            if(id != -1)
                 rv.put(key, id);
-            }
-        } finally {
-            statement.close();
         }
-
         return rv;
     }
 
     public HashMap<String, Integer> add(Collection<String> keys) throws SQLException {
-        conn.setAutoCommit(false);
-        PreparedStatement statement = conn.prepareStatement("INSERT OR IGNORE INTO keys VALUES (?)");
-        try {
-            for (String key : keys) {
-                statement.setString(1, key);
-                statement.executeUpdate();
+        HashMap<String, Integer> rv = new HashMap<>();
+        for(String key: keys) {
+
+            int id = get(key);
+            if(id == -1) {
+                rv.put(key, add(key));
+            } else {
+                rv.put(key, id);
             }
-        } finally {
-            statement.close();
-            conn.setAutoCommit(true);
-
         }
-
-        return get(keys);
+        return rv;
     }
 
     public int add(String key) throws SQLException {
-        PreparedStatement statement = conn.prepareStatement("INSERT OR IGNORE INTO keys VALUES (?)");
+        int id = get(key);
+        if(id != -1)
+            return id;
 
-        try {
-            statement.setString(1, key);
-            statement.executeUpdate();
-            return get(key);
-        } finally {
-            statement.close();
-        }
+        id = getNumRows();
+        byte[] idValue = toBytes(id );
+        db.put(NUM_ROW_KEYS, toBytes(id+1));
+        db.put(getStringKey(key), idValue);
+        db.put(getIntKey(id), bytes(key));
+        return id;
     }
 
     public int getNumRows() throws SQLException {
-        PreparedStatement statement = conn.prepareStatement("SELECT MAX(rowid) FROM keys");
+        byte[] rv = db.get(NUM_ROW_KEYS);
+        int numRows = toInt(db.get(NUM_ROW_KEYS));
+        if(numRows == -1)
+            numRows = 0;
 
-        try {
-            ResultSet rs = statement.executeQuery();
-            rs.next();
-            return rs.getInt(1);
-        } finally {
-            statement.close();
-        }
+        return numRows;
     }
 
-    private void ensureSchema() throws SQLException {
-        Statement statement = conn.createStatement();
-        statement.executeUpdate("CREATE TABLE IF NOT EXISTS keys(key TEXT PRIMARY KEY);");
-        statement.close();
+    public static void delete(String filename) {
+        deleteDir(new File(filename));
+    }
+
+    private static void deleteDir(File file) {
+        if(!file.exists())
+            return;
+
+        File[] contents = file.listFiles();
+        if (contents != null) {
+            for (File f : contents) {
+                deleteDir(f);
+            }
+        }
+        file.delete();
     }
 }

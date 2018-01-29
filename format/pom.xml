@@ -47,8 +47,11 @@
     <dependency>
       <groupId>me.lemire.integercompression</groupId>
       <artifactId>JavaFastPFOR</artifactId>
-      <version>0.1.11</version>
     </dependency> 
+    <dependency>
+      <groupId>org.fusesource.leveldbjni</groupId>
+      <artifactId>leveldbjni-linux64</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

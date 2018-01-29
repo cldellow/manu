@@ -15,6 +15,11 @@ root="$here"/../../..
 resources="$root"/serve/src/test/resources/datadir
 mkdir -p "$resources"
 
+for manu in hourly hourly2 daily nulls sparse; do
+  git rm -r "$resources"/"$manu" || true
+  rm -r "${resources:?}"/"$manu" || true
+done
+
 # A dataset by hour that spans 2 months; 2 records and 1 field
 mkdir -p "$resources"/hourly
 echo -e a$'\n'b | "$root"/cli/bin/ensure-keys "$resources"/hourly/keys
@@ -61,3 +66,9 @@ echo a$'\t'11 > "$tmpdir"/sparse1.tsv
 echo "b" | "$root"/cli/bin/ensure-keys "$resources"/sparse/keys
 echo b$'\t'22 > "$tmpdir"/sparse2.tsv
 "$root"/cli/bin/write "$resources"/sparse/keys "$resources"/sparse/20080102.manu 2008-01-02 day field1 "$tmpdir"/sparse2.tsv
+
+for manu in hourly hourly2 daily nulls sparse; do
+  git add -f "$resources"/"$manu"
+done
+
+

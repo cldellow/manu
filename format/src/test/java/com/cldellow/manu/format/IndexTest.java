@@ -22,9 +22,7 @@ public class IndexTest {
 
     @After
     public void cleanup() throws Exception {
-        File f = new File(dbLoc);
-        if (f.exists())
-            f.delete();
+        Index.delete(dbLoc);
     }
 
 
@@ -45,37 +43,8 @@ public class IndexTest {
         index.close();
     }
 
-
-    @Test(expected = SQLException.class)
-    public void testEmptyIndexNotOKWhenReadOnly() throws Exception {
-        Index index = null;
-        try {
-            index = new Index(dbLoc, true);
-        } finally {
-            if (index != null) index.close();
-        }
-    }
-
-
     @Test
-    public void testNonEmptyIndexOK() throws SQLException {
-        Index index = null;
-
-        Connection conn = DriverManager.getConnection("jdbc:sqlite:file:" + dbLoc);
-        try {
-
-            try {
-                index = new Index(dbLoc, true);
-            } finally {
-                if (index != null) index.close();
-            }
-        } finally {
-            conn.close();
-        }
-    }
-
-    @Test
-    public void testNonExistentKey() throws SQLException {
+    public void testNonExistentKey() throws Exception {
         Index index = null;
         try {
             index = new Index(dbLoc, false);
@@ -87,7 +56,7 @@ public class IndexTest {
     }
 
     @Test
-    public void testEmptyHasZeroRows() throws SQLException {
+    public void testEmptyHasZeroRows() throws Exception {
         Index index = null;
         try {
             index = new Index(dbLoc, false);
@@ -98,7 +67,7 @@ public class IndexTest {
     }
 
     @Test
-    public void testAddAndGetKey() throws SQLException {
+    public void testAddAndGetKey() throws Exception {
         Index index = null;
         try {
             index = new Index(dbLoc, false);
@@ -114,7 +83,7 @@ public class IndexTest {
     }
 
     @Test
-    public void testAddExistingKey() throws SQLException {
+    public void testAddExistingKey() throws Exception {
         Index index = null;
         try {
             index = new Index(dbLoc, false);
@@ -128,7 +97,7 @@ public class IndexTest {
     }
 
     @Test
-    public void testAddMultiple() throws SQLException {
+    public void testAddMultiple() throws Exception {
         Index index = null;
         try {
             index = new Index(dbLoc, false);
@@ -147,7 +116,7 @@ public class IndexTest {
 
 
     @Test
-    public void testGetExistingById() throws SQLException {
+    public void testGetExistingById() throws Exception {
         Index index = null;
         try {
             index = new Index(dbLoc, false);
@@ -160,7 +129,7 @@ public class IndexTest {
     }
 
     @Test
-    public void testGetNonExistingById() throws SQLException {
+    public void testGetNonExistingById() throws Exception {
         Index index = null;
         try {
             index = new Index(dbLoc, false);
