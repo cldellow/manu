@@ -1,9 +1,6 @@
 package com.cldellow.manu.serve;
 
-import com.cldellow.manu.format.Index;
-import com.cldellow.manu.format.Interval;
-import com.cldellow.manu.format.NotManuException;
-import com.cldellow.manu.format.Reader;
+import com.cldellow.manu.format.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -24,7 +21,7 @@ public class Collection {
         if (!keyFile.exists())
             throw new IllegalArgumentException(String.format(
                     "%s: doesn't have a keys file", dir));
-        this.index = new Index(keyFile.getAbsolutePath(), true);
+        this.index = new Index(keyFile.getAbsolutePath(), IndexAccessMode.READ_ONLY);
 
         int numFiles = 0;
         File[] files = new File(dir).listFiles();

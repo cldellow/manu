@@ -32,7 +32,7 @@ public class IndexTest {
     public void testEmptyIndexOKWhenWritable() throws Exception {
         Index index = null;
         try {
-            index = new Index(dbLoc, false);
+            index = new Index(dbLoc, IndexAccessMode.READ_WRITE_SAFE);
         } finally {
             if (index != null) index.close();
         }
@@ -40,7 +40,7 @@ public class IndexTest {
 
     @Test
     public void testDoubleCloseOk() throws Exception {
-        Index index = new Index(dbLoc, false);
+        Index index = new Index(dbLoc, IndexAccessMode.READ_WRITE_SAFE);
         index.close();
         index.close();
     }
@@ -50,7 +50,7 @@ public class IndexTest {
     public void testEmptyIndexNotOKWhenReadOnly() throws Exception {
         Index index = null;
         try {
-            index = new Index(dbLoc, true);
+            index = new Index(dbLoc, IndexAccessMode.READ_ONLY);
         } finally {
             if (index != null) index.close();
         }
@@ -65,7 +65,7 @@ public class IndexTest {
         try {
 
             try {
-                index = new Index(dbLoc, true);
+                index = new Index(dbLoc, IndexAccessMode.READ_ONLY);
             } finally {
                 if (index != null) index.close();
             }
@@ -78,7 +78,7 @@ public class IndexTest {
     public void testNonExistentKey() throws SQLException {
         Index index = null;
         try {
-            index = new Index(dbLoc, false);
+            index = new Index(dbLoc, IndexAccessMode.READ_WRITE_SAFE);
             int id = index.get("this key doesn't exist");
             assertEquals(-1, id);
         } finally {
@@ -90,7 +90,7 @@ public class IndexTest {
     public void testEmptyHasZeroRows() throws SQLException {
         Index index = null;
         try {
-            index = new Index(dbLoc, false);
+            index = new Index(dbLoc, IndexAccessMode.READ_WRITE_SAFE);
             assertEquals(0, index.getNumRows());
         } finally {
             if (index != null) index.close();
@@ -101,7 +101,7 @@ public class IndexTest {
     public void testAddAndGetKey() throws SQLException {
         Index index = null;
         try {
-            index = new Index(dbLoc, false);
+            index = new Index(dbLoc, IndexAccessMode.READ_WRITE_SAFE);
             int id = index.add("somekey");
             assertNotEquals(-1, id);
             assertEquals(0, id);
@@ -117,7 +117,7 @@ public class IndexTest {
     public void testAddExistingKey() throws SQLException {
         Index index = null;
         try {
-            index = new Index(dbLoc, false);
+            index = new Index(dbLoc, IndexAccessMode.READ_WRITE_SAFE);
             int id = index.add("somekey");
             assertNotEquals(-1, id);
             int id2 = index.add("somekey");
@@ -131,7 +131,7 @@ public class IndexTest {
     public void testAddMultiple() throws SQLException {
         Index index = null;
         try {
-            index = new Index(dbLoc, false);
+            index = new Index(dbLoc, IndexAccessMode.READ_WRITE_SAFE);
             Collection<String> keys = new Vector<String>();
             keys.add("abc");
             keys.add("def");
@@ -150,7 +150,7 @@ public class IndexTest {
     public void testGetExistingById() throws SQLException {
         Index index = null;
         try {
-            index = new Index(dbLoc, false);
+            index = new Index(dbLoc, IndexAccessMode.READ_WRITE_SAFE);
             int id = index.add("somekey");
             String actual = index.get(id);
             assertEquals("somekey", actual);
@@ -163,7 +163,7 @@ public class IndexTest {
     public void testGetNonExistingById() throws SQLException {
         Index index = null;
         try {
-            index = new Index(dbLoc, false);
+            index = new Index(dbLoc, IndexAccessMode.READ_WRITE_SAFE);
             String actual = index.get(123);
             assertEquals(null, actual);
         } finally {
@@ -197,7 +197,7 @@ public class IndexTest {
 
         Index index = null;
         try {
-            index = new Index(dbLoc, false);
+            index = new Index(dbLoc, IndexAccessMode.READ_WRITE_UNSAFE);
             HashMap<String, Integer> rv = index.add(toInsert);
             assertEquals(0, rv.get("0").intValue());
             assertEquals(index.get("0"), rv.get("0").intValue());
@@ -213,7 +213,7 @@ public class IndexTest {
     public void getBulk() throws Exception {
         Index index = null;
         try {
-            index = new Index(dbLoc, false);
+            index = new Index(dbLoc, IndexAccessMode.READ_WRITE_UNSAFE);
             int foo = index.add("foo");
             Vector<String> keys = new Vector<>();
             keys.add("foo");
@@ -230,7 +230,7 @@ public class IndexTest {
     public void getIdBulk() throws Exception {
         Index index = null;
         try {
-            index = new Index(dbLoc, false);
+            index = new Index(dbLoc, IndexAccessMode.READ_WRITE_UNSAFE);
             int foo = index.add("foo");
             int bar = index.add("bar");
             String[] keys = index.get(0, 3);
@@ -247,7 +247,7 @@ public class IndexTest {
     public void getIdBulkInvalid() throws Exception {
         Index index = null;
         try {
-            index = new Index(dbLoc, false);
+            index = new Index(dbLoc, IndexAccessMode.READ_WRITE_UNSAFE);
             index.get(0, 0);
         } finally {
             if (index != null) index.close();

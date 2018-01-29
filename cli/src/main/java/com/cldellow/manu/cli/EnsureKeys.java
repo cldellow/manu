@@ -2,6 +2,7 @@ package com.cldellow.manu.cli;
 
 import com.cldellow.manu.common.Common;
 import com.cldellow.manu.format.Index;
+import com.cldellow.manu.format.IndexAccessMode;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -20,7 +21,7 @@ public class EnsureKeys {
             return 1;
         }
 
-        Index i = new Index(args[0], false);
+        Index i = new Index(args[0], IndexAccessMode.READ_WRITE_SAFE);
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         Vector<String> keys = new Vector<String>();

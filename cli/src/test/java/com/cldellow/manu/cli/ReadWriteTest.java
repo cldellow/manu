@@ -2,6 +2,7 @@ package com.cldellow.manu.cli;
 
 import com.cldellow.manu.common.Common;
 import com.cldellow.manu.format.Index;
+import com.cldellow.manu.format.IndexAccessMode;
 import com.cldellow.manu.format.Reader;
 import com.cldellow.manu.format.Record;
 import org.junit.After;
@@ -31,7 +32,7 @@ public class ReadWriteTest {
 
     @Test
     public void testSparseRecord() throws Exception {
-        Index idx = new Index(keyLoc, false);
+        Index idx = new Index(keyLoc, IndexAccessMode.READ_WRITE_SAFE);
         idx.add("a");
         idx.add("b");
         idx.close();

@@ -60,7 +60,7 @@ public class Write {
             if (defs.isEmpty())
                 throw new NotEnoughArgsException();
 
-            Index index = new Index(indexFile, true);
+            Index index = new Index(indexFile, IndexAccessMode.READ_ONLY);
             numRows = index.getNumRows();
             fields = new int[numRows][][];
             for (int i = 0; i < numRows; i++)

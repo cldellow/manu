@@ -1,6 +1,7 @@
 package com.cldellow.manu.cli;
 
 import com.cldellow.manu.format.Index;
+import com.cldellow.manu.format.IndexAccessMode;
 import com.cldellow.manu.format.Reader;
 import com.cldellow.manu.format.Record;
 import com.cldellow.manu.common.NotEnoughArgsException;
@@ -33,7 +34,7 @@ public class Read {
             this.args = new ReadArgs(_args);
 
             Reader reader = new Reader(args.inputFile);
-            Index index = new Index(args.indexFile, true);
+            Index index = new Index(args.indexFile, IndexAccessMode.READ_WRITE_SAFE);
             boolean filterKeys = args.filterKeys();
             boolean[] printFields = args.printFields(reader.fieldNames);
 

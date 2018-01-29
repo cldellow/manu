@@ -3,24 +3,43 @@ package com.cldellow.manu.format;
 import java.sql.*;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Properties;
 import java.util.Vector;
 
 public class Index {
     private Connection conn = null;
+    private final IndexAccessMode mode;
 
-    public Index(String file, boolean readOnly) throws SQLException {
+    public Index(String file, IndexAccessMode mode) throws SQLException {
+        this.mode = mode;
         String maybeRo = "";
-        if (readOnly)
+        if (mode == IndexAccessMode.READ_ONLY)
             maybeRo = "?mode=ro";
 
-        conn = DriverManager.getConnection("jdbc:sqlite:file:" + file + maybeRo);
+        Properties p = new Properties();
+        if(mode != IndexAccessMode.READ_ONLY)
+            p.setProperty("journal_mode", "WAL");
+        conn = DriverManager.getConnection("jdbc:sqlite:file:" + file + maybeRo, p);
 
-        if (!readOnly)
+        if (mode != IndexAccessMode.READ_ONLY) {
             ensureSchema();
+            Statement st = conn.createStatement();
+            if(mode == IndexAccessMode.READ_WRITE_SAFE)
+                st.execute("PRAGMA synchronous=NORMAL");
+            else if(mode == IndexAccessMode.READ_WRITE_UNSAFE)
+                st.execute("PRAGMA synchronous=OFF");
+            st.close();
+        }
     }
 
     public void close() throws SQLException {
         if (conn != null) {
+            if(mode != IndexAccessMode.READ_ONLY) {
+                Statement st = conn.createStatement();
+                String sql = "PRAGMA journal_mode=DELETE";
+                st.execute(sql);
+                st.close();
+            }
             conn.close();
             conn = null;
         }
