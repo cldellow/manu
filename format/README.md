@@ -24,3 +24,19 @@ When serializing, a different encoder can be selected for each field in each rec
 - `1` - `PFOREncoder`, uses FastPFOR128
 - `2` - `AverageEncoder`, lossy, stores the # of non-zero points and sum of values
 - `3` - `SingleValueEncoder`, stores -128..127 in 1 byte, -32768..32767 in 2 bytes, otherwise uses 4 bytes. Only works for a single datapoint.
+
+### File size
+
+Manu only compresses the numeric values for individual fields. This provides a reasonable tradeoff
+between performance and size, but still leaves a lot on the table.
+
+You may be interested in using squashfs and lz4 compression:
+
+```
+$ sudo apt-get install squashfs-tools
+$ mksquashfs keys file1.manu file2.manu file3.manu files.fs -comp lz4 -Xhc
+$ sudo mount files.fs /mnt/manu
+$ ls /mnt/manu
+```
+
+lz4 compressed data can be decompressed with almost no overhead.
