@@ -34,7 +34,7 @@ public class Read {
             this.args = new ReadArgs(_args);
 
             Reader reader = new Reader(args.inputFile);
-            Index index = new Index(args.indexFile, IndexAccessMode.READ_WRITE_SAFE);
+            Index index = new Index(args.indexFile, IndexAccessMode.READ_ONLY);
             boolean filterKeys = args.filterKeys();
             boolean[] printFields = args.printFields(reader.fieldNames);
 
