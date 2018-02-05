@@ -4,6 +4,12 @@ import me.lemire.integercompression.IntWrapper;
 
 import java.nio.ByteBuffer;
 
+/**
+ * An encoder which encodes a single integer in a space-efficient manner.
+ *
+ * Values between -128 and 127 take 1 byte. Between -32,768 and 32,767 take 2 bytes.
+ * All other values take 4 bytes.
+ */
 public class SingleValueEncoder implements FieldEncoder {
     public int getId() {
         return 3;

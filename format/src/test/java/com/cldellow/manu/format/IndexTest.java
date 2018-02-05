@@ -227,6 +227,20 @@ public class IndexTest {
     }
 
     @Test
+    public void getBulkEmpty() throws Exception {
+        Index index = null;
+        try {
+            index = new Index(dbLoc, IndexAccessMode.READ_WRITE_UNSAFE);
+            Vector<String> keys = new Vector<>();
+            HashMap<String, Integer> rv = index.get(keys);
+            assertEquals(0, rv.size());
+        } finally {
+            if (index != null) index.close();
+        }
+    }
+
+
+    @Test
     public void getIdBulk() throws Exception {
         Index index = null;
         try {

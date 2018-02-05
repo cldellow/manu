@@ -3,7 +3,7 @@ package com.cldellow.manu.serve;
 import com.cldellow.manu.common.ArgHolder;
 import com.cldellow.manu.common.NotEnoughArgsException;
 
-public class ServerArgs {
+class ServerArgs {
     int port = 6268;
     String datadir = "./datadir";
 

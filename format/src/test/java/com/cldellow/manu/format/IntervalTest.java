@@ -58,9 +58,13 @@ public class IntervalTest {
                 Interval.DAY.truncate(new DateTime(2012, 1, 2, 12, 34, 56, 123)));
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void truncateWeek() {
-        Interval.WEEK.truncate(new DateTime(2012, 1, 2, 12, 34, 56, 123));
+        assertEquals(
+                new DateTime(2011, 12, 29, 0, 0, 0, 0),
+                Interval.WEEK.truncate(new DateTime(2012, 1, 2, 12, 34, 56, 123))
+        );
+
     }
 
     @Test
@@ -97,6 +101,7 @@ public class IntervalTest {
         assertEquals(1665958, Interval.MINUTE.difference(s1, s2));
         assertEquals(27766, Interval.HOUR.difference(s1, s2));
         assertEquals(1157, Interval.DAY.difference(s1, s2));
+        assertEquals(165, Interval.WEEK.difference(s1, s2));
         assertEquals(38, Interval.MONTH.difference(s1, s2));
         assertEquals(12, Interval.QUARTER.difference(s1, s2));
         assertEquals(3, Interval.YEAR.difference(s1, s2));
@@ -104,6 +109,7 @@ public class IntervalTest {
         assertEquals(0, Interval.MINUTE.difference(s1,s1));
         assertEquals(0, Interval.HOUR.difference(s1,s1));
         assertEquals(0, Interval.DAY.difference(s1,s1));
+        assertEquals(0, Interval.WEEK.difference(s1,s1));
         assertEquals(0, Interval.MONTH.difference(s1,s1));
         assertEquals(0, Interval.QUARTER.difference(s1,s1));
         assertEquals(0, Interval.YEAR.difference(s1,s1));
@@ -111,18 +117,9 @@ public class IntervalTest {
         assertEquals(1, Interval.MINUTE.difference(s1,s1.plusMinutes(1)));
         assertEquals(1, Interval.HOUR.difference(s1,s1.plusHours(1)));
         assertEquals(1, Interval.DAY.difference(s1,s1.plusDays(1)));
+        assertEquals(1, Interval.WEEK.difference(s1,s1.plusWeeks(1)));
         assertEquals(1, Interval.MONTH.difference(s1,s1.plusMonths(1)));
         assertEquals(1, Interval.QUARTER.difference(s1,s1.plusMonths(3)));
         assertEquals(1, Interval.YEAR.difference(s1,s1.plusYears(1)));
-
     }
-
-    @Test(expected = UnsupportedOperationException.class)
-    public void differenceWeek() {
-        DateTime s1 = new DateTime(2012, 1, 2, 3, 4, 5);
-        DateTime s2 = new DateTime(2015, 3, 4, 1, 2, 3);
-
-        Interval.WEEK.difference(s1, s2);
-    }
-
 }

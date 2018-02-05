@@ -1,6 +1,6 @@
 package com.cldellow.manu.format;
 
-public class LengthOps {
+class LengthOps {
     public static byte encode(byte id, int len) {
         if (id > 63 || id < 0)
             throw new IllegalArgumentException("id " + id + " is out of range (must be 0..63)");

@@ -1,16 +1,23 @@
 package com.cldellow.manu.format;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
 
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The interval of time between datapoints in a Manu file.
+ */
 public enum Interval {
     MINUTE(0),
     HOUR(1),
     DAY(2),
+    /**
+     * Not fully supported.
+     */
     WEEK(3),
     MONTH(4),
     QUARTER(5),
@@ -38,6 +45,14 @@ public enum Interval {
         return value;
     }
 
+    /**
+     * Return the date {@code n} intervals after {@code from}.
+     * .
+     *
+     * @param from The date from which to start counting.
+     * @param n    The number of intervals of this type to add.
+     * @return The date {@code n} intervals after {@code from}.
+     */
     public DateTime add(DateTime from, int n) {
         if (this == MINUTE)
             return from.plusMinutes(n);
@@ -55,10 +70,14 @@ public enum Interval {
         return from.plusYears(n);
     }
 
+    /**
+     * Returns the number of intervals between {@code from} and {@code to}.
+     *
+     * @param from The start date.
+     * @param to   The final date.
+     * @return The number of intervals between {@code from} and {@code to}.
+     */
     public int difference(DateTime from, DateTime to) {
-        if(this==WEEK)
-            throw new UnsupportedOperationException();
-
         from = truncate(from);
         to = truncate(to);
 
@@ -67,6 +86,8 @@ public enum Interval {
             pt = PeriodType.hours();
         else if (this == DAY)
             pt = PeriodType.days();
+        else if (this == WEEK)
+            pt = PeriodType.weeks();
         else if (this == MONTH || this == QUARTER)
             pt = PeriodType.months();
         else if (this == YEAR)
@@ -79,6 +100,8 @@ public enum Interval {
             return p.getHours();
         else if (this == DAY)
             return p.getDays();
+        else if (this == WEEK)
+            return p.getWeeks();
         else if (this == MONTH)
             return p.getMonths();
         else if (this == QUARTER)
@@ -87,8 +110,14 @@ public enum Interval {
         return p.getYears();
     }
 
-    public DateTime truncate(DateTime dt) {
-        DateTime rv = dt.withSecondOfMinute(0).withMillisOfSecond(0);
+    /**
+     * Truncates {@code date} such that it lies on an interval boundary.
+     *
+     * @param date The date to be truncated.
+     * @return The truncated value.
+     */
+    public DateTime truncate(DateTime date) {
+        DateTime rv = date.withSecondOfMinute(0).withMillisOfSecond(0);
 
         if (this == MINUTE) {
             return rv;
@@ -102,8 +131,12 @@ public enum Interval {
         if (this == DAY)
             return rv;
 
-        if (this == WEEK)
-            throw new UnsupportedOperationException();
+        if (this == WEEK) {
+            while (rv.getDayOfWeek() != DateTimeConstants.THURSDAY)
+                rv = rv.plusDays(-1);
+
+            return rv;
+        }
 
         rv = rv.withDayOfMonth(1);
 

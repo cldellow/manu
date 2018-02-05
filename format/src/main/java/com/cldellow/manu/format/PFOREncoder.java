@@ -7,6 +7,9 @@ import me.lemire.integercompression.VariableByte;
 
 import java.nio.ByteBuffer;
 
+/**
+ * An encoder which uses {@link me.lemire.integercompression.FastPFOR128} to compress integers.
+ */
 public class PFOREncoder implements FieldEncoder {
     private int[] tmp = null;
     private SkippableComposition compressor = null;

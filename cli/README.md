@@ -2,15 +2,15 @@
 
 ## ensure-keys
 
-`./bin/ensure-keys keys.index < list-of-keys`
+`./bin/ensure-keys keys < list-of-keys`
 
-Reads a list of newline-separated keys from `list-of-keys` and ensures they exist in `keys.index`.
+Reads a list of newline-separated keys from `list-of-keys` and ensures they exist in `keys`.
 
-`keys.index` will be created if it does not exist.
+`keys` will be created if it does not exist.
 
 ## write
 
-`./bin/write keys.index output-file timestamp interval [[field-kind-1] [key-kind-1] field-name-1 field-source-1],  ...]`
+`./bin/write keys output timestamp interval [[field-kind-1] [key-kind-1] field-name-1 field-source-1],  ...]`
 
 `field-kind` is one of:
 
@@ -26,11 +26,11 @@ Reads a list of newline-separated keys from `list-of-keys` and ensures they exis
 
 eg:
 
-`./bin/write keys.index output 2017-01-01T00:00Z hour --lossy pageviews pageviews-file`
+`./bin/write keys output 2017-01-01T00:00Z hour --lossy pageviews pageviews-file`
 
 ## read
 
-`./bin/read keys.index input-file [key-kind] [[--key-id key-id-1], ...] [[--key-name needle-1], ...] [[--key-regex needle-1], ...] [[field-name-1], ...]`
+`./bin/read keys input [key-kind] [[--key-id key-id-1], ...] [[--key-name needle-1], ...] [[--key-regex needle-1], ...] [[field-name-1], ...]`
 
 `key-kind` is one of:
 
@@ -42,3 +42,16 @@ results to only keys that match those clauses.
 
 If no field names are specified, all fields are printed in the order
 they are present in the file.
+
+## merge
+
+`./bin/merge output input-1 ... input-N [--lossy[=fields]]`
+
+The output file contains the union of fields in the inputs, for the minimal time range
+that spans all the input files.
+
+`--lossy` indicates which fields can be made lossy.
+
+If a datapoint is present in multiple files, the last file on the command line wins.
+
+The order of fields in the output file is based on the order of discovery in the input files.

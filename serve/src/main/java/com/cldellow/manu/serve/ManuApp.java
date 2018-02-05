@@ -11,7 +11,7 @@ public class ManuApp {
         System.exit(rv);
     }
 
-    public static int entrypoint(String[] _args) throws Exception {
+    static int entrypoint(String[] _args) throws Exception {
         if(Common.contains(_args, "--help")) {
             usage();
             return 1;
@@ -32,7 +32,7 @@ public class ManuApp {
         return 0;
     }
 
-    public static void usage() {
+    static void usage() {
         System.err.println("./serve/bin/serve [--port 6268] [--datadir ./datadir]");
     }
 }

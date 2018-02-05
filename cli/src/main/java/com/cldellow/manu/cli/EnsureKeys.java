@@ -8,7 +8,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Vector;
 
-public class EnsureKeys {
+class EnsureKeys {
     String[] args;
 
     public EnsureKeys(String[] args) {

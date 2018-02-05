@@ -1,6 +1,6 @@
 package com.cldellow.manu.cli;
 
-public enum KeyKind {
+enum KeyKind {
     KEY(0),
     ID(1);
 

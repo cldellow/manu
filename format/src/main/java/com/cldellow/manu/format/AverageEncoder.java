@@ -4,6 +4,12 @@ import me.lemire.integercompression.IntWrapper;
 
 import java.nio.ByteBuffer;
 
+/**
+ * An encoder which encodes a lossy summary of the integers.
+ *
+ * This encoder accurately stores the sum and number of non-zero entries in the list;
+ * all other data is lost.
+ */
 public class AverageEncoder implements FieldEncoder {
     public static boolean eligible(int[] data) {
         int sum = 0;

@@ -9,10 +9,10 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Comparator;
 
-public class Collection {
+class Collection {
     public final String dir;
     public final Index index;
-    public final Reader[] readers;
+    public final ManuReader[] readers;
 
     public Collection(String dir) throws SQLException, FileNotFoundException, IOException, NotManuException {
         this.dir = dir;
@@ -30,40 +30,40 @@ public class Collection {
                 numFiles++;
         }
 
-        this.readers = new Reader[numFiles];
+        this.readers = new ManuReader[numFiles];
         numFiles = 0;
         for (int i = 0; i < files.length; i++) {
             if (files[i].getName().endsWith((".manu")))
-                readers[numFiles++] = new Reader(files[i].getAbsolutePath());
+                readers[numFiles++] = new ManuReader(files[i].getAbsolutePath());
         }
 
         validateReaders(dir, readers);
     }
 
-    public static void validateReaders(String dir, Reader[] readers) {
+    public static void validateReaders(String dir, ManuReader[] readers) {
         if (readers.length == 0)
             throw new IllegalArgumentException(String.format(
                     "%s doesn't have any .manu files", dir));
 
-        Interval interval = readers[0].interval;
+        Interval interval = readers[0].getInterval();
         for(int i = 0; i < readers.length; i++) {
-            if(interval != readers[i].interval) {
+            if(interval != readers[i].getInterval()) {
                 throw new IllegalArgumentException(String.format(
                         "%s has interval %s but %s has interval %s",
-                        readers[0].fileName,
-                        readers[0].interval,
-                        readers[i].fileName,
-                        readers[i].interval));
+                        readers[0].getFileName(),
+                        readers[0].getInterval(),
+                        readers[i].getFileName(),
+                        readers[i].getInterval()));
             }
         }
 
         // Sort them chronologically
         Arrays.sort(readers, new ReaderComparator());
         for(int i = 1; i < readers.length; i++) {
-            if(!readers[i-1].to.equals(readers[i].from))
+            if(!readers[i-1].getTo().equals(readers[i].getFrom()))
                 throw new IllegalArgumentException(String.format(
                         "%s: %s is not immediately after %s",
-                        new File(dir).getName(), readers[i-1].fileName, readers[i].fileName));
+                        new File(dir).getName(), readers[i-1].getFileName(), readers[i].getFileName()));
         }
     }
 
@@ -88,12 +88,12 @@ public class Collection {
         index.close();
     }
 
-    private static class ReaderComparator implements Comparator<Reader> {
+    private static class ReaderComparator implements Comparator<ManuReader> {
         @Override
-        public int compare(Reader reader, Reader t1) {
-            if(reader.epochMs == t1.epochMs)
+        public int compare(ManuReader reader, ManuReader t1) {
+            if(reader.getFrom().getMillis() == t1.getFrom().getMillis())
                 return 0;
-            if(reader.epochMs > t1.epochMs)
+            if(reader.getFrom().getMillis() > t1.getFrom().getMillis())
                 return 1;
             return -1;
         }

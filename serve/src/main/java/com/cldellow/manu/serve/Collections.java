@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Collections {
+class Collections {
     public static Map<String, Collection> discover(String datadir) throws Exception {
         Map<String, Collection> rv = new HashMap<>();
         File f = new File(datadir);

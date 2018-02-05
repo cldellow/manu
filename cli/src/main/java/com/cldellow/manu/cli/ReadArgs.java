@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 import com.cldellow.manu.common.ArgHolder;
 import com.cldellow.manu.common.NotEnoughArgsException;
 
-public class ReadArgs {
+class ReadArgs {
     public String indexFile;
     public String inputFile;
     public KeyKind keyKind = KeyKind.KEY;

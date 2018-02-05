@@ -153,6 +153,7 @@ public class Writer {
             byte newId = LengthOps.encode((byte) fe.getId(), length);
             dos.writeByte(newId);
             if (fe.isVariableLength() && field != numFields - 1) {
+
                 int lengthSize = LengthOps.lengthSize(length);
                 if (lengthSize == 0)
                     dos.writeByte(length);

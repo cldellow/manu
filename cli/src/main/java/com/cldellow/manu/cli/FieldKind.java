@@ -2,7 +2,7 @@ package com.cldellow.manu.cli;
 
 import com.cldellow.manu.format.FieldType;
 
-public enum FieldKind {
+enum FieldKind {
     INT(0, FieldType.INT),
     FIXED1(1, FieldType.FIXED1),
     FIXED2(2, FieldType.FIXED2),

@@ -2,14 +2,14 @@ package com.cldellow.manu.cli;
 
 import com.cldellow.manu.format.Index;
 import com.cldellow.manu.format.IndexAccessMode;
-import com.cldellow.manu.format.Reader;
+import com.cldellow.manu.format.ManuReader;
 import com.cldellow.manu.format.Record;
 import com.cldellow.manu.common.NotEnoughArgsException;
 
 import java.sql.SQLException;
 import java.util.Iterator;
 
-public class Read {
+class Read {
     private final int KEY_BATCH_SIZE = 128;
 
     final String[] _args;
@@ -29,18 +29,22 @@ public class Read {
 
         return keyNames[id - keyNameIndex];
     }
+
     public int entrypoint() throws Exception {
         try {
             this.args = new ReadArgs(_args);
 
-            Reader reader = new Reader(args.inputFile);
+            ManuReader reader = new ManuReader(args.inputFile);
             Index index = new Index(args.indexFile, IndexAccessMode.READ_ONLY);
             boolean filterKeys = args.filterKeys();
-            boolean[] printFields = args.printFields(reader.fieldNames);
+            String[] fieldNames = new String[reader.getNumFields()];
+            for(int i = 0; i < fieldNames.length; i++)
+                fieldNames[i] = reader.getFieldName(i);
+            boolean[] printFields = args.printFields(fieldNames);
 
             // TODO: consider only doing a full scan for --key-regex,
             // for --key-id and --key-name, convert to ID and lookup by ID
-            Iterator<Record> it = reader.records;
+            Iterator<Record> it = reader.getRecords();
             while (it.hasNext()) {
                 Record record = it.next();
 
@@ -88,9 +92,9 @@ public class Read {
                         sb.append(key);
                     }
                     int[] datapoints = record.getValues(i);
-                    for (int j = 0; j < reader.numDatapoints; j++) {
+                    for (int j = 0; j < reader.getNumDatapoints(); j++) {
                         sb.append('\t');
-                        if(datapoints[j] != reader.nullValue)
+                        if(datapoints[j] != reader.getNullValue())
                             sb.append(datapoints[j]);
                     }
                     System.out.println(sb.toString());

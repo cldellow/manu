@@ -1,6 +1,6 @@
 package com.cldellow.manu.format;
 
-public class ThreadEncoders {
+class ThreadEncoders {
     private static final ThreadLocal<FieldEncoder[]> encoders =
             new ThreadLocal<FieldEncoder[]>() {
                 @Override protected FieldEncoder[] initialValue() {

@@ -2,7 +2,7 @@ package com.cldellow.manu.serve;
 
 import com.cldellow.manu.format.FieldType;
 import com.cldellow.manu.format.Interval;
-import com.cldellow.manu.format.Reader;
+import com.cldellow.manu.format.ManuReader;
 import com.cldellow.manu.format.Record;
 import com.codahale.metrics.JmxReporter;
 import com.codahale.metrics.Meter;
@@ -23,7 +23,7 @@ import java.util.Vector;
 
 import static spark.Spark.*;
 
-public class Server {
+class Server {
     private final MetricRegistry metrics = new MetricRegistry();
     final JmxReporter reporter = JmxReporter.forRegistry(metrics).build();
     private final Meter requests = metrics.meter("requests");
@@ -64,17 +64,16 @@ public class Server {
         gen.writeStringField("name", name);
         gen.writeFieldName("fields");
         gen.writeStartArray();
-        String[] fields = collection.readers[0].fieldNames;
-        for (int i = 0; i < fields.length; i++)
-            gen.writeString(fields[i]);
+        for (int i = 0; i < collection.readers[0].getNumFields(); i++)
+            gen.writeString(collection.readers[0].getFieldName(i));
         gen.writeEndArray();
-        gen.writeStringField("interval", collection.readers[0].interval.name().toLowerCase());
+        gen.writeStringField("interval", collection.readers[0].getInterval().name().toLowerCase());
         gen.writeStringField(
                 "from",
-                fmt.print(collection.readers[0].from));
+                fmt.print(collection.readers[0].getFrom()));
         gen.writeStringField(
                 "to",
-                fmt.print(collection.readers[collection.readers.length - 1].to));
+                fmt.print(collection.readers[collection.readers.length - 1].getTo()));
         gen.writeEndObject();
         gen.flush();
         gen.close();
@@ -89,8 +88,8 @@ public class Server {
         String errMsg = "";
 
         try {
-            Reader[] readers = collection.readers;
-            Interval interval = readers[0].interval;
+            ManuReader[] readers = collection.readers;
+            Interval interval = readers[0].getInterval();
 
             errMsg = "error parsing `from` parameter";
             DateTime from = interval.truncate(iso8601.parseDateTime(request.queryParams("from")));
@@ -101,21 +100,21 @@ public class Server {
             if (to.isBefore(from))
                 throw new Exception(errMsg);
 
-            if (from.isBefore(readers[0].from))
-                from = readers[0].from;
+            if (from.isBefore(readers[0].getFrom()))
+                from = readers[0].getFrom();
 
-            if (to.isAfter(readers[readers.length - 1].to))
-                to = readers[readers.length - 1].to;
+            if (to.isAfter(readers[readers.length - 1].getTo()))
+                to = readers[readers.length - 1].getTo();
             errMsg = "error parsing `field` parameters";
             String field[] = request.queryParamsValues("field");
             Vector<Integer> fieldIds = new Vector<>();
             if (field == null) {
-                for (int i = 0; i < readers[0].numFields; i++)
+                for (int i = 0; i < readers[0].getNumFields(); i++)
                     fieldIds.add(i);
             } else {
-                for (int i = 0; i < readers[0].numFields; i++)
+                for (int i = 0; i < readers[0].getNumFields(); i++)
                     for (int j = 0; j < field.length; j++)
-                        if (field[j].equals(readers[0].fieldNames[i]))
+                        if (field[j].equals(readers[0].getFieldName(i)))
                             fieldIds.add(i);
             }
 
@@ -148,7 +147,7 @@ public class Server {
 
 
             int numMergedDatapoints = interval.difference(from, to);
-            int startIndex = interval.difference(readers[0].from, from);
+            int startIndex = interval.difference(readers[0].getFrom(), from);
             int endIndex = startIndex + numMergedDatapoints;
             int[] rv = new int[numMergedDatapoints];
             int[] zeroes = new int[numMergedDatapoints];
@@ -159,28 +158,28 @@ public class Server {
                 gen.writeStartObject();
                 for (int j = 0; j < fieldIds.size(); j++) {
                     int fieldId = fieldIds.get(j);
-                    gen.writeFieldName(readers[0].fieldNames[fieldId]);
-                    FieldType fieldType = readers[0].fieldTypes[fieldId];
+                    gen.writeFieldName(readers[0].getFieldName(fieldId));
+                    FieldType fieldType = readers[0].getFieldType(fieldId);
 
                     System.arraycopy(zeroes, 0, rv, 0, rv.length);
                     for (int k = 0; k < readers.length; k++) {
-                        int readerStart = interval.difference(readers[0].from, readers[k].from);
-                        int readerEnd = interval.difference(readers[0].from, readers[k].to);
+                        int readerStart = interval.difference(readers[0].getFrom(), readers[k].getFrom());
+                        int readerEnd = interval.difference(readers[0].getFrom(), readers[k].getTo());
 
                         if (readerStart <= endIndex && startIndex <= readerEnd) {
                             int collectionStart = startIndex - readerStart;
                             if (collectionStart < 0)
                                 collectionStart = 0;
 
-                            int collectionLength = Math.min(readers[k].numDatapoints,
+                            int collectionLength = Math.min(readers[k].getNumDatapoints(),
                                     endIndex - (readerStart + collectionStart));
 
-                            if (collectionLength + collectionStart > readers[k].numDatapoints)
+                            if (collectionLength + collectionStart > readers[k].getNumDatapoints())
                                 collectionLength--;
 
                             int[] values = null;
-                            if (readers[k].recordOffset <= id &&
-                                    (readers[k].recordOffset + readers[k].numRecords) > id) {
+                            if (readers[k].getRecordOffset() <= id &&
+                                    (readers[k].getRecordOffset() + readers[k].getNumRecords()) > id) {
                                 Record r = readers[k].get(id);
                                 if (r != null)
                                     values = r.getValues(fieldId);
@@ -198,14 +197,14 @@ public class Server {
                                 );
                             else {
                                 for (int l = 0; l < collectionLength; l++)
-                                    rv[l + readerStart + collectionStart - startIndex] = readers[0].nullValue;
+                                    rv[l + readerStart + collectionStart - startIndex] = readers[0].getNullValue();
                             }
                         }
                     }
                     gen.writeStartArray();
                     for (int k = 0; k < rv.length; k++) {
                         int intVal = rv[k];
-                        if (intVal == readers[0].nullValue)
+                        if (intVal == readers[0].getNullValue())
                             gen.writeNull();
                         else {
                             if (fieldType == FieldType.INT)

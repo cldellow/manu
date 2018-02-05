@@ -1,16 +1,22 @@
 package com.cldellow.manu.format;
 
 import com.cldellow.manu.common.Common;
+import com.pholser.junit.quickcheck.Property;
+import com.pholser.junit.quickcheck.generator.Size;
+import com.pholser.junit.quickcheck.runner.JUnitQuickcheck;
 import org.junit.After;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Random;
 
 import static junit.framework.TestCase.*;
 
+@RunWith(JUnitQuickcheck.class)
 public class ReaderTest {
     private String dbLoc = "/tmp/manu-test.data";
 
@@ -45,8 +51,8 @@ public class ReaderTest {
                 fieldNames,
                 fieldTypes,
                 Arrays.asList(records).iterator());
-        Reader r = new Reader(dbLoc);
-        return r.records;
+        ManuReader r = new ManuReader(dbLoc);
+        return r.getRecords();
     }
 
     @Test(expected = NoSuchElementException.class)
@@ -79,12 +85,12 @@ public class ReaderTest {
 
     @Test(expected = NotManuException.class)
     public void testNotManu() throws Exception {
-        new Reader(new Common().getFile("not-a-manu"));
+        new ManuReader(new Common().getFile("not-a-manu"));
     }
 
     @Test(expected = NotManuException.class)
     public void testNotManu2() throws Exception {
-        new Reader(new Common().getFile("not-a-manu2"));
+        new ManuReader(new Common().getFile("not-a-manu2"));
     }
 
     @Test
@@ -110,11 +116,11 @@ public class ReaderTest {
                     new FieldType[]{FieldType.INT},
                     Arrays.asList(inRecords).iterator());
 
-            Reader r = new Reader(dbLoc);
+            ManuReader r = new ManuReader(dbLoc);
             Record[] outRecords = new Record[5]; //r.records.next(), r.records.next(), r.records.next()};
 
-            while(r.records.hasNext()) {
-                Record rec = r.records.next();
+            while(r.getRecords().hasNext()) {
+                Record rec = r.getRecords().next();
                 outRecords[rec.getId()] = rec;
             }
 
@@ -132,6 +138,90 @@ public class ReaderTest {
             }
 
             cleanup();
+        }
+    }
+
+    @Property(trials=5)
+    public void testVariableSize512(
+            int @Size(min=512, max=512)[] f1,
+            int @Size(min=512, max=512)[] f2,
+            int @Size(min=512, max=512)[] f3,
+            int @Size(min=512, max=512)[] f4
+    ) throws Exception {
+        testVariableSize(f1, f2, f3, f4);
+    }
+
+    @Property(trials=5)
+    public void testVariableSize20K(
+            int @Size(min=20480, max=20480)[] f1,
+            int @Size(min=20480, max=20480)[] f2,
+            int @Size(min=20480, max=20480)[] f3,
+            int @Size(min=20480, max=20480)[] f4
+    ) throws Exception {
+        testVariableSize(f1, f2, f3, f4);
+    }
+
+
+    @Test(expected = NoSuchElementException.class)
+    public void testGetOutOfBounds() throws Exception {
+        SimpleRecord r1 = new SimpleRecord(1, new FieldEncoder[] { new CopyEncoder()}, new int[][] { new int[] { 1 }});
+
+        Writer.write(
+                dbLoc,
+                0L,
+                Interval.DAY,
+                new String[] { "field1"},
+                new FieldType[] { FieldType.INT},
+                Arrays.asList(new Record[] { r1}).iterator());
+
+        Reader reader = new ManuReader(dbLoc);
+        reader.get(1024);
+    }
+
+    void testVariableSize(int[] f1, int[] f2, int[] f3, int[] f4) throws Exception {
+        int[][] values1 = new int[][] { f1, f2};
+        SimpleRecord r1 = new SimpleRecord(1, new FieldEncoder[] { new CopyEncoder(), new CopyEncoder() }, values1);
+
+        int[][] values2 = new int[][] { f3, f4};
+        SimpleRecord r2 = new SimpleRecord(2, new FieldEncoder[] { new CopyEncoder(), new CopyEncoder() }, values2);
+
+        Writer.write(
+                dbLoc,
+                0L,
+                Interval.DAY,
+                new String[] { "field1", "field2"},
+                new FieldType[] { FieldType.INT, FieldType.INT },
+                Arrays.asList(new Record[] { r1, r2 }).iterator());
+
+        Reader reader = new ManuReader(dbLoc);
+        RecordIterator it = reader.getRecords();
+        assertTrue(it.hasNext());
+        Record r12 = it.next();
+        assertEquals(f1.length, reader.getNumDatapoints());
+
+        int[] f12 = r12.getValues(0);
+        assertEquals(f1.length, f12.length);
+        for(int i = 0; i < f12.length; i++)
+            assertEquals(f1[i], f12[i]);
+
+        int[] f22 = r12.getValues(1);
+        assertEquals(f2.length, f22.length);
+        for(int i = 0; i < f22.length; i++)
+            assertEquals(f2[i], f22[i]);
+
+        assertTrue(it.hasNext());
+        Record r22 = it.next();
+        assertFalse(it.hasNext());
+
+        int[] f32 = r22.getValues(0);
+        assertEquals(f3.length, f32.length);
+        for(int i = 0; i < f32.length; i++)
+            assertEquals(f3[i], f32[i]);
+
+        int[] f42 = r22.getValues(1);
+        assertEquals(f4.length, f42.length);
+        for(int i = 0; i < f42.length; i++) {
+            assertEquals(f4[i], f42[i]);
         }
     }
 
@@ -158,7 +248,7 @@ public class ReaderTest {
                     new FieldType[]{FieldType.INT},
                     Arrays.asList(inRecords).iterator());
 
-            Reader r = new Reader(dbLoc);
+            ManuReader r = new ManuReader(dbLoc);
             Record[] outRecords = new Record[5]; //r.records.next(), r.records.next(), r.records.next()};
 
             for (int j = 0; j < 5; j++) {
@@ -240,21 +330,21 @@ public class ReaderTest {
                 fieldNames,
                 fieldTypes,
                 Arrays.asList(inRecords).iterator());
-        Reader reader = new Reader(dbLoc);
-        assertEquals(16, reader.rowListSize);
-        assertEquals((long) epochMs, reader.epochMs);
-        assertEquals(Integer.MIN_VALUE, reader.nullValue);
-        assertEquals(numDatapoints, reader.numDatapoints);
-        assertEquals(interval, reader.interval);
-        assertEquals(recordOffset, reader.recordOffset);
-        assertEquals(numRecords, reader.numRecords);
-        assertEquals(numFields, reader.numFields);
+        ManuReader reader = new ManuReader(dbLoc);
+        assertEquals(16, reader.getRowListSize());
+        assertEquals((long) epochMs, reader.getFrom().getMillis());
+        assertEquals(Integer.MIN_VALUE, reader.getNullValue());
+        assertEquals(numDatapoints, reader.getNumDatapoints());
+        assertEquals(interval, reader.getInterval());
+        assertEquals(recordOffset, reader.getRecordOffset());
+        assertEquals(numRecords, reader.getNumRecords());
+        assertEquals(numFields, reader.getNumFields());
         for (int i = 0; i < numFields; i++) {
-            assertEquals(fieldNames[i], reader.fieldNames[i]);
-            assertEquals(fieldTypes[i], reader.fieldTypes[i]);
+            assertEquals(fieldNames[i], reader.getFieldName(i));
+            assertEquals(fieldTypes[i], reader.getFieldType(i));
         }
 
-        Reader.RecordIterator records = reader.records;
+        RecordIterator records = reader.getRecords();
         int recordIndex = recordOffset;
         while (records.hasNext()) {
             Record r = records.next();

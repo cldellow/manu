@@ -11,7 +11,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import java.util.Collection;
 import java.util.Vector;
 
-public class Parsers {
+class Parsers {
     public static Interval interval(String name) {
         if (name.equals("minute"))
             return Interval.MINUTE;

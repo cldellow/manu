@@ -1,6 +1,6 @@
 package com.cldellow.manu.cli;
 
-public class FieldDef {
+class FieldDef {
     private KeyKind keyKind = KeyKind.KEY;
     private FieldKind fieldKind = FieldKind.INT;
     private String name = null;

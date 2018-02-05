@@ -3,10 +3,22 @@ package com.cldellow.manu.format;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The kind of number stored in a field.
+ */
 public enum FieldType {
-    INT(0),     // an int
-    FIXED1(1),  // an int, divided by 10 on output
-    FIXED2(2);  // an int, divided by 100 on output
+    /**
+     * An integer, for example, 42.
+     */
+    INT(0),
+    /**
+     * A number with one decimal point of precision, for example, 4.2.
+     */
+    FIXED1(1),
+    /**
+     * A number with two decimal points of precision, for example, 0.42.
+     */
+    FIXED2(2);
 
     private static Map map = new HashMap();
 

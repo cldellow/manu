@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.Vector;
 
-public class Write {
+class Write {
     private final String[] _args;
     private final FieldEncoder pfor = new PFOREncoder();
     private final FieldEncoder single = new SingleValueEncoder();
@@ -130,7 +130,7 @@ public class Write {
         return 0;
     }
 
-    class RecordIterator implements Iterator<Record> {
+    private class RecordIterator implements Iterator<Record> {
         int index = 0;
 
         public boolean hasNext() {

@@ -3,15 +3,12 @@ package com.cldellow.manu.cli;
 import com.cldellow.manu.common.Common;
 import com.cldellow.manu.format.Index;
 import com.cldellow.manu.format.IndexAccessMode;
-import com.cldellow.manu.format.Reader;
+import com.cldellow.manu.format.ManuReader;
 import com.cldellow.manu.format.Record;
 import org.junit.After;
 import org.junit.Test;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 import static junit.framework.TestCase.*;
 
@@ -40,11 +37,11 @@ public class ReadWriteTest {
         Write w = new Write(new String[] {keyLoc, dbLoc, "0", "hour", "field", new Common().getFile("b-1.tsv")});
         w.entrypoint();
 
-        Reader reader = new Reader(dbLoc);
-        Record r = reader.records.next();
+        ManuReader reader = new ManuReader(dbLoc);
+        Record r = reader.getRecords().next();
         assertNotNull(r);
         assertEquals(1, r.getId());
-        assertFalse(reader.records.hasNext());
+        assertFalse(reader.getRecords().hasNext());
 
     }
 }

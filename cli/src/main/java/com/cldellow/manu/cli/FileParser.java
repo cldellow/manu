@@ -10,7 +10,7 @@ import java.util.Iterator;
 import com.cldellow.manu.cli.FileParserState;
 import static com.cldellow.manu.cli.FileParserState.*;
 
-public class FileParser {
+class FileParser {
     private final RandomAccessFile raf;
     private final ByteBuffer buffer;
     private final String fileName;

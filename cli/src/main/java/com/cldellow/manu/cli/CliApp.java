@@ -23,6 +23,8 @@ public class CliApp {
         switch(_args[0]) {
             case "ensure-keys":
                 return new EnsureKeys(cmdArgs).entrypoint();
+            case "merge":
+                return new Merge(cmdArgs).entrypoint();
             case "read":
                 return new Read(cmdArgs).entrypoint();
             case "write":
@@ -33,11 +35,12 @@ public class CliApp {
         }
     }
 
-    public void usage() {
+    private void usage() {
         System.err.println("manu-cli <command> <args>");
         System.err.println();
         System.err.println("Valid commands:");
         System.err.println("  ensure-keys");
+        System.err.println("  merge");
         System.err.println("  read");
         System.err.println("  write");
     }

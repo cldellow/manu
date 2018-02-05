@@ -4,8 +4,11 @@ import me.lemire.integercompression.IntWrapper;
 
 import java.nio.ByteBuffer;
 
-// A dumb encoder - just copies src to dst; useful
-// for validating the rest of the system.
+/**
+ * An encoder which copies the input exactly as it's represented in memory.
+ *
+ * This encoder should only be used for integration testing, not actual data storage.
+ */
 public class CopyEncoder implements FieldEncoder {
     private int[] tmp = null;
 

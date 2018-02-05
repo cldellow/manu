@@ -4,7 +4,7 @@ import me.lemire.integercompression.IntWrapper;
 
 import java.nio.ByteBuffer;
 
-public class EncodedRecord implements Record {
+class EncodedRecord implements Record {
     private final int id;
     private final ByteBuffer buffer;
     private final int numFields;
