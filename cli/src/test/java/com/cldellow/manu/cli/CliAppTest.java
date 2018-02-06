@@ -17,4 +17,10 @@ public class CliAppTest {
         assertEquals(1, rv);
     }
 
+    @Test
+    public void merge() throws Exception {
+        int rv = new CliApp(new String[]{"merge", "--help"}).entrypoint();
+        assertEquals(1, rv);
+    }
+
 }

@@ -12,24 +12,28 @@ public class ManuApp {
     }
 
     static int entrypoint(String[] _args) throws Exception {
-        if(Common.contains(_args, "--help")) {
-            usage();
-            return 1;
-        }
-
-        ServerArgs args = new ServerArgs(_args);
-        Map<String, Collection> collections =  Collections.discover(args.datadir);
-        if(collections.isEmpty()) {
-            System.err.println("no collections found in " + args.datadir);
-            return 2;
-        }
-
-        Server server = new Server(args.port, collections);
-        server.run();
-
         CountDownLatch done = new CountDownLatch(1);
+        int rv = 0;
+
+        if (Common.contains(_args, "--help")) {
+            usage();
+            rv = 1;
+            done.countDown();
+        } else {
+
+            ServerArgs args = new ServerArgs(_args);
+            Map<String, Collection> collections = Collections.discover(args.datadir);
+            if (collections.isEmpty()) {
+                System.err.println("no collections found in " + args.datadir);
+                rv = 2;
+                done.countDown();
+            } else {
+                Server server = new Server(args.port, collections);
+                server.run();
+            }
+        }
         done.await();
-        return 0;
+        return rv;
     }
 
     static void usage() {

@@ -12,7 +12,6 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Random;
 
 import static junit.framework.TestCase.*;
 
@@ -119,7 +118,7 @@ public class ReaderTest {
             ManuReader r = new ManuReader(dbLoc);
             Record[] outRecords = new Record[5]; //r.records.next(), r.records.next(), r.records.next()};
 
-            while(r.getRecords().hasNext()) {
+            while (r.getRecords().hasNext()) {
                 Record rec = r.getRecords().next();
                 outRecords[rec.getId()] = rec;
             }
@@ -132,7 +131,7 @@ public class ReaderTest {
                     assertEquals(j, outRecords[j].getId());
                     int[] values = outRecords[j].getValues(0);
                     assertNotNull(values);
-                    for(int k = 0; k < values.length; k++)
+                    for (int k = 0; k < values.length; k++)
                         assertEquals(inRecords[j].getValues(0)[k], values[k]);
                 }
             }
@@ -141,57 +140,64 @@ public class ReaderTest {
         }
     }
 
-    @Property(trials=5)
+    @Property(trials = 5)
     public void testVariableSize512(
-            int @Size(min=512, max=512)[] f1,
-            int @Size(min=512, max=512)[] f2,
-            int @Size(min=512, max=512)[] f3,
-            int @Size(min=512, max=512)[] f4
+            int @Size(min = 512, max = 512) [] f1,
+            int @Size(min = 512, max = 512) [] f2,
+            int @Size(min = 512, max = 512) [] f3,
+            int @Size(min = 512, max = 512) [] f4
     ) throws Exception {
         testVariableSize(f1, f2, f3, f4);
     }
 
-    @Property(trials=5)
+    @Property(trials = 5)
     public void testVariableSize20K(
-            int @Size(min=20480, max=20480)[] f1,
-            int @Size(min=20480, max=20480)[] f2,
-            int @Size(min=20480, max=20480)[] f3,
-            int @Size(min=20480, max=20480)[] f4
+            int @Size(min = 20480, max = 20480) [] f1,
+            int @Size(min = 20480, max = 20480) [] f2,
+            int @Size(min = 20480, max = 20480) [] f3,
+            int @Size(min = 20480, max = 20480) [] f4
     ) throws Exception {
         testVariableSize(f1, f2, f3, f4);
     }
 
+    @Test
+    public void testFixedSizeMultiple() throws Exception {
+        testVariableSize(new int[]{0}, new int[]{1}, new int[]{2}, new int[]{3});
+    }
 
     @Test(expected = NoSuchElementException.class)
     public void testGetOutOfBounds() throws Exception {
-        SimpleRecord r1 = new SimpleRecord(1, new FieldEncoder[] { new CopyEncoder()}, new int[][] { new int[] { 1 }});
+        SimpleRecord r1 = new SimpleRecord(1, new FieldEncoder[]{new CopyEncoder()}, new int[][]{new int[]{1}});
 
         Writer.write(
                 dbLoc,
                 0L,
                 Interval.DAY,
-                new String[] { "field1"},
-                new FieldType[] { FieldType.INT},
-                Arrays.asList(new Record[] { r1}).iterator());
+                new String[]{"field1"},
+                new FieldType[]{FieldType.INT},
+                Arrays.asList(new Record[]{r1}).iterator());
 
         Reader reader = new ManuReader(dbLoc);
         reader.get(1024);
     }
 
     void testVariableSize(int[] f1, int[] f2, int[] f3, int[] f4) throws Exception {
-        int[][] values1 = new int[][] { f1, f2};
-        SimpleRecord r1 = new SimpleRecord(1, new FieldEncoder[] { new CopyEncoder(), new CopyEncoder() }, values1);
+        FieldEncoder encoder = new CopyEncoder();
+        if(f1.length == 1)
+            encoder = new AverageEncoder();
+        int[][] values1 = new int[][]{f1, f2};
+        SimpleRecord r1 = new SimpleRecord(1, new FieldEncoder[]{encoder, encoder}, values1);
 
-        int[][] values2 = new int[][] { f3, f4};
-        SimpleRecord r2 = new SimpleRecord(2, new FieldEncoder[] { new CopyEncoder(), new CopyEncoder() }, values2);
+        int[][] values2 = new int[][]{f3, f4};
+        SimpleRecord r2 = new SimpleRecord(2, new FieldEncoder[]{encoder, encoder}, values2);
 
         Writer.write(
                 dbLoc,
                 0L,
                 Interval.DAY,
-                new String[] { "field1", "field2"},
-                new FieldType[] { FieldType.INT, FieldType.INT },
-                Arrays.asList(new Record[] { r1, r2 }).iterator());
+                new String[]{"field1", "field2"},
+                new FieldType[]{FieldType.INT, FieldType.INT},
+                Arrays.asList(new Record[]{r1, r2}).iterator());
 
         Reader reader = new ManuReader(dbLoc);
         RecordIterator it = reader.getRecords();
@@ -201,12 +207,12 @@ public class ReaderTest {
 
         int[] f12 = r12.getValues(0);
         assertEquals(f1.length, f12.length);
-        for(int i = 0; i < f12.length; i++)
+        for (int i = 0; i < f12.length; i++)
             assertEquals(f1[i], f12[i]);
 
         int[] f22 = r12.getValues(1);
         assertEquals(f2.length, f22.length);
-        for(int i = 0; i < f22.length; i++)
+        for (int i = 0; i < f22.length; i++)
             assertEquals(f2[i], f22[i]);
 
         assertTrue(it.hasNext());
@@ -215,12 +221,12 @@ public class ReaderTest {
 
         int[] f32 = r22.getValues(0);
         assertEquals(f3.length, f32.length);
-        for(int i = 0; i < f32.length; i++)
+        for (int i = 0; i < f32.length; i++)
             assertEquals(f3[i], f32[i]);
 
         int[] f42 = r22.getValues(1);
         assertEquals(f4.length, f42.length);
-        for(int i = 0; i < f42.length; i++) {
+        for (int i = 0; i < f42.length; i++) {
             assertEquals(f4[i], f42[i]);
         }
     }
@@ -263,7 +269,7 @@ public class ReaderTest {
                     assertEquals(j, outRecords[j].getId());
                     int[] values = outRecords[j].getValues(0);
                     assertNotNull(values);
-                    for(int k = 0; k < values.length; k++)
+                    for (int k = 0; k < values.length; k++)
                         assertEquals(inRecords[j].getValues(0)[k], values[k]);
                 }
             }
@@ -282,7 +288,7 @@ public class ReaderTest {
             for (int j = 0; j < numFields.length; j++) {
                 parameterizedTest(numRecords[i], numFields[j]);
             }
-        }
+    }
 
     private void parameterizedTest(int numRecords, int numFields) throws Exception {
         Long epochMs = System.currentTimeMillis();

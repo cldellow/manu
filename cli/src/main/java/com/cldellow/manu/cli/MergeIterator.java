@@ -5,6 +5,7 @@ import com.cldellow.manu.format.*;
 import org.joda.time.DateTime;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 class MergeIterator implements Iterator<Record> {
     private final Reader[] readers;
@@ -20,6 +21,7 @@ class MergeIterator implements Iterator<Record> {
     private final boolean[] lossyOk;
     private final int[] offsets;
     private int current;
+    private boolean ensuredNext;
 
     MergeIterator(
             Reader[] readers,
@@ -39,13 +41,13 @@ class MergeIterator implements Iterator<Record> {
         this.numFields = fieldNames.length;
 
         DateTime startDate = readers[0].getFrom();
-        for(int i = 0; i < readers.length; i++) {
-            if(readers[i].getFrom().isBefore(startDate))
+        for (int i = 0; i < readers.length; i++) {
+            if (readers[i].getFrom().isBefore(startDate))
                 startDate = readers[i].getFrom();
         }
 
         offsets = new int[readers.length];
-        for(int i = 0; i < readers.length; i++)
+        for (int i = 0; i < readers.length; i++)
             offsets[i] = readers[i].getInterval().difference(startDate, readers[i].getFrom());
 
         encoders = new FieldEncoder[fieldNames.length];
@@ -65,11 +67,41 @@ class MergeIterator implements Iterator<Record> {
         current = recordOffset;
     }
 
+    private void ensureNext() {
+        try {
+            while (!ensuredNext && current < maxRecords) {
+                for (int readerIndex = 0; readerIndex < readers.length; readerIndex++) {
+                    if (current < readers[readerIndex].getRecordOffset() ||
+                            current >= readers[readerIndex].getRecordOffset() + readers[readerIndex].getNumRecords())
+                        continue;
+                    Record r = readers[readerIndex].get(current);
+                    if (r == null)
+                        continue;
+
+                    ensuredNext = true;
+                    break;
+                }
+
+                if (ensuredNext)
+                    break;
+
+                current++;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public boolean hasNext() {
+        ensureNext();
         return current < maxRecords;
     }
 
     public Record next() {
+        if (!hasNext())
+            throw new NoSuchElementException();
+
+        ensuredNext = false;
         try {
             int[][] values = new int[fieldNames.length][];
 
@@ -80,14 +112,23 @@ class MergeIterator implements Iterator<Record> {
             }
 
             for (int readerIndex = 0; readerIndex < readers.length; readerIndex++) {
+                if (current < readers[readerIndex].getRecordOffset() ||
+                        current >= readers[readerIndex].getRecordOffset() + readers[readerIndex].getNumRecords())
+                    continue;
                 Record r = readers[readerIndex].get(current);
                 if (r == null)
                     continue;
 
-                for (int i = 0; i < numFields; i++) {
+                for (int i = 0; i < readers[readerIndex].getNumFields(); i++) {
+                    String fieldName = readers[readerIndex].getFieldName(i);
+                    int valuesIndex = -1;
+                    for (int j = 0; j < fieldNames.length; j++)
+                        if (fieldName.equals(fieldNames[j]))
+                            valuesIndex = j;
+
                     int[] fieldValues = r.getValues(i);
-                    for(int j = 0; j < values.length; j++) {
-                        values[i][offsets[readerIndex] + j] = fieldValues[j];
+                    for (int j = 0; j < fieldValues.length; j++) {
+                        values[valuesIndex][offsets[readerIndex] + j] = fieldValues[j];
                     }
                 }
             }
@@ -100,7 +141,7 @@ class MergeIterator implements Iterator<Record> {
             Record rv = new SimpleRecord(current, encoders, values);
             current++;
             return rv;
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

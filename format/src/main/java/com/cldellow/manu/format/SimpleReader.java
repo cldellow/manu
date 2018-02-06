@@ -77,6 +77,13 @@ public class SimpleReader implements Reader {
                     "recordOffset %d cannot be negative",
                     recordOffset));
 
+        for(int i = 0; i < records.length; i++)
+            if(records[i] != null && records[i].getId() != recordOffset + i)
+                throw new IllegalArgumentException(String.format(
+                        "records[%d] should have id %d but had %d",
+                        i,
+                        recordOffset + i,
+                        records[i].getId()));
         this.fileName = fileName;
         this.nullValue = nullValue;
         this.from = from;

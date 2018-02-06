@@ -212,7 +212,7 @@ class Server {
                             else if (fieldType == FieldType.FIXED1) {
                                 double fixed = (double) intVal / 10;
                                 gen.writeNumber(fixed);
-                            } else if (fieldType == FieldType.FIXED2) {
+                            } else { // if (fieldType == FieldType.FIXED2) {
                                 double fixed = (double) intVal / 100;
                                 gen.writeNumber(fixed);
                             }

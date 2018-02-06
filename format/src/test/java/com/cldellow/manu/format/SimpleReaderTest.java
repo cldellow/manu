@@ -107,6 +107,22 @@ public class SimpleReaderTest {
         it.close();
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void offsetMismatch() throws Exception {
+        SimpleRecord r1 = new SimpleRecord(1, new FieldEncoder[]{new CopyEncoder()}, new int[][]{new int[]{12}});
+        SimpleReader reader1 = new SimpleReader("r1", Integer.MIN_VALUE, d1, d2, Interval.DAY, 0, new String[]{"field"}, new FieldType[]{FieldType.INT}, new Record[]{r1});
+    }
+
+    @Test
+    public void offset() throws Exception {
+        SimpleRecord r1 = new SimpleRecord(1, new FieldEncoder[]{new CopyEncoder()}, new int[][]{new int[]{12}});
+
+        SimpleReader reader1 = new SimpleReader("r1", Integer.MIN_VALUE, d1, d2, Interval.DAY, 1, new String[]{"field"}, new FieldType[]{FieldType.INT}, new Record[]{r1});
+
+        reader1.get(1);
+    }
+
+
     @Test(expected = NoSuchElementException.class)
     public void badIdNegative() throws Exception {
         mkReader().get(-1);

@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.util.Iterator;
-import com.cldellow.manu.cli.FileParserState;
+
 import static com.cldellow.manu.cli.FileParserState.*;
 
 class FileParser {
@@ -88,86 +88,79 @@ class FileParser {
                 int scale = 1;
                 int value = 0;
                 FileParserState state = IN_KEY;
-                while(state != ROW_START) {
-                    if(!buffer.hasRemaining()) {
+                while (state != ROW_START) {
+                    if (!buffer.hasRemaining()) {
                         throw new IllegalArgumentException(String.format(
                                 "%s: row %d ends unexpectedly",
                                 fileName, currentRow));
                     }
-                    switch(state) {
-                        case IN_KEY:
-                            next = buffer.get();
-                            if(next == '\n' || next == '\t') {
-                                key = new String(bytes, 0, keyLength, Charset.forName("UTF-8"));
-                            } else {
-                                bytes[keyLength++] = next;
-                            }
 
-                            if(next == '\n')
-                                state = ROW_START;
-                            if(next == '\t')
-                                state = FIELD_START;
-                            break;
-                        case FIELD_START:
-                            if(currentField >= ints.length)
-                                throw new IllegalArgumentException(String.format(
-                                        "%s: row %d has too many columns",
-                                        fileName, currentRow));
-                            scale = 1;
-                            value = 0;
-                            next = buffer.get();
-                            if(next == '\n' || next == '\t')
-                                ints[currentField++] = nullValue;
-                            else if(next == '-') {
-                                scale = -1;
-                                state = INTEGER_REQUIRED;
-                            } else {
-                                buffer.position(buffer.position() - 1);
-                                state = INTEGER_REQUIRED;
-                            }
+                    if (state == IN_KEY) {
+                        next = buffer.get();
+                        if (next == '\n' || next == '\t') {
+                            key = new String(bytes, 0, keyLength, Charset.forName("UTF-8"));
+                        } else {
+                            bytes[keyLength++] = next;
+                        }
 
-                            if(next == '\n')
-                                state = ROW_START;
+                        if (next == '\n')
+                            state = ROW_START;
+                        if (next == '\t')
+                            state = FIELD_START;
+                    } else if (state == FIELD_START) {
+                        if (currentField >= ints.length)
+                            throw new IllegalArgumentException(String.format(
+                                    "%s: row %d has too many columns",
+                                    fileName, currentRow));
+                        scale = 1;
+                        value = 0;
+                        next = buffer.get();
+                        if (next == '\n' || next == '\t')
+                            ints[currentField++] = nullValue;
+                        else if (next == '-') {
+                            scale = -1;
+                            state = INTEGER_REQUIRED;
+                        } else {
+                            buffer.position(buffer.position() - 1);
+                            state = INTEGER_REQUIRED;
+                        }
 
-                            break;
-                        case INTEGER_REQUIRED:
-                            next = buffer.get();
-                            if(next >= '0' && next <= '9') {
-                                value = value * 10 + next - '0';
-                                state = INTEGER_OPTIONAL;
-                            } else {
-                                throw new IllegalArgumentException(String.format(
-                                        "%s: row %d column %d invalid",
-                                        fileName, currentRow, currentField
-                                ));
-                            }
-                            break;
-                        case INTEGER_OPTIONAL:
-                            next = buffer.get();
-                            if(next >= '0' && next <= '9') {
-                                value = value * 10 + next - '0';
-                                state = INTEGER_OPTIONAL;
-                            } else if(next == '\n' || next == '\t') {
-                                ints[currentField++] = value * scale;
-                            }
-                            else {
-                                throw new IllegalArgumentException(String.format(
-                                        "%s: row %d column %d invalid",
-                                        fileName, currentRow, currentField
-                                ));
-                            }
+                        if (next == '\n')
+                            state = ROW_START;
 
-                            if(next == '\t')
-                                state = FIELD_START;
-                            if(next == '\n')
-                                state = ROW_START;
-                            break;
-                        default:
-                            throw new RuntimeException("impossible to get here");
+                    } else if (state == INTEGER_REQUIRED) {
+                        next = buffer.get();
+                        if (next >= '0' && next <= '9') {
+                            value = value * 10 + next - '0';
+                            state = INTEGER_OPTIONAL;
+                        } else {
+                            throw new IllegalArgumentException(String.format(
+                                    "%s: row %d column %d invalid",
+                                    fileName, currentRow, currentField
+                            ));
+                        }
+                    } else { // if (state == INTEGER_OPTIONAL) {
+                        next = buffer.get();
+                        if (next >= '0' && next <= '9') {
+                            value = value * 10 + next - '0';
+                            state = INTEGER_OPTIONAL;
+                        } else if (next == '\n' || next == '\t') {
+                            ints[currentField++] = value * scale;
+                        } else {
+                            throw new IllegalArgumentException(String.format(
+                                    "%s: row %d column %d invalid",
+                                    fileName, currentRow, currentField
+                            ));
+                        }
+
+                        if (next == '\t')
+                            state = FIELD_START;
+                        if (next == '\n')
+                            state = ROW_START;
                     }
                 }
 
-                if(currentField != ints.length)
+                if (currentField != ints.length)
                     throw new IllegalArgumentException(String.format(
                             "%s: row %d did not have enough fields",
                             fileName, currentRow));

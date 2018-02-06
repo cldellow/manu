@@ -112,6 +112,62 @@ public class FileParserTest {
         fp.close();
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidLine4() throws Exception {
+        FileParser fp = new FileParser(new Common().getFile("non-numeric2.tsv"), Integer.MIN_VALUE);
+        assertEquals(2, fp.getNumFields());
+        Iterator<FileParser.RowIterator.Row> it = fp.getIterator();
+        assertTrue(it.hasNext());
+        FileParser.RowIterator.Row row = it.next();
+        assertTrue(it.hasNext());
+        fp.close();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidLine5() throws Exception {
+        FileParser fp = new FileParser(new Common().getFile("non-numeric3.tsv"), Integer.MIN_VALUE);
+        assertEquals(2, fp.getNumFields());
+        Iterator<FileParser.RowIterator.Row> it = fp.getIterator();
+        assertTrue(it.hasNext());
+        FileParser.RowIterator.Row row = it.next();
+        assertTrue(it.hasNext());
+        fp.close();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidLine6() throws Exception {
+        FileParser fp = new FileParser(new Common().getFile("non-numeric4.tsv"), Integer.MIN_VALUE);
+        assertEquals(2, fp.getNumFields());
+        Iterator<FileParser.RowIterator.Row> it = fp.getIterator();
+        assertTrue(it.hasNext());
+        FileParser.RowIterator.Row row = it.next();
+        assertTrue(it.hasNext());
+        fp.close();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidLine7() throws Exception {
+        FileParser fp = new FileParser(new Common().getFile("non-numeric5.tsv"), Integer.MIN_VALUE);
+        assertEquals(2, fp.getNumFields());
+        Iterator<FileParser.RowIterator.Row> it = fp.getIterator();
+        assertTrue(it.hasNext());
+        FileParser.RowIterator.Row row = it.next();
+        assertTrue(it.hasNext());
+        fp.close();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidLine8() throws Exception {
+        FileParser fp = new FileParser(new Common().getFile("non-numeric6.tsv"), Integer.MIN_VALUE);
+        assertEquals(2, fp.getNumFields());
+        Iterator<FileParser.RowIterator.Row> it = fp.getIterator();
+        assertTrue(it.hasNext());
+        FileParser.RowIterator.Row row = it.next();
+        assertTrue(it.hasNext());
+        fp.close();
+    }
+
+
     @Test
     public void testOnlyOneColumn() throws Exception {
         FileParser fp = new FileParser(new Common().getFile("only-one-column.tsv"), Integer.MIN_VALUE);

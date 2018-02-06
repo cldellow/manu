@@ -29,10 +29,8 @@ public class WriterTest {
         Writer w = new Writer(); // to satisy jacoco
 
         Long epochMs = System.currentTimeMillis();
-        int numDatapoints = 10;
         Interval interval = Interval.DAY;
         int recordOffset = 123;
-        int numRecords = 2;
         String[] fieldNames = {"int"};
         FieldType[] fieldTypes = {FieldType.INT};
         FieldEncoder[] encoders = {new CopyEncoder()};
@@ -53,15 +51,34 @@ public class WriterTest {
                 Arrays.asList(records).iterator());
     }
 
+    @Test(expected=IllegalArgumentException.class)
+    public void testCannotInferNumDatapoints() throws Exception {
+        Long epochMs = System.currentTimeMillis();
+        Interval interval = Interval.DAY;
+        String[] fieldNames = {"int"};
+        FieldType[] fieldTypes = {FieldType.INT};
+        FieldEncoder[] encoders = {new CopyEncoder()};
+
+        Record[] records = {
+        };
+
+        Writer.write(
+                dbLoc,
+                epochMs,
+                interval,
+                fieldNames,
+                fieldTypes,
+                Arrays.asList(records).iterator());
+    }
+
+
     @Test(expected = IllegalArgumentException.class)
     public void testWriteTooManyValues() throws Exception {
         Writer w = new Writer(); // to satisy jacoco
 
         Long epochMs = System.currentTimeMillis();
-        int numDatapoints = 5;
         Interval interval = Interval.DAY;
         int recordOffset = 123;
-        int numRecords = 2;
         String[] fieldNames = {"int"};
         FieldType[] fieldTypes = {FieldType.INT};
         FieldEncoder[] encoders = {new CopyEncoder()};
@@ -87,10 +104,8 @@ public class WriterTest {
         Writer w = new Writer(); // to satisy jacoco
 
         Long epochMs = System.currentTimeMillis();
-        int numDatapoints = 5;
         Interval interval = Interval.DAY;
         int recordOffset = 123;
-        int numRecords = 2;
         String[] fieldNames = {"int"};
         FieldType[] fieldTypes = {FieldType.INT};
         FieldEncoder[] encoders = {new CopyEncoder()};
@@ -116,10 +131,8 @@ public class WriterTest {
     @Test
     public void testTwoField() throws Exception {
         Long epochMs = System.currentTimeMillis();
-        int numDatapoints = 10;
         Interval interval = Interval.DAY;
         int recordOffset = 123;
-        int numRecords = 2;
         String[] fieldNames = {"int", "decimal"};
         FieldType[] fieldTypes = {FieldType.INT, FieldType.FIXED1};
         FieldEncoder[] encoders = {new CopyEncoder(), new CopyEncoder()};
@@ -174,10 +187,8 @@ public class WriterTest {
     @Test(expected = IllegalArgumentException.class)
     public void testFieldMismatch() throws Exception {
         Long epochMs = System.currentTimeMillis();
-        int numDatapoints = 10;
         Interval interval = Interval.DAY;
         int recordOffset = 123;
-        int numRecords = 1;
         String[] fieldNames = {"int"};
         FieldType[] fieldTypes = {FieldType.INT, FieldType.INT};
         FieldEncoder[] encoders = {new CopyEncoder()};

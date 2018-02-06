@@ -18,6 +18,8 @@ function finish {
 }
 trap finish EXIT
 
+! "$here"/../serve --help
+
 "$here"/../serve --datadir "$here"/../../src/test/resources/datadir &
 pid=$!
 

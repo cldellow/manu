@@ -98,8 +98,6 @@ class Merge {
                                     readers[i].getFieldType(k)));
                             return FIELD_TYPE_MISMATCH;
                         }
-
-                        break;
                     }
                 }
 
