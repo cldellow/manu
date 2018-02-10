@@ -55,7 +55,7 @@ public class MergeTest {
                 new FieldType[]{FieldType.INT},
                 new Record[]{});
 
-        assertEquals(Merge.INTERVAL_MISMATCH, Merge.handle(Integer.MIN_VALUE, new Reader[]{r1, r2}, "blah", null));
+        assertEquals(Merge.INTERVAL_MISMATCH, Merge.handle(new Reader[]{r1, r2}, "blah", null));
     }
 
     @Test
@@ -81,7 +81,7 @@ public class MergeTest {
                 new FieldType[]{FieldType.FIXED2},
                 new Record[]{});
 
-        assertEquals(Merge.FIELD_TYPE_MISMATCH, Merge.handle(Integer.MIN_VALUE, new Reader[]{r1, r2}, "blah", null));
+        assertEquals(Merge.FIELD_TYPE_MISMATCH, Merge.handle(new Reader[]{r1, r2}, "blah", null));
     }
 
     @Test
@@ -107,7 +107,7 @@ public class MergeTest {
                 new FieldType[]{FieldType.INT},
                 new Record[]{});
 
-        assertEquals(Merge.UNKNOWN_FIELD, Merge.handle(Integer.MIN_VALUE, new Reader[]{r1, r2}, "blah", new String[]{"x"}));
+        assertEquals(Merge.UNKNOWN_FIELD, Merge.handle(new Reader[]{r1, r2}, "blah", new String[]{"x"}));
     }
 
     @Test
@@ -133,7 +133,7 @@ public class MergeTest {
                 new FieldType[]{FieldType.INT},
                 new Record[]{});
 
-        Merge.handle(Integer.MIN_VALUE, new Reader[]{r1, r2}, dbLoc, new String[]{"field"});
+        Merge.handle(new Reader[]{r1, r2}, dbLoc, new String[]{"field"});
         Reader r = new ManuReader(dbLoc);
         assertEquals(0, r.getNumRecords());
     }
@@ -161,7 +161,7 @@ public class MergeTest {
                 new FieldType[]{FieldType.INT},
                 new Record[]{});
 
-        Merge.handle(Integer.MIN_VALUE, new Reader[]{r2, r1}, dbLoc, new String[]{"field"});
+        Merge.handle(new Reader[]{r2, r1}, dbLoc, new String[]{"field"});
         Reader r = new ManuReader(dbLoc);
         assertEquals(0, r.getNumRecords());
     }
@@ -190,7 +190,7 @@ public class MergeTest {
                 new FieldType[]{FieldType.INT},
                 new Record[]{});
 
-        Merge.handle(Integer.MIN_VALUE, new Reader[]{r1, r2}, dbLoc, new String[]{"field"});
+        Merge.handle(new Reader[]{r1, r2}, dbLoc, new String[]{"field"});
         Reader r = new ManuReader(dbLoc);
         assertEquals(1, r.getNumRecords());
     }
@@ -221,7 +221,7 @@ public class MergeTest {
                 new FieldType[]{FieldType.INT},
                 new Record[]{rec1});
 
-        Merge.handle(Integer.MIN_VALUE, new Reader[]{r1, r2}, dbLoc, new String[]{"field"});
+        Merge.handle(new Reader[]{r1, r2}, dbLoc, new String[]{"field"});
         Reader r = new ManuReader(dbLoc);
         assertEquals(2, r.getNumRecords());
     }
@@ -252,7 +252,7 @@ public class MergeTest {
                 new FieldType[]{FieldType.INT},
                 new Record[]{rec1});
 
-        Merge.handle(Integer.MIN_VALUE, new Reader[]{r2, r1}, dbLoc, new String[]{"field"});
+        Merge.handle(new Reader[]{r2, r1}, dbLoc, new String[]{"field"});
         Reader r = new ManuReader(dbLoc);
         assertEquals(2, r.getNumRecords());
         Record rec0rt = r.get(0);
@@ -285,7 +285,7 @@ public class MergeTest {
                 new FieldType[]{FieldType.INT},
                 new Record[]{rec1});
 
-        Merge.handle(Integer.MIN_VALUE, new Reader[]{r1, r2}, dbLoc, null);
+        Merge.handle(new Reader[]{r1, r2}, dbLoc, null);
         Reader r = new ManuReader(dbLoc);
         assertEquals(2, r.getNumRecords());
         Record rec0rt = r.get(0);
@@ -318,7 +318,7 @@ public class MergeTest {
                 new FieldType[]{FieldType.INT},
                 new Record[]{rec1});
 
-        Merge.handle(Integer.MIN_VALUE, new Reader[]{r1, r2}, dbLoc, new String[]{});
+        Merge.handle(new Reader[]{r1, r2}, dbLoc, new String[]{});
         Reader r = new ManuReader(dbLoc);
         assertEquals(2, r.getNumRecords());
         Record rec0rt = r.get(0);

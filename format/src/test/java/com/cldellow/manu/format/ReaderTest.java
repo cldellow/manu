@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import static com.cldellow.manu.format.Common.nonNullIterator;
 import static junit.framework.TestCase.*;
 
 @RunWith(JUnitQuickcheck.class)
@@ -113,7 +114,7 @@ public class ReaderTest {
                     Interval.DAY,
                     new String[]{"field"},
                     new FieldType[]{FieldType.INT},
-                    Arrays.asList(inRecords).iterator());
+                    nonNullIterator(inRecords));
 
             ManuReader r = new ManuReader(dbLoc);
             Record[] outRecords = new Record[5]; //r.records.next(), r.records.next(), r.records.next()};
@@ -185,7 +186,7 @@ public class ReaderTest {
 
     void testVariableSize(int[] f1, int[] f2, int[] f3, int[] f4) throws Exception {
         FieldEncoder encoder = new CopyEncoder();
-        if(f1.length == 1)
+        if (f1.length == 1)
             encoder = new AverageEncoder();
         int[][] values1 = new int[][]{f1, f2};
         SimpleRecord r1 = new SimpleRecord(1, new FieldEncoder[]{encoder, encoder}, values1);
@@ -254,13 +255,16 @@ public class ReaderTest {
                     Interval.DAY,
                     new String[]{"field"},
                     new FieldType[]{FieldType.INT},
-                    Arrays.asList(inRecords).iterator());
+                    nonNullIterator(inRecords));
 
             ManuReader r = new ManuReader(dbLoc);
             Record[] outRecords = new Record[5]; //r.records.next(), r.records.next(), r.records.next()};
 
             for (int j = 0; j < 5; j++) {
-                outRecords[j] = r.get(j);
+                try {
+                    outRecords[j] = r.get(j);
+                } catch (NoSuchElementException nsee) {
+                }
             }
 
             for (int j = 0; j < 5; j++) {

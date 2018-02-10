@@ -16,24 +16,12 @@ public class MergeArgsTest {
         new MergeArgs(new String[] {"output"});
     }
 
-    @Test(expected = NotEnoughArgsException.class)
-    public void nullWithoutArg() throws Exception {
-        MergeArgs ma = new MergeArgs(new String[] {"output", "input", "--null"});
-    }
-
-    @Test
-    public void specifiedNull() throws Exception {
-        MergeArgs ma = new MergeArgs(new String[] {"output", "input", "--null", "0"});
-        assertEquals(0, ma.nullValue);
-    }
-
     @Test
     public void simple() throws Exception {
         MergeArgs ma = new MergeArgs(new String[] {"output", "input"});
         assertEquals("output", ma.outputFile);
         assertEquals(1, ma.inputFiles.length);
         assertEquals("input", ma.inputFiles[0]);
-        assertEquals(Integer.MIN_VALUE, ma.nullValue);
         assertNull(ma.lossyFields);
     }
 

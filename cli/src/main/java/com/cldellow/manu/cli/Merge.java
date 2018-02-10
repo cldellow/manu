@@ -40,18 +40,19 @@ class Merge {
             Reader[] readers = new ManuReader[args.inputFiles.length];
             for(int i = 0; i < readers.length; i++)
                 readers[i] = new ManuReader(args.inputFiles[i]);
-            return handle(args.nullValue, readers, args.outputFile, args.lossyFields);
+            return handle(readers, args.outputFile, args.lossyFields);
         } catch (NotEnoughArgsException neae) {
             usage();
             return 1;
         }
     }
 
-    public static int handle(int nullValue, Reader[] readers, String outputFile, String[] lossyFieldFilters) throws Exception {
+    public static int handle(Reader[] readers, String outputFile, String[] lossyFieldFilters) throws Exception {
         long minEpochMs = 0;
         int recordOffset = 0;
         int maxRecords = 0;
         long maxEpochMs = 0;
+        int nullValue = Integer.MIN_VALUE;
         Interval interval = Interval.YEAR;
         Vector<String> fieldNames = new Vector<>();
         Vector<FieldType> fieldTypes = new Vector<>();

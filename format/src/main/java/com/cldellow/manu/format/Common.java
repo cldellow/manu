@@ -5,6 +5,9 @@ import me.lemire.integercompression.differential.IntegratedComposition;
 import me.lemire.integercompression.differential.IntegratedIntegerCODEC;
 import me.lemire.integercompression.differential.IntegratedVariableByte;
 
+import java.util.Arrays;
+import java.util.Iterator;
+
 class Common {
     public static final int INT_ARRAY_SIZE = 131072;
     public static short getVersion() { return 1; }
@@ -36,5 +39,23 @@ class Common {
             encoders[i] = getEncoder(i);
 
         return encoders;
+    }
+
+    public static<T> Iterator<T> nonNullIterator(T[] items) {
+        int cnt = 0;
+        for(int i = 0; i < items.length; i++)
+            if(items[i] != null)
+                cnt++;
+
+        T[] rv = Arrays.copyOf(items, cnt);
+        cnt = 0;
+        for(int i = 0; i < items.length; i++) {
+            if(items[i] != null) {
+                rv[cnt] = items[i];
+                cnt++;
+            }
+        }
+
+        return Arrays.asList(rv).iterator();
     }
 }

@@ -62,13 +62,24 @@ public class Writer {
             dos.writeInt(0); // write a dummy value so the space is allocated
 
             while (records.hasNext()) {
-                recordPositions.add(dos.size());
+
                 Record record = records.next();
-                if (record != null) {
-                    if (numDatapoints == -1)
-                        numDatapoints = record.getValues(0).length;
-                    writeRecord(currentRecord, numFields, numDatapoints, dos, record, byteArray);
+                if(record == null)
+                    throw new IllegalArgumentException(String.format("record %d is null", currentRecord));
+
+                while(currentRecord < record.getId() - recordOffset) {
+                    // Insert dummy entries for missing records
+                    recordPositions.add(dos.size());
+                    currentRecord++;
+                    if (currentRecord % rowListSize == 0)
+                        writeRowList(dos, rowListSize, currentRecord, recordPositions, rowListPositions, intArray);
                 }
+                recordPositions.add(dos.size());
+
+                if (numDatapoints == -1)
+                    numDatapoints = record.getValues(0).length;
+                writeRecord(currentRecord, numFields, numDatapoints, dos, record, byteArray);
+
                 currentRecord++;
 
                 if (currentRecord % rowListSize == 0)

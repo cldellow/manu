@@ -132,38 +132,54 @@ class Write {
 
     private class RecordIterator implements Iterator<Record> {
         int index = 0;
+        boolean ensuredNext = false;
+
+        private void ensureNext() {
+            while(!ensuredNext && index < numRows) {
+                boolean allNull = true;
+                boolean someNull = false;
+                for (int i = 0; i < defs.size(); i++) {
+                    if (fields[index][i] != null) {
+                        allNull = false;
+                    } else
+                        someNull = true;
+                }
+
+                if (someNull && !allNull)
+                    throw new IllegalArgumentException("record " + index + " has a mix of null/non-null fields");
+
+                if(allNull)
+                    index++;
+                else
+                    ensuredNext = true;
+            }
+        }
 
         public boolean hasNext() {
+            ensureNext();
             return index < numRows;
         }
 
         public Record next() {
+            ensureNext();
             FieldEncoder[] encoders = new FieldEncoder[defs.size()];
 
             int[][] newFields = new int[defs.size()][];
-            boolean allNull = true;
-            boolean someNull = false;
             for (int i = 0; i < defs.size(); i++) {
                 if (fields[index][i] != null) {
-                    allNull = false;
                     newFields[i] = ic.uncompress(fields[index][i]);
                     encoders[i] = pfor;
                     if(SingleValueEncoder.eligible(newFields[i]))
                         encoders[i] = single;
                     else if (defs.get(i).getFieldKind() == FieldKind.LOSSY && AverageEncoder.eligible(newFields[i]))
                         encoders[i] = lossy;
-                } else
-                    someNull = true;
+                }
             }
 
-            if (someNull && !allNull)
-                throw new IllegalArgumentException("record " + index + " has a mix of null/non-null fields");
-
-            Record r = null;
-            if (!allNull)
-                r = new SimpleRecord(index, encoders, newFields);
+            Record r = new SimpleRecord(index, encoders, newFields);
 
             index++;
+            ensuredNext = false;
             return r;
         }
     }
