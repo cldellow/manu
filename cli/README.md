@@ -50,12 +50,16 @@ they are present in the file.
 
 ## merge
 
-`./bin/merge output input-1 ... input-N [--lossy[=fields]]`
+`./bin/merge output input-1 ... input-N [--lossy[=fields]] [--null value]`
 
 The output file contains the union of fields in the inputs, for the minimal time range
 that spans all the input files.
 
-`--lossy` indicates which fields can be made lossy.
+`--lossy` indicates which fields can be made lossy. Multiple fields can be
+specified by separating them with a comma.
+
+`--null` can be used to set the sentinel value representing nulls. By default,
+it is -2147483648.
 
 If a datapoint is present in multiple files, the last file on the command line wins.
 
