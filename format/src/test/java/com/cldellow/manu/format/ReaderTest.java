@@ -118,10 +118,12 @@ public class ReaderTest {
             ManuReader r = new ManuReader(dbLoc);
             Record[] outRecords = new Record[5]; //r.records.next(), r.records.next(), r.records.next()};
 
-            while (r.getRecords().hasNext()) {
-                Record rec = r.getRecords().next();
+            RecordIterator it = r.getRecords();
+            while (it.hasNext()) {
+                Record rec = it.next();
                 outRecords[rec.getId()] = rec;
             }
+            it.close();
 
             for (int j = 0; j < 5; j++) {
                 if (inRecords[j] == null)

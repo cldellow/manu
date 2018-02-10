@@ -1,10 +1,7 @@
 package com.cldellow.manu.cli;
 
 import com.cldellow.manu.common.Common;
-import com.cldellow.manu.format.Index;
-import com.cldellow.manu.format.IndexAccessMode;
-import com.cldellow.manu.format.ManuReader;
-import com.cldellow.manu.format.Record;
+import com.cldellow.manu.format.*;
 import org.junit.After;
 import org.junit.Test;
 
@@ -38,10 +35,11 @@ public class ReadWriteTest {
         w.entrypoint();
 
         ManuReader reader = new ManuReader(dbLoc);
-        Record r = reader.getRecords().next();
+        RecordIterator it = reader.getRecords();
+        Record r = it.next();
         assertNotNull(r);
         assertEquals(1, r.getId());
-        assertFalse(reader.getRecords().hasNext());
-
+        assertFalse(it.hasNext());
+        it.close();
     }
 }

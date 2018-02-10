@@ -2,7 +2,11 @@ package com.cldellow.manu.format;
 
 import org.joda.time.DateTime;
 
-public interface Reader {
+import java.io.Closeable;
+import java.io.FileNotFoundException;
+
+public interface Reader extends Closeable
+{
     int getNullValue();
     Interval getInterval();
     String getFieldName(int i);

@@ -144,6 +144,8 @@ public class SimpleReader implements Reader {
         return fileName;
     }
 
+    public void close() {}
+
     public Record get(int i) throws Exception {
         if (i < recordOffset || i >= (recordOffset + getNumRecords()))
             throw new NoSuchElementException();
