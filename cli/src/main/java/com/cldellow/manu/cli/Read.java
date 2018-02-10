@@ -35,7 +35,7 @@ class Read {
             this.args = new ReadArgs(_args);
 
             ManuReader reader = new ManuReader(args.inputFile);
-            Index index = new Index(args.indexFile, IndexAccessMode.READ_ONLY);
+            Index index = new Index(args.indexFile, args.indexAccessMode);
             boolean filterKeys = args.filterKeys();
             String[] fieldNames = new String[reader.getNumFields()];
             for(int i = 0; i < fieldNames.length; i++)

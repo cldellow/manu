@@ -3,6 +3,7 @@
 `manu-cli`:
 
 - add `merge` command to merge multiple manu files into a single file
+- add `--write` flag to `read` command, to fix broken WAL entries
 
 # 0.2.2
 

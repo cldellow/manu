@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 
 import com.cldellow.manu.common.ArgHolder;
 import com.cldellow.manu.common.NotEnoughArgsException;
+import com.cldellow.manu.format.IndexAccessMode;
 
 class ReadArgs {
     public String indexFile;
@@ -14,11 +15,13 @@ class ReadArgs {
     public final Vector<Pattern> patterns = new Vector<Pattern>();
     public final Vector<String> fields = new Vector<String>();
     public final Vector<Integer> ids = new Vector<Integer>();
+    public final IndexAccessMode indexAccessMode;
 
     ReadArgs(String[] _args) throws NotEnoughArgsException {
         ArgHolder args = new ArgHolder(_args);
         String errMsg = "must provide index file";
 
+        IndexAccessMode mode = IndexAccessMode.READ_ONLY;
         try {
             indexFile = args.next();
             errMsg = "must provide input file";
@@ -30,6 +33,11 @@ class ReadArgs {
                     keyKind = Parsers.keyKind(next);
                     continue;
                 } catch (IllegalArgumentException iae) {
+                }
+
+                if(next.equals("--write")) {
+                    mode = IndexAccessMode.READ_WRITE_SAFE;
+                    continue;
                 }
 
                 if (next.equals("--key-name") || next.equals("-n")) {
@@ -52,6 +60,7 @@ class ReadArgs {
 
                 fields.add(next);
             }
+            indexAccessMode = mode;
         } catch (NotEnoughArgsException nean) {
             throw new NotEnoughArgsException(errMsg, nean);
         }

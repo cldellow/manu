@@ -30,7 +30,12 @@ eg:
 
 ## read
 
-`./bin/read keys input [key-kind] [[--key-id key-id-1], ...] [[--key-name needle-1], ...] [[--key-regex needle-1], ...] [[field-name-1], ...]`
+`./bin/read [--write] keys input [key-kind] [[--key-id key-id-1], ...] [[--key-name needle-1], ...] [[--key-regex needle-1], ...] [[field-name-1], ...]`
+
+By default, the keys file is opened in read-only mode. This makes it possible to use
+on read-only media (such as a squashfs filesystem). If the keys file was not correctly
+closed, you will need to pass the `--write` flag to open it in read-write mode, so that
+the rollback journal can be applied.
 
 `key-kind` is one of:
 
