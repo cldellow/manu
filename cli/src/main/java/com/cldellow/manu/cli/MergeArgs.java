@@ -20,7 +20,7 @@ class MergeArgs {
         try {
             while (args.hasNext()) {
                 String next = args.next();
-                if (next == "--lossy")
+                if (next.equals("--lossy"))
                     _lossyFields = new Vector<>();
                 else if (next.startsWith("--lossy=")) {
                     _lossyFields = new Vector<>();
