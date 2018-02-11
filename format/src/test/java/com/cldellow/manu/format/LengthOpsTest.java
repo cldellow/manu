@@ -12,7 +12,10 @@ import static org.junit.Assume.assumeThat;
 
 @RunWith(JUnitQuickcheck.class)
 public class LengthOpsTest {
-    @Test public void ctor() { new LengthOps(); }
+    @Test
+    public void ctor() {
+        new LengthOps();
+    }
 
     @Test
     public void decodeId() {
@@ -40,7 +43,7 @@ public class LengthOpsTest {
         boolean threw = false;
 
         try {
-            LengthOps.encode((byte)0, len);
+            LengthOps.encode((byte) 0, len);
         } catch (Exception e) {
             threw = true;
         }
@@ -59,10 +62,10 @@ public class LengthOpsTest {
         int newLen = len;
 
         assertThat(lengthSize, anyOf(is(1), is(2), is(4)));
-        if(lengthSize == 1)
-            newLen = (byte)newLen;
-        if(lengthSize == 2)
-            newLen = (short)newLen;
+        if (lengthSize == 1)
+            newLen = (byte) newLen;
+        if (lengthSize == 2)
+            newLen = (short) newLen;
 
         assertEquals(len, newLen);
     }

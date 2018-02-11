@@ -106,20 +106,20 @@ public class IntervalTest {
         assertEquals(12, Interval.QUARTER.difference(s1, s2));
         assertEquals(3, Interval.YEAR.difference(s1, s2));
 
-        assertEquals(0, Interval.MINUTE.difference(s1,s1));
-        assertEquals(0, Interval.HOUR.difference(s1,s1));
-        assertEquals(0, Interval.DAY.difference(s1,s1));
-        assertEquals(0, Interval.WEEK.difference(s1,s1));
-        assertEquals(0, Interval.MONTH.difference(s1,s1));
-        assertEquals(0, Interval.QUARTER.difference(s1,s1));
-        assertEquals(0, Interval.YEAR.difference(s1,s1));
+        assertEquals(0, Interval.MINUTE.difference(s1, s1));
+        assertEquals(0, Interval.HOUR.difference(s1, s1));
+        assertEquals(0, Interval.DAY.difference(s1, s1));
+        assertEquals(0, Interval.WEEK.difference(s1, s1));
+        assertEquals(0, Interval.MONTH.difference(s1, s1));
+        assertEquals(0, Interval.QUARTER.difference(s1, s1));
+        assertEquals(0, Interval.YEAR.difference(s1, s1));
 
-        assertEquals(1, Interval.MINUTE.difference(s1,s1.plusMinutes(1)));
-        assertEquals(1, Interval.HOUR.difference(s1,s1.plusHours(1)));
-        assertEquals(1, Interval.DAY.difference(s1,s1.plusDays(1)));
-        assertEquals(1, Interval.WEEK.difference(s1,s1.plusWeeks(1)));
-        assertEquals(1, Interval.MONTH.difference(s1,s1.plusMonths(1)));
-        assertEquals(1, Interval.QUARTER.difference(s1,s1.plusMonths(3)));
-        assertEquals(1, Interval.YEAR.difference(s1,s1.plusYears(1)));
+        assertEquals(1, Interval.MINUTE.difference(s1, s1.plusMinutes(1)));
+        assertEquals(1, Interval.HOUR.difference(s1, s1.plusHours(1)));
+        assertEquals(1, Interval.DAY.difference(s1, s1.plusDays(1)));
+        assertEquals(1, Interval.WEEK.difference(s1, s1.plusWeeks(1)));
+        assertEquals(1, Interval.MONTH.difference(s1, s1.plusMonths(1)));
+        assertEquals(1, Interval.QUARTER.difference(s1, s1.plusMonths(3)));
+        assertEquals(1, Interval.YEAR.difference(s1, s1.plusYears(1)));
     }
 }

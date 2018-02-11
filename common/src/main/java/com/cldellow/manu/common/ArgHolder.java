@@ -9,6 +9,7 @@ public class ArgHolder {
 
     /**
      * Constructs the ArgHolder.
+     *
      * @param args The {@code String[] args} from your class's {@code main} method.
      */
     public ArgHolder(String[] args) {
@@ -17,6 +18,7 @@ public class ArgHolder {
 
     /**
      * Returns whether or not there are more arguments to parse.
+     *
      * @return Whether or not there are more arguments.
      */
     public boolean hasNext() {
@@ -25,6 +27,7 @@ public class ArgHolder {
 
     /**
      * Returns the next argument.
+     *
      * @return The next argument.
      * @throws NotEnoughArgsException When called when {@code hasNext} returns {@code false}.
      */

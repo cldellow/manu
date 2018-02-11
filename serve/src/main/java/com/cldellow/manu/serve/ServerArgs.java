@@ -9,15 +9,15 @@ class ServerArgs {
 
     public ServerArgs(String[] _args) throws IllegalArgumentException, NotEnoughArgsException {
         ArgHolder args = new ArgHolder(_args);
-        while(args.hasNext()) {
+        while (args.hasNext()) {
             String next = args.next();
 
-            String errMsg =  "";
+            String errMsg = "";
             try {
                 switch (next) {
                     case "--port":
                     case "-p":
-                        errMsg ="--port must be followed by the port number";
+                        errMsg = "--port must be followed by the port number";
                         port = Integer.parseInt(args.next());
                         break;
                     case "--datadir":

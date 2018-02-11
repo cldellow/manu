@@ -6,9 +6,7 @@ import me.lemire.integercompression.IntWrapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @RunWith(JUnitQuickcheck.class)
 public class SingleValueEncoderTest {
@@ -72,13 +70,13 @@ public class SingleValueEncoderTest {
 
     @Test
     public void eligible() throws Exception {
-        assertTrue(SingleValueEncoder.eligible(new int[] { 1}));
-        assertFalse(SingleValueEncoder.eligible(new int[] { }));
-        assertFalse(SingleValueEncoder.eligible(new int[] { 1,2}));
+        assertTrue(SingleValueEncoder.eligible(new int[]{1}));
+        assertFalse(SingleValueEncoder.eligible(new int[]{}));
+        assertFalse(SingleValueEncoder.eligible(new int[]{1, 2}));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void encodeIneligible() throws Exception {
-        new SingleValueEncoder().encode(new int [] {}, new byte[100], new IntWrapper(0));
+        new SingleValueEncoder().encode(new int[]{}, new byte[100], new IntWrapper(0));
     }
 }

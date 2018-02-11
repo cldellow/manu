@@ -1,13 +1,13 @@
 package com.cldellow.manu.cli;
 
-import com.cldellow.manu.format.Interval;
 import com.cldellow.manu.common.ArgHolder;
+import com.cldellow.manu.format.Interval;
 import org.junit.Test;
 
-import java.security.Key;
 import java.util.Collection;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ParsersTest {
     @Test
@@ -68,24 +68,24 @@ public class ParsersTest {
     }
 
     @Test
-    public void emptyFieldDefs() throws Exception{
+    public void emptyFieldDefs() throws Exception {
         Collection<FieldDef> defs = Parsers.fieldDefs(new ArgHolder(new String[]{}));
         assertTrue(defs.isEmpty());
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void incompleteFieldDef() throws Exception{
+    public void incompleteFieldDef() throws Exception {
         Parsers.fieldDefs(new ArgHolder(new String[]{"--key"}));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void incompleteFieldDef2() throws Exception{
+    public void incompleteFieldDef2() throws Exception {
         Parsers.fieldDefs(new ArgHolder(new String[]{"foo", "--key"}));
     }
 
 
     @Test
-    public void oneFieldDef() throws Exception{
+    public void oneFieldDef() throws Exception {
         Collection<FieldDef> defs = Parsers.fieldDefs(new ArgHolder(new String[]{"pvs", "pvs.file"}));
         assertEquals(1L, defs.size());
         FieldDef[] arr = new FieldDef[0];
@@ -95,7 +95,7 @@ public class ParsersTest {
     }
 
     @Test
-    public void oneFieldDefWithFlags() throws Exception{
+    public void oneFieldDefWithFlags() throws Exception {
         Collection<FieldDef> defs = Parsers.fieldDefs(new ArgHolder(new String[]{"--id", "--lossy", "pvs", "pvs.file"}));
         assertEquals(1L, defs.size());
         FieldDef[] arr = new FieldDef[0];
@@ -108,10 +108,11 @@ public class ParsersTest {
 
 
     @Test
-    public void twoFieldDefs() throws Exception{
+    public void twoFieldDefs() throws Exception {
         Collection<FieldDef> defs = Parsers.fieldDefs(new ArgHolder(new String[]{"pvs", "pvs.file", "edits", "edits.file"}));
         assertEquals(2L, defs.size());
-        FieldDef[] arr = new FieldDef[0];;
+        FieldDef[] arr = new FieldDef[0];
+        ;
         arr = defs.toArray(arr);
         assertEquals("pvs", arr[0].getName());
         assertEquals("pvs.file", arr[0].getFile());

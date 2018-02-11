@@ -31,7 +31,7 @@ public class ReadWriteTest {
         idx.add("b");
         idx.close();
 
-        Write w = new Write(new String[] {keyLoc, dbLoc, "0", "hour", "field", new Common().getFile("b-1.tsv")});
+        Write w = new Write(new String[]{keyLoc, dbLoc, "0", "hour", "field", new Common().getFile("b-1.tsv")});
         w.entrypoint();
 
         ManuReader reader = new ManuReader(dbLoc);

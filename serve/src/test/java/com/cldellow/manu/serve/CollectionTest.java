@@ -4,7 +4,8 @@ import com.cldellow.manu.common.Common;
 import com.cldellow.manu.format.ManuReader;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class CollectionTest {
     @Test(expected = IllegalArgumentException.class)
@@ -17,9 +18,9 @@ public class CollectionTest {
         Collection.validateReaders("foo", new ManuReader[]{});
     }
 
-    @Test(expected =  IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void mismatchedInterval() throws Exception {
-        ManuReader[] readers = new ManuReader[] {
+        ManuReader[] readers = new ManuReader[]{
                 new ManuReader(new Common().getFile("datadir/hourly/200801.manu")),
                 new ManuReader(new Common().getFile("datadir/daily/200801.manu"))
         };
@@ -41,23 +42,23 @@ public class CollectionTest {
         ManuReader r2 = new ManuReader(new Common().getFile("datadir/hourly/200802.manu"));
 
         {
-            ManuReader r[] = new ManuReader[] { r1, r2};
+            ManuReader r[] = new ManuReader[]{r1, r2};
             Collection.validateReaders("d", r);
             assertTrue(r[0].getFrom().getMillis() < r[1].getFrom().getMillis());
         }
 
         {
-            ManuReader r[] = new ManuReader[] { r2, r1};
+            ManuReader r[] = new ManuReader[]{r2, r1};
             Collection.validateReaders("d", r);
             assertTrue(r[0].getFrom().getMillis() < r[1].getFrom().getMillis());
         }
-   }
+    }
 
     @Test(expected = IllegalArgumentException.class)
     public void validateReadersOverlap() throws Exception {
         ManuReader r1 = new ManuReader(new Common().getFile("datadir/hourly/200801.manu"));
 
-        ManuReader r[] = new ManuReader[] { r1, r1};
-            Collection.validateReaders("d", r);
+        ManuReader r[] = new ManuReader[]{r1, r1};
+        Collection.validateReaders("d", r);
     }
 }

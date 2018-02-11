@@ -3,7 +3,6 @@ package com.cldellow.manu.cli;
 import com.cldellow.manu.format.*;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
@@ -318,8 +317,8 @@ public class MergeIteratorTest {
             public Record get(int i) throws Exception {
                 Exception e = new Exception();
                 StackTraceElement[] stes = e.getStackTrace();
-                for(StackTraceElement ste : stes) {
-                    if(ste.getMethodName() == "hasNext")
+                for (StackTraceElement ste : stes) {
+                    if (ste.getMethodName() == "hasNext")
                         throw new IllegalAccessException("simulating unexpected exception in hasNext");
                 }
                 return super.get(i);
@@ -339,8 +338,8 @@ public class MergeIteratorTest {
             public Record get(int i) throws Exception {
                 Exception e = new Exception();
                 StackTraceElement[] stes = e.getStackTrace();
-                for(StackTraceElement ste : stes) {
-                    if(ste.getMethodName() == "next")
+                for (StackTraceElement ste : stes) {
+                    if (ste.getMethodName() == "next")
                         throw new IllegalAccessException("simulating unexpected exception in next");
                 }
                 return super.get(i);

@@ -64,10 +64,10 @@ public class Writer {
             while (records.hasNext()) {
 
                 Record record = records.next();
-                if(record == null)
+                if (record == null)
                     throw new IllegalArgumentException(String.format("record %d is null", currentRecord));
 
-                while(currentRecord < record.getId() - recordOffset) {
+                while (currentRecord < record.getId() - recordOffset) {
                     // Insert dummy entries for missing records
                     recordPositions.add(dos.size());
                     currentRecord++;

@@ -4,12 +4,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import java.io.File;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Random;
 
 
@@ -51,7 +46,7 @@ public class WriterTest {
                 Arrays.asList(records).iterator());
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testCannotInferNumDatapoints() throws Exception {
         Long epochMs = System.currentTimeMillis();
         Interval interval = Interval.DAY;
@@ -125,7 +120,6 @@ public class WriterTest {
                 fieldTypes,
                 Arrays.asList(records).iterator());
     }
-
 
 
     @Test

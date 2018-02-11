@@ -40,16 +40,16 @@ public class SimpleRecordTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void moreFieldsThanDataPoints() {
-        new SimpleRecord(1, new FieldEncoder[]{new CopyEncoder(), new CopyEncoder()}, new int[][]{new int[] {0}});
+        new SimpleRecord(1, new FieldEncoder[]{new CopyEncoder(), new CopyEncoder()}, new int[][]{new int[]{0}});
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void negativeId() {
-        new SimpleRecord(-1, new FieldEncoder[] { new CopyEncoder() }, new int[][] { new int[] {0}});
+        new SimpleRecord(-1, new FieldEncoder[]{new CopyEncoder()}, new int[][]{new int[]{0}});
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void raggedData() {
-        new SimpleRecord(1, new FieldEncoder[] { new CopyEncoder(), new CopyEncoder() }, new int[][] { new int[] {0}, new int[] {1,2}});
+        new SimpleRecord(1, new FieldEncoder[]{new CopyEncoder(), new CopyEncoder()}, new int[][]{new int[]{0}, new int[]{1, 2}});
     }
 }

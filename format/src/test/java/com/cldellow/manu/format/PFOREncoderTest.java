@@ -5,7 +5,6 @@ import com.pholser.junit.quickcheck.runner.JUnitQuickcheck;
 import me.lemire.integercompression.IntWrapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runner.notification.RunListener;
 
 import java.util.Random;
 
@@ -49,7 +48,7 @@ public class PFOREncoderTest {
         IntWrapper len = new IntWrapper(0);
         int[] actual = EncoderTools.roundtrip(ints, encoder, len);
         assertEquals(ints.length, actual.length);
-        for(int i = 0; i < ints.length; i++)
+        for (int i = 0; i < ints.length; i++)
             assertEquals(ints[i], actual[i]);
     }
 

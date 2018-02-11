@@ -59,7 +59,7 @@ public class Http {
             StringBuilder sb = new StringBuilder();
             reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
             String line = null;
-            while((line = reader.readLine()) != null)
+            while ((line = reader.readLine()) != null)
                 sb.append(line + "\n");
             return new HttpResponse(connection.getResponseCode(), sb.toString());
         }

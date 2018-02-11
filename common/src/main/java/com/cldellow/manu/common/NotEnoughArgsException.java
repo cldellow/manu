@@ -14,6 +14,7 @@ public class NotEnoughArgsException extends Exception {
 
     /**
      * Constructs an instance of {@code NotEnoughArgsException}.
+     *
      * @param message The message to show the user.
      */
     public NotEnoughArgsException(String message) {
@@ -22,8 +23,9 @@ public class NotEnoughArgsException extends Exception {
 
     /**
      * Constructs an instance of {@code NotEnoughArgsException}.
+     *
      * @param message The message to show the user.
-     * @param cause An underlying cause of the exception.
+     * @param cause   An underlying cause of the exception.
      */
     public NotEnoughArgsException(String message, Throwable cause) {
         super(message, cause);

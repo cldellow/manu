@@ -8,17 +8,17 @@ import static org.junit.Assert.*;
 public class MergeArgsTest {
     @Test(expected = NotEnoughArgsException.class)
     public void noOutputFile() throws Exception {
-        new MergeArgs(new String[] {});
+        new MergeArgs(new String[]{});
     }
 
     @Test(expected = NotEnoughArgsException.class)
     public void noInputFile() throws Exception {
-        new MergeArgs(new String[] {"output"});
+        new MergeArgs(new String[]{"output"});
     }
 
     @Test
     public void simple() throws Exception {
-        MergeArgs ma = new MergeArgs(new String[] {"output", "input"});
+        MergeArgs ma = new MergeArgs(new String[]{"output", "input"});
         assertEquals("output", ma.outputFile);
         assertEquals(1, ma.inputFiles.length);
         assertEquals("input", ma.inputFiles[0]);
@@ -27,7 +27,7 @@ public class MergeArgsTest {
 
     @Test
     public void simple2() throws Exception {
-        MergeArgs ma = new MergeArgs(new String[] {"output", "input", "input2"});
+        MergeArgs ma = new MergeArgs(new String[]{"output", "input", "input2"});
         assertEquals("output", ma.outputFile);
         assertEquals(2, ma.inputFiles.length);
         assertEquals("input", ma.inputFiles[0]);
@@ -37,7 +37,7 @@ public class MergeArgsTest {
 
     @Test
     public void lossyAll() throws Exception {
-        MergeArgs ma = new MergeArgs(new String[] {"output", "input", "--lossy"});
+        MergeArgs ma = new MergeArgs(new String[]{"output", "input", "--lossy"});
         assertEquals("output", ma.outputFile);
         assertEquals(1, ma.inputFiles.length);
         assertEquals("input", ma.inputFiles[0]);
@@ -47,7 +47,7 @@ public class MergeArgsTest {
 
     @Test
     public void lossyAll2() throws Exception {
-        MergeArgs ma = new MergeArgs(new String[] {"output", "input", "--lossy="});
+        MergeArgs ma = new MergeArgs(new String[]{"output", "input", "--lossy="});
         assertEquals("output", ma.outputFile);
         assertEquals(1, ma.inputFiles.length);
         assertEquals("input", ma.inputFiles[0]);
@@ -57,7 +57,7 @@ public class MergeArgsTest {
 
     @Test
     public void lossy1() throws Exception {
-        MergeArgs ma = new MergeArgs(new String[] {"output", "input", "--lossy=foo"});
+        MergeArgs ma = new MergeArgs(new String[]{"output", "input", "--lossy=foo"});
         assertEquals("output", ma.outputFile);
         assertEquals(1, ma.inputFiles.length);
         assertEquals("input", ma.inputFiles[0]);
@@ -68,7 +68,7 @@ public class MergeArgsTest {
 
     @Test
     public void lossy2() throws Exception {
-        MergeArgs ma = new MergeArgs(new String[] {"output", "input", "--lossy=foo,bar"});
+        MergeArgs ma = new MergeArgs(new String[]{"output", "input", "--lossy=foo,bar"});
         assertEquals("output", ma.outputFile);
         assertEquals(1, ma.inputFiles.length);
         assertEquals("input", ma.inputFiles[0]);
@@ -80,7 +80,7 @@ public class MergeArgsTest {
 
     @Test
     public void lossyPosition() throws Exception {
-        MergeArgs ma = new MergeArgs(new String[] {"--lossy=foo", "output", "input"});
+        MergeArgs ma = new MergeArgs(new String[]{"--lossy=foo", "output", "input"});
         assertEquals("output", ma.outputFile);
         assertEquals(1, ma.inputFiles.length);
         assertEquals("input", ma.inputFiles[0]);

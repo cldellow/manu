@@ -17,20 +17,22 @@ public class IntVector {
 
     /**
      * Constructs an empty IntVector with the specified initial capacity.
+     *
      * @param initialCapacity The number of elements for which to pre-allocate memory.
      */
     public IntVector(int initialCapacity) {
-        if(initialCapacity < 1)
+        if (initialCapacity < 1)
             throw new IllegalArgumentException("initialCapacity " + initialCapacity + " is out of bounds, must be > 0");
         arr = new int[initialCapacity];
     }
 
     /**
      * Appends the given value to the end of the vector.
+     *
      * @param value The value to append.
      */
     public void add(int value) {
-        if(size == arr.length)
+        if (size == arr.length)
             grow();
 
         arr[size++] = value;
@@ -38,6 +40,7 @@ public class IntVector {
 
     /**
      * Returns the value at the given index.
+     *
      * @param index The index of the value sought.
      * @return The previously stored value.
      */
@@ -59,21 +62,27 @@ public class IntVector {
 
     /**
      * Returns the number of elements in the vector.
+     *
      * @return The number of elements in the vector.
      */
-    public int getSize() { return size; }
+    public int getSize() {
+        return size;
+    }
 
     /**
      * Returns the underlying array that backs this vector.
-     *
+     * <p>
      * Note that the array's length may be greater than the size of the
      * vector due to pre-allocation of space.
+     *
      * @return The backing array.
      */
-    public int[] getArray() { return arr; }
+    public int[] getArray() {
+        return arr;
+    }
 
     private void checkIndex(int i) {
-        if(i >= size)
+        if (i >= size)
             throw new ArrayIndexOutOfBoundsException("index " + i + " is beyond size of " + size);
     }
 

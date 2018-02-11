@@ -1,15 +1,15 @@
 package com.cldellow.manu.cli;
 
+import com.cldellow.manu.common.NotEnoughArgsException;
 import com.cldellow.manu.format.IndexAccessMode;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
-import com.cldellow.manu.common.NotEnoughArgsException;
 
 public class ReadArgsTest {
     @Test
     public void testArgsSimple() throws Exception {
-        ReadArgs ra = new ReadArgs(new String[] { "index", "input"});
+        ReadArgs ra = new ReadArgs(new String[]{"index", "input"});
         assertEquals("index", ra.indexFile);
         assertEquals("input", ra.inputFile);
         assertEquals(KeyKind.KEY, ra.keyKind);
@@ -23,7 +23,7 @@ public class ReadArgsTest {
 
     @Test
     public void testArgsComplex() throws Exception {
-        ReadArgs ra = new ReadArgs(new String[] { "index", "input", "--id", "-i", "123", "-n", "name", "-r", "regex", "field1", "--write"});
+        ReadArgs ra = new ReadArgs(new String[]{"index", "input", "--id", "-i", "123", "-n", "name", "-r", "regex", "field1", "--write"});
         assertEquals("index", ra.indexFile);
         assertEquals("input", ra.inputFile);
         assertEquals(KeyKind.ID, ra.keyKind);
@@ -40,7 +40,7 @@ public class ReadArgsTest {
 
     @Test
     public void testArgsLongComplex() throws Exception {
-        ReadArgs ra = new ReadArgs(new String[] { "index", "input", "--id", "--key-id", "123", "--key-name", "name", "--key-regex", "regex", "field1"});
+        ReadArgs ra = new ReadArgs(new String[]{"index", "input", "--id", "--key-id", "123", "--key-name", "name", "--key-regex", "regex", "field1"});
         assertEquals("index", ra.indexFile);
         assertEquals("input", ra.inputFile);
         assertEquals(KeyKind.ID, ra.keyKind);
@@ -57,7 +57,7 @@ public class ReadArgsTest {
 
     @Test
     public void testArgsName() throws Exception {
-        ReadArgs ra = new ReadArgs(new String[] { "keys", "pvs.out", "-n", "name"});
+        ReadArgs ra = new ReadArgs(new String[]{"keys", "pvs.out", "-n", "name"});
         assertEquals("keys", ra.indexFile);
         assertEquals("pvs.out", ra.inputFile);
         assertEquals(KeyKind.KEY, ra.keyKind);
@@ -70,25 +70,25 @@ public class ReadArgsTest {
 
     @Test(expected = NotEnoughArgsException.class)
     public void testArgsIncomplete() throws Exception {
-        ReadArgs ra = new ReadArgs(new String[] { "index", "input", "--key-name"});
+        ReadArgs ra = new ReadArgs(new String[]{"index", "input", "--key-name"});
     }
 
     @Test
     public void testFilterKeys() throws Exception {
-        ReadArgs ra = new ReadArgs(new String[] {"a", "b", "-n", "name"});
+        ReadArgs ra = new ReadArgs(new String[]{"a", "b", "-n", "name"});
         assertTrue(ra.filterKeys());
 
-        ra = new ReadArgs(new String[] {"a", "b", "-i", "0"});
+        ra = new ReadArgs(new String[]{"a", "b", "-i", "0"});
         assertTrue(ra.filterKeys());
 
-        ra = new ReadArgs(new String[] {"a", "b", "-r", "name"});
+        ra = new ReadArgs(new String[]{"a", "b", "-r", "name"});
         assertTrue(ra.filterKeys());
     }
 
     @Test
     public void testPrintFields() throws Exception {
-        ReadArgs ra = new ReadArgs(new String[] {"a", "b"});
-        boolean[] rv = ra.printFields(new String[] {"field1", "field2"});
+        ReadArgs ra = new ReadArgs(new String[]{"a", "b"});
+        boolean[] rv = ra.printFields(new String[]{"field1", "field2"});
         assertEquals(2, rv.length);
         assertTrue(rv[0]);
         assertTrue(rv[1]);
@@ -96,14 +96,14 @@ public class ReadArgsTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testPrintFieldsUnknown() throws Exception {
-        ReadArgs ra = new ReadArgs(new String[] {"a", "b", "field3"});
-        boolean[] rv = ra.printFields(new String[] {"field1", "field2"});
+        ReadArgs ra = new ReadArgs(new String[]{"a", "b", "field3"});
+        boolean[] rv = ra.printFields(new String[]{"field1", "field2"});
     }
 
     @Test
     public void testPrintFieldsSome() throws Exception {
-        ReadArgs ra = new ReadArgs(new String[] {"a", "b", "field1"});
-        boolean[] rv = ra.printFields(new String[] {"field1", "field2"});
+        ReadArgs ra = new ReadArgs(new String[]{"a", "b", "field1"});
+        boolean[] rv = ra.printFields(new String[]{"field1", "field2"});
         assertEquals(2, rv.length);
         assertTrue(rv[0]);
         assertFalse(rv[1]);

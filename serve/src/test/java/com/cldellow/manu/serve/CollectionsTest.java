@@ -1,13 +1,12 @@
 package com.cldellow.manu.serve;
 
 import com.cldellow.manu.common.Common;
-import org.junit.Assert;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
-
-import java.io.File;
 import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class CollectionsTest {
     @Test
@@ -16,7 +15,7 @@ public class CollectionsTest {
     }
 
     @Test
-    public void discover() throws Exception{
+    public void discover() throws Exception {
         String datadir = new Common().getFile("datadir");
 
         Map<String, Collection> rv = Collections.discover(datadir);
@@ -29,7 +28,7 @@ public class CollectionsTest {
     }
 
     @Test
-    public void discoverEmpty() throws Exception{
+    public void discoverEmpty() throws Exception {
         Map<String, Collection> rv = Collections.discover("/tmp/nonexistent");
         assertEquals(0, rv.size());
     }
