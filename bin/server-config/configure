@@ -34,17 +34,17 @@ err() {
 
 ensure_java() {
   set_name
-  apt-get install openjdk-8-jdk-headless
+  apt-get install -y openjdk-8-jdk-headless
 }
 
 ensure_htop() {
   set_name
-  apt-get install htop
+  apt-get install -y htop
 }
 
 ensure_runit() {
   set_name
-  apt-get install runit
+  apt-get install -y runit
 }
 
 ensure_manu() {
@@ -66,7 +66,7 @@ ensure_manu() {
 
 ensure_s3cmd() {
   set_name
-  apt-get install s3cmd
+  apt-get install -y s3cmd
 }
 
 ensure_manu_data() {
@@ -79,7 +79,7 @@ ensure_manu_data() {
 
 ensure_nginx() {
   set_name
-  apt-get install nginx
+  apt-get install -y nginx
   # Disable the standard "Welcome to nginx" site
   if [ -e /etc/nginx/sites-enabled/default ]; then
     rm /etc/nginx/sites-enabled/default
@@ -95,11 +95,13 @@ ensure_nginx() {
 ensure_certbot() {
   # Run on the dev box to renew SSL certificates.
   set_name
-  apt-get install software-properties-common
+  apt-get install -y software-properties-common
   add-apt-repository ppa:certbot/certbot
   apt-get update
-  apt-get install certbot
-  apt-get install python-pip
+  apt-get install -y certbot
+  apt-get install -y python-pip
+  apt-get install -y python-setuptools
+  pip install --upgrade pip
   pip install future
   pip install certbot-external-auth
 }
@@ -125,7 +127,7 @@ renew_certs() {
 
 ensure_varnish() {
   set_name
-  apt-get install varnish
+  apt-get install -y varnish
   systemctl daemon-reload
   service varnish restart
 }
