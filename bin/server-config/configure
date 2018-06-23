@@ -113,7 +113,6 @@ renew_certs() {
   certbot certonly --webroot \
     -w /var/www/certbot/ \
     -d www.cldellow.com \
-    -d cldellow.com \
     -d manu.cldellow.com \
     -d certbot.cldellow.com
 
