@@ -110,6 +110,9 @@ renew_certs() {
   # Usage:
   # ./configure publish droplet renew_certs
   ensure_certbot
+
+  # This is a hack since we're not using the renew mode. Perhaps it's bad? Let's see.
+  rm -rf /etc/letsencrypt/live/www.cldellow.com*
   certbot certonly --webroot \
     -w /var/www/certbot/ \
     -d www.cldellow.com \
@@ -118,7 +121,7 @@ renew_certs() {
 
   now=$(TZ=UTC date -Iseconds | tr -d ':-' | sed -e 's/+.*//')
   for x in fullchain.pem privkey.pem; do
-    f=$(readlink -f /etc/letsencrypt/live/www.cldellow.com/"$x")
+    f=$(readlink -f /etc/letsencrypt/live/www.cldellow.com*/"$x")
     s3cmd put "$f" s3://manu-data/keys/cldellow.com/"$x"
     s3cmd put "$f" s3://manu-data/keys/cldellow.com/"$now"/"$x"
   done
