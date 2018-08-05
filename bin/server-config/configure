@@ -167,16 +167,12 @@ fn_publish() {
   target=${1:-droplet}
   # Bootstrap a droplet's filesystems with S3 credentials and a script
   # to install services.
-  ( cd "$here" && tar cf "$tmp" . )
+  files=$(cd "$here" && git ls-files .)
+  ( cd "$here" && tar cf "$tmp" $files )
   local home
   home=${HOME#/}
   tar --append -f "$tmp" --transform "flags=r;s|$home/.s3cld|root/.s3cfg|" ~/.s3cld
 
-  # Remove vim .swp files
-  # CONSIDER: maybe use git ls-files to generate the list of files?
-  tar tf "$tmp" |
-    grep "\\.swp$" |
-    xargs --no-run-if-empty tar --delete -f "$tmp"
   gzip -9 - < "$tmp" | ssh "$target" -- tar xzf - -C / --no-same-permissions
   echo "Published $(tar tf "$tmp" | wc -l) files."
 
