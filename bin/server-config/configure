@@ -127,11 +127,28 @@ renew_certs() {
   done
 }
 
+ensure_pipenv() {
+  apt-get install -y python-pip
+  apt-get install -y python-setuptools
+  pip install --upgrade pip
+  pip install pipenv
+}
+
 ensure_varnish() {
   set_name
   apt-get install -y varnish
   systemctl daemon-reload
   service varnish restart
+}
+
+ensure_ssmtp() {
+  apt-get install ssmtp
+  s3cmd get --force s3://cldellow/private/ssmtp.conf /etc/ssmtp/ssmtp.conf
+}
+
+install_crime_map() {
+  git clone https://github.com/cldellow/canada-crime-maps.git
+  ln -s /root/canada-crime-maps/download-all /etc/cron.daily/canada-crime-maps
 }
 
 fn_update() {
@@ -154,12 +171,14 @@ fn_update() {
     reboot
   fi
 
+  ensure_pipenv
   ensure_htop
   ensure_java
   ensure_manu
   ensure_manu_data
   ensure_runit
   ensure_nginx
+  ensure_ssmtp
   ensure_varnish
 }
 
