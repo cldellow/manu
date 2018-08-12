@@ -1,0 +1,9 @@
+#!/bin/bash
+set -euo pipefail
+
+# cron on Ubuntu doesn't support the MAILFROM variable and I can't
+# for the life of me figure out how to make ssmtp do what I want here,
+# so instead we stomp on the incoming message and arguments. Total hack.
+
+sed -e 's#From: root (Cron Daemon)#From: cldellow@cldellow.com#' |
+  /usr/sbin/ssmtp -fcldellow@cldellow.com -Fcldellow@cldellow.com "$@"
