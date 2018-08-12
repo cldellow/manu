@@ -129,6 +129,7 @@ renew_certs() {
 
 ensure_pipenv() {
   apt-get install -y python-pip
+  apt-get install -y python3-dev
   apt-get install -y python-setuptools
   pip install --upgrade pip
   pip install pipenv
@@ -147,8 +148,9 @@ ensure_ssmtp() {
 }
 
 install_crime_map() {
-  git clone https://github.com/cldellow/canada-crime-maps.git
-  ln -s /root/canada-crime-maps/download-all /etc/cron.daily/canada-crime-maps
+  cd /root && git clone https://github.com/cldellow/canada-crime-maps.git
+  echo 'MAILTO=cldellow@cldellow.com
+33 5 * * * root /root/canada-crime-maps/download-all' > /etc/cron.d/canada-crime-maps
 }
 
 fn_update() {
